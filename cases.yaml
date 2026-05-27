@@ -1,0 +1,24 @@
+# (cell_line, drug) pairs to evaluate.
+# Labels sourced from GDSC2 IC50 z-scores: z < -0.5 → SENSITIVE, z > 0.5 → RESISTANT.
+# Expand to 30-50 pairs using notebooks/data_exploration.ipynb after ETL is complete.
+
+cases:
+  - cell_line: A375
+    drug: Vemurafenib
+    label: SENSITIVE
+    notes: "BRAF V600E melanoma — canonical T1 axiom case"
+
+  - cell_line: NCI-H1975
+    drug: Gefitinib
+    label: RESISTANT
+    notes: "EGFR T790M — canonical resistance case"
+
+  - cell_line: MCF7
+    drug: Fulvestrant
+    label: SENSITIVE
+    notes: "ESR1-positive breast cancer"
+
+  - cell_line: K562
+    drug: Imatinib
+    label: SENSITIVE
+    notes: "BCR-ABL CML — canonical T4 pharmacological prior case"
