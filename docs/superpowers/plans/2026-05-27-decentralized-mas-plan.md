@@ -73,7 +73,7 @@ decentralized-mas/
 
 ## Phase 1: Foundation
 
-### Task 1: Project Setup
+### Task 1: Project Setup ✅ COMPLETE
 
 **Files:**
 - Create: `pyproject.toml`
@@ -82,7 +82,7 @@ decentralized-mas/
 - Create: `tests/conftest.py`
 - Create: all `src/**/__init__.py` and `evaluation/__init__.py`
 
-- [ ] **Step 1: Create `pyproject.toml`**
+- [x] **Step 1: Create `pyproject.toml`**
 
 ```toml
 [build-system]
@@ -121,7 +121,7 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 ```
 
-- [ ] **Step 2: Create `.env.example`**
+- [x] **Step 2: Create `.env.example`**
 
 ```
 GOOGLE_API_KEY=your_google_ai_studio_key
@@ -133,7 +133,7 @@ PATHWAYS_DB=data/processed/pathways.db
 LLM_CACHE_DIR=.cache/llm
 ```
 
-- [ ] **Step 3: Create `cases.yaml`** (4 anchor cases; expand via data exploration notebook)
+- [x] **Step 3: Create `cases.yaml`** (4 anchor cases; will be expanded with literature-sourced cases before Task 4)
 
 ```yaml
 # (cell_line, drug) pairs to evaluate.
@@ -162,7 +162,7 @@ cases:
     notes: "BCR-ABL CML — canonical T4 pharmacological prior case"
 ```
 
-- [ ] **Step 4: Create directory structure and empty `__init__.py` files**
+- [x] **Step 4: Create directory structure and empty `__init__.py` files**
 
 ```bash
 mkdir -p src/schemas src/data src/mcp_servers src/llm src/agents src/protocols
@@ -174,7 +174,7 @@ touch src/agents/__init__.py src/protocols/__init__.py
 touch evaluation/__init__.py
 ```
 
-- [ ] **Step 5: Create `tests/conftest.py`**
+- [x] **Step 5: Create `tests/conftest.py`**
 
 ```python
 import sqlite3
@@ -269,7 +269,7 @@ def pathways_db(tmp_path):
     return db
 ```
 
-- [ ] **Step 6: Install dependencies**
+- [x] **Step 6: Install dependencies**
 
 ```bash
 pip install -e ".[dev]"
@@ -277,7 +277,7 @@ pip install -e ".[dev]"
 
 Expected: No errors. `fastmcp`, `pydantic`, `google-genai`, `groq` all installed.
 
-- [ ] **Step 7: Verify pytest runs (no tests yet, just collection)**
+- [x] **Step 7: Verify pytest runs (no tests yet, just collection)**
 
 ```bash
 pytest --collect-only
@@ -285,7 +285,7 @@ pytest --collect-only
 
 Expected: `no tests ran`
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add pyproject.toml .env.example cases.yaml tests/conftest.py src/ evaluation/ data/ .cache/ notebooks/ experiments/
@@ -294,7 +294,7 @@ git commit -m "feat: project scaffold, cases.yaml, test fixtures"
 
 ---
 
-### Task 2: Pydantic Schemas
+### Task 2: Pydantic Schemas ✅ COMPLETE
 
 **Files:**
 - Create: `src/schemas/evidence_pack.py`
@@ -302,7 +302,7 @@ git commit -m "feat: project scaffold, cases.yaml, test fixtures"
 - Create: `src/schemas/axiom_rules.py`
 - Create: `tests/test_schemas.py`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `tests/test_schemas.py`:
 ```python
@@ -361,7 +361,7 @@ def test_axiom_hierarchy_ordered():
     assert AXIOM_HIERARCHY[AxiomTier.T2_TRANSCRIPTIONAL_GATE] > AXIOM_HIERARCHY[AxiomTier.T3_PATHWAY_BYPASS]
 ```
 
-- [ ] **Step 2: Run tests — verify they fail**
+- [x] **Step 2: Run tests — verify they fail**
 
 ```bash
 pytest tests/test_schemas.py -v
@@ -369,7 +369,7 @@ pytest tests/test_schemas.py -v
 
 Expected: `ImportError` (modules not yet created)
 
-- [ ] **Step 3: Create `src/schemas/evidence_pack.py`**
+- [x] **Step 3: Create `src/schemas/evidence_pack.py`**
 
 ```python
 from enum import Enum
@@ -411,7 +411,7 @@ class EvidencePack(BaseModel):
     conflict_flags: list[str] = []
 ```
 
-- [ ] **Step 4: Create `src/schemas/axiom_rules.py`**
+- [x] **Step 4: Create `src/schemas/axiom_rules.py`**
 
 ```python
 from enum import Enum
@@ -439,7 +439,7 @@ CONFIDENCE_DECAY_PER_FLIP = 0.15
 MAX_DEBATE_ROUNDS = 3
 ```
 
-- [ ] **Step 5: Create `src/schemas/debate_message.py`**
+- [x] **Step 5: Create `src/schemas/debate_message.py`**
 
 ```python
 from pydantic import BaseModel
@@ -463,7 +463,7 @@ class DebateMessage(BaseModel):
     axiom_challenge: AxiomChallenge | None = None
 ```
 
-- [ ] **Step 6: Run tests — verify they pass**
+- [x] **Step 6: Run tests — verify they pass**
 
 ```bash
 pytest tests/test_schemas.py -v
@@ -471,7 +471,7 @@ pytest tests/test_schemas.py -v
 
 Expected: `4 passed`
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/schemas/ tests/test_schemas.py
@@ -480,12 +480,12 @@ git commit -m "feat: pydantic schemas for EvidencePack, DebateMessage, AxiomRule
 
 ---
 
-### Task 3: Data Loader Utility
+### Task 3: Data Loader Utility ✅ COMPLETE
 
 **Files:**
 - Create: `src/data/loader.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 Add to `tests/test_etl.py`:
 ```python
@@ -516,7 +516,7 @@ def test_get_db_connection(genomics_db):
     conn.close()
 ```
 
-- [ ] **Step 2: Run — verify fail**
+- [x] **Step 2: Run — verify fail**
 
 ```bash
 pytest tests/test_etl.py -v
@@ -524,7 +524,7 @@ pytest tests/test_etl.py -v
 
 Expected: `ImportError`
 
-- [ ] **Step 3: Create `src/data/loader.py`**
+- [x] **Step 3: Create `src/data/loader.py`**
 
 ```python
 import sqlite3
@@ -553,7 +553,7 @@ def get_db_connection(db_path: Path) -> sqlite3.Connection:
     return conn
 ```
 
-- [ ] **Step 4: Run — verify pass**
+- [x] **Step 4: Run — verify pass**
 
 ```bash
 pytest tests/test_etl.py -v
@@ -561,7 +561,7 @@ pytest tests/test_etl.py -v
 
 Expected: `2 passed`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/data/loader.py tests/test_etl.py
@@ -571,6 +571,8 @@ git commit -m "feat: data loader for cases.yaml and SQLite connections"
 ---
 
 ### Task 4: ETL — Genomics Database
+
+> **⚠️ PAUSE BEFORE STARTING:** Update `cases.yaml` with literature-sourced (cell_line, drug, mechanism) cases before running ETL. See discussion in session 2026-05-27.
 
 **Files:**
 - Create: `src/data/etl_genomics.py`
