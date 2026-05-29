@@ -570,9 +570,9 @@ git commit -m "feat: data loader for cases.yaml and SQLite connections"
 
 ---
 
-### Task 4: ETL — Genomics Database
+### Task 4: ETL — Genomics Database ✅ COMPLETE
 
-> **⚠️ PAUSE BEFORE STARTING:** Update `cases.yaml` with literature-sourced (cell_line, drug, mechanism) cases before running ETL. See discussion in session 2026-05-27.
+> `cases.yaml` updated to 40 GDSC2-verified cases (session 2026-05-28). `Case` dataclass extended with `z_score`, `pathway`, `putative_target`, `axiom_tier` fields.
 
 **Files:**
 - Create: `src/data/etl_genomics.py`
@@ -726,7 +726,7 @@ git commit -m "feat: ETL pipeline for genomics.db (mutations + CNV)"
 
 ---
 
-### Task 5: ETL — Transcriptomics Database
+### Task 5: ETL — Transcriptomics Database ✅ COMPLETE
 
 **Files:**
 - Create: `src/data/etl_transcriptomics.py`
@@ -853,7 +853,7 @@ git commit -m "feat: ETL pipeline for transcriptomics.db (expression z-scores)"
 
 ---
 
-### Task 6: ETL — Pharmacology Database
+### Task 6: ETL — Pharmacology Database ✅ COMPLETE
 
 **Files:**
 - Create: `src/data/etl_pharmacology.py`
@@ -1008,7 +1008,7 @@ git commit -m "feat: ETL pipeline for pharmacology.db (IC50 + ChEMBL drug info)"
 
 ---
 
-### Task 7: ETL — Pathways Database
+### Task 7: ETL — Pathways Database ✅ COMPLETE
 
 **Files:**
 - Create: `src/data/etl_pathways.py`

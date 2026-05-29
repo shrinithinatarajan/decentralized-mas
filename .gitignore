@@ -9,3 +9,7 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+
+# Data
+src/data/raw/
+src/data/processed/

@@ -10,12 +10,12 @@ def genomics_db(tmp_path):
     conn.executescript("""
         CREATE TABLE mutations (
             cell_line TEXT, gene TEXT, mutation TEXT,
-            mutation_type TEXT, cosmic_id TEXT
+            mutation_type TEXT, cosmic_id TEXT, is_driver INTEGER DEFAULT 0
         );
         CREATE TABLE cnv (
             cell_line TEXT, gene TEXT, cnv_value REAL, status TEXT
         );
-        INSERT INTO mutations VALUES ('A375','BRAF','V600E','missense','COSM476');
+        INSERT INTO mutations VALUES ('A375','BRAF','V600E','missense','COSM476',1);
         INSERT INTO cnv VALUES ('A375','BRAF',2.0,'neutral');
     """)
     conn.commit()
@@ -46,8 +46,8 @@ def pharmacology_db(tmp_path):
     conn = sqlite3.connect(db)
     conn.executescript("""
         CREATE TABLE drug_response (
-            cell_line TEXT, drug TEXT, ic50 REAL,
-            ln_ic50 REAL, z_score REAL, auc REAL
+            cell_line TEXT, drug TEXT, ln_ic50 REAL,
+            auc REAL, z_score REAL, label TEXT
         );
         CREATE TABLE drug_info (
             drug TEXT PRIMARY KEY, target_genes TEXT,
@@ -57,7 +57,7 @@ def pharmacology_db(tmp_path):
             drug TEXT, mutation TEXT, median_ic50 REAL,
             resistant_fraction REAL, n_cell_lines INTEGER
         );
-        INSERT INTO drug_response VALUES ('A375','Vemurafenib',0.3,-1.2,-1.5,0.3);
+        INSERT INTO drug_response VALUES ('A375','Vemurafenib',-1.2,0.3,-1.5,'SENSITIVE');
         INSERT INTO drug_info VALUES ('Vemurafenib','BRAF','BRAF inhibitor','MAPK','targeted');
         INSERT INTO sensitivity_profile VALUES ('Vemurafenib','V600E',0.35,0.1,120);
     """)
