@@ -20,9 +20,9 @@ class ConsensusResult:
 
 
 class DebateEngine:
-    def __init__(self) -> None:
+    def __init__(self, resolver=None) -> None:
         self._detector = ConflictDetector()
-        self._resolver = AxiomResolver()
+        self._resolver = resolver if resolver is not None else AxiomResolver()
 
     def run(self, packs: list[EvidencePack]) -> ConsensusResult:
         cell_line = packs[0].cell_line
