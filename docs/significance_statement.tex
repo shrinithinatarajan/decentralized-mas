@@ -1,0 +1,190 @@
+\documentclass[12pt, letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titlespacing*{\section}{0pt}{1.2em}{0.3em}
+
+\setstretch{1.1}
+\setlength{\parskip}{0.5em}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE\bfseries Innovation Experiment --- Significance Statement}\\
+    \vspace{0.3em}
+    {\normalsize Shrinithi Natarajan}
+\end{center}
+
+\vspace{0.5em}
+\hrule
+\vspace{0.8em}
+
+% ============================================================
+\section{NIH \#1: Importance of the Problem}
+
+Drug resistance is implicated in the overwhelming majority of cancer deaths in patients with
+metastatic disease \cite{liu2025multiomics, mao2025ai}. Despite targeted therapies designed to block
+specific oncogenic drivers, acquired resistance emerges in most patients within one to two years of
+treatment initiation \cite{mao2025ai}. The problem is not a shortage of data --- public repositories
+(GDSC2, CCLE, CTRPv2) contain pharmacological sensitivity profiles matched with genomic,
+transcriptomic, and pathway annotations for thousands of cell line--drug pairs, and recent work
+demonstrates that learnable general principles of drug sensitivity exist within them
+\cite{carli2025cellhit}. What is missing is a framework that reasons over those data layers the
+way a trained oncologist does: by recognising that evidence has a natural causal ordering, and that
+when layers disagree, the hierarchy --- not a statistical average --- should decide the outcome. No
+current computational tool encodes this logic explicitly.
+
+\hrule
+\vspace{0.5em}
+
+% ============================================================
+\section{NIH \#2: Scientific Premise}
+
+\textbf{We hypothesise that a decentralised multi-agent system resolving inter-modality conflicts
+through an explicit five-tier biological Hierarchy of Truth will predict drug resistance more
+accurately and more interpretably than monolithic LLM baselines and naive majority-vote systems.}
+Three lines of evidence support this.
+
+\textit{First}, the causal hierarchy is already established by biology. Structural DNA alterations
+are upstream of transcriptional state, which is upstream of protein activity, which determines
+pathway flux \cite{liu2025multiomics, carli2025cellhit}. Encoding this as executable logic --- rather
+than leaving it implicit in model weights --- is the core novelty.
+
+\textit{Second}, our preliminary system is working. Four specialised agents (Genomics,
+Transcriptomics, Pharmacology, Pathway) each query a curated SQLite database via the Model Context
+Protocol \cite{flotho2026mcpmed, widjaja2025bioinformcp}, produce a structured \texttt{EvidencePack},
+and feed into a \texttt{DebateEngine} that runs up to three conflict-resolution rounds using a
+\texttt{ConflictDetector} and \texttt{AxiomResolver}. All software components are validated by 83 unit and integration tests covering the ETL pipelines,
+MCP servers, agent parsing, and protocol logic. The framework will be evaluated against 40
+GDSC2-verified cell line--drug pairs once connected to a live LLM. The five tiers are:
+
+\begin{itemize}[leftmargin=1.5em, itemsep=0pt, topsep=2pt]
+    \item \textbf{T1 --- Structural Primacy:} DNA-level loss-of-function overrides all downstream signals.
+    \item \textbf{T2 --- Transcriptional Gate:} Silencing (z-score $< -2.0$) renders a gene functionally absent.
+    \item \textbf{T3 --- Pathway Bypass:} Active bypass routes confer resistance regardless of target status.
+    \item \textbf{T4 --- Pharmacological Prior:} Historical IC\textsubscript{50} is a population baseline, overridable by T1--T3.
+    \item \textbf{T5 --- Statistical Consensus:} Population statistics apply when molecular evidence is absent.
+\end{itemize}
+
+Every prediction will be accompanied by a structured reasoning trace naming the axiom tier that
+resolved the case, which agents were overridden, and which dissents were preserved --- a form of
+clinical accountability no existing AI tool provides \cite{evomdt2026, han2024consensus,
+lorenzo2026oncotimia}.
+
+\textit{Third}, prior approaches have addressable weaknesses. Classical ML methods produce
+black-box predictions with no mechanism to inspect which data layer drove the outcome
+\cite{saranya2024drncdr, zhao2023msdrp}. LLM-based systems suffer from context overwhelm when
+incommensurable data types are presented simultaneously, and from hallucination --- the generation
+of biomedical claims not grounded in input data --- a well-documented clinical risk
+\cite{kim2025hallucination, nishisako2025hallucination}. Both failure modes are addressed here:
+every claim is anchored to a database query, and every conflict is resolved by logged axiom logic.
+
+\hrule
+\vspace{0.5em}
+
+% ============================================================
+\section{NIH \#3: Improvement to Scientific Knowledge and Clinical Practice}
+
+\textbf{Aim 1} establishes predictive accuracy on the GDSC2 development set (AUROC, AUPRC,
+Cohen's $\kappa$, Spearman $\rho$). \textbf{Aim 2} quantifies reasoning quality: hallucination
+rate and biological faithfulness score --- evaluation dimensions absent from all prior work
+\cite{kim2025hallucination}. \textbf{Aim 3} runs six ablations (no axiom hierarchy; single agent;
+free-text data instead of MCP; random tier order; no debate loop; majority vote) to prove each
+architectural choice is independently necessary.
+
+Scientific benefit: a reproducible, LLM-agnostic framework for multi-modal biological reasoning.
+Technical benefit: an open-source MCP agent-to-tool protocol adaptable to any multi-modal
+biomedical task \cite{mehandru2025bioagents}. Clinical benefit: structured reasoning traces that
+clinicians can interrogate in the language of molecular oncology --- not a confidence score, but
+an auditable argument.
+
+\hrule
+\vspace{0.5em}
+
+% ============================================================
+\section{NIH \#4: How the Field Will Change}
+
+If the aims are achieved, the field's optimisation target shifts from AUROC points toward reasoning
+quality metrics. The axiom-governed debate protocol is generalisable beyond drug resistance to any
+domain requiring multi-modal evidence reconciliation --- rare disease diagnosis, treatment response
+prediction, biomarker discovery \cite{mehandru2025bioagents}. The debate trace is a novel clinical
+artefact: a structured, citable record of which evidence tier resolved each case, directly enabling
+clinician oversight of AI recommendations \cite{evomdt2026, han2024consensus}.
+
+\begin{quote}
+\small\textit{As a result, our knowledge of how multi-modal molecular evidence should be integrated
+during clinical inference will be advanced by an auditable, biologically faithful reasoning
+architecture --- one that makes the reasoning process a first-class scientific object and brings
+computational oncology closer to AI-assisted decision support that clinicians can trust.}
+\end{quote}
+
+\hrule
+\vspace{0.5em}
+
+% ============================================================
+\section{Reflection}
+
+The Wrenshall sock example taught me to lead with the hypothesis and preliminary data together,
+before describing the plan --- reviewers need to believe in the solution before they care about the
+details. It also showed that weaknesses belong at the end of the scientific premise, not in a
+separate section: strengths first establish credibility, then weaknesses frame exactly what the
+aims will address. Switching from fabricated to literature-sourced references sharpened the
+statement considerably --- the CellHit, EvoMDT, and MCPmed papers situate this work precisely in
+its field rather than citing generic statistics.
+
+% ============================================================
+\section{Feedback}
+
+\textit{[To be completed after peer or supervisor review: who gave feedback, how it was solicited,
+and what changes were made in response.]}
+
+\vspace{0.8em}
+\hrule
+\vspace{0.5em}
+
+% ============================================================
+{\small
+\begin{thebibliography}{99}
+\setlength{\itemsep}{0pt}
+
+\bibitem{liu2025multiomics} Liu X et al. Multi-omics advances in understanding cancer drug resistance. \textit{Biomed Technol}. 2025. doi:10.1016/j.bmt.2025.100119
+
+\bibitem{mao2025ai} Mao Y et al. Emerging AI-driven precision therapies in tumor drug resistance. \textit{Mol Cancer}. 2025. doi:10.1186/s12943-025-02321-x
+
+\bibitem{carli2025cellhit} Carli F et al. Learning and actioning general principles of cancer cell drug sensitivity. \textit{Nat Commun}. 2025. doi:10.1038/s41467-025-56827-5
+
+\bibitem{saranya2024drncdr} Saranya KR, Vimina ER. DRN-CDR: cancer drug response prediction using multi-omics. \textit{Comput Biol Chem}. 2024. doi:10.1016/j.compbiolchem.2024.108175
+
+\bibitem{zhao2023msdrp} Zhao H et al. MSDRP: deep learning model for drug response prediction. \textit{Bioinformatics}. 2023.
+
+\bibitem{evomdt2026} Liu Q et al. EvoMDT: self-evolving multi-agent system for clinical decision-making. \textit{npj Digit Med}. 2026. doi:10.1038/s41746-025-02304-8
+
+\bibitem{han2024consensus} Han X et al. Multi-Agent Medical Decision Consensus Matrix for Oncology MDT. \textit{arXiv}:2512.14321. 2024.
+
+\bibitem{lorenzo2026oncotimia} Lorenzo L et al. Evaluation of Oncotimia: LLM system for tumour boards. \textit{arXiv}:2601.19899. 2026.
+
+\bibitem{kim2025hallucination} Kim Y et al. Medical Hallucinations in Foundation Models. \textit{arXiv}:2503.05777. 2025.
+
+\bibitem{nishisako2025hallucination} Nishisako S et al. Reducing Hallucinations in Generative AI for Cancer Information. \textit{JMIR Cancer}. 2025. doi:10.2196/70176
+
+\bibitem{flotho2026mcpmed} Flotho M et al. MCPmed: MCP-enabled bioinformatics for LLM-driven discovery. \textit{Brief Bioinform}. 2026. doi:10.1093/bib/bbag076
+
+\bibitem{widjaja2025bioinformcp} Widjaja F et al. BioinfoMCP: MCP Interfaces in Agentic Bioinformatics. \textit{arXiv}:2510.02139. 2025.
+
+\bibitem{mehandru2025bioagents} Mehandru N et al. BioAgents: multi-agent systems for bioinformatics. \textit{Sci Rep}. 2025. doi:10.1038/s41598-025-25919-z
+
+\end{thebibliography}
+}
+
+\end{document}
