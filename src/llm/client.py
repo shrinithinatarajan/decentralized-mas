@@ -15,11 +15,34 @@ except ImportError:  # pragma: no cover
 
 _ANTHROPIC_PREFIXES = ("claude",)
 
+_OPENAI_COMPATIBLE_PROVIDERS = {
+    "groq": {
+        "base_url": "https://api.groq.com/openai/v1",
+        "key_env": "GROQ_API_KEY",
+    },
+    "gemini": {
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "key_env": "GEMINI_API_KEY",
+    },
+}
+
 
 class LLMClient:
     def __init__(self, model: str | None = None, cache_db: Path | None = None) -> None:
         self.model = model or os.getenv("LLM_MODEL", "gpt-4o")
         self._cache = ResponseCache(cache_db or Path("src/data/processed/llm_cache.db"))
+
+    def _provider(self) -> str | None:
+        if ":" in self.model:
+            prefix = self.model.split(":", 1)[0]
+            if prefix in _OPENAI_COMPATIBLE_PROVIDERS:
+                return prefix
+        return None
+
+    def _api_model_name(self) -> str:
+        if self._provider() is not None:
+            return self.model.split(":", 1)[1]
+        return self.model
 
     def _is_anthropic(self) -> bool:
         return any(self.model.startswith(p) for p in _ANTHROPIC_PREFIXES)
@@ -40,8 +63,15 @@ class LLMClient:
 
     async def _call_openai(self, messages: list[dict], system: str) -> str:
         all_messages = ([{"role": "system", "content": system}] if system else []) + messages
-        client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        resp = await client.chat.completions.create(model=self.model, messages=all_messages)
+
+        provider = self._provider()
+        if provider:
+            cfg = _OPENAI_COMPATIBLE_PROVIDERS[provider]
+            client = AsyncOpenAI(api_key=os.getenv(cfg["key_env"]), base_url=cfg["base_url"])
+        else:
+            client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+        resp = await client.chat.completions.create(model=self._api_model_name(), messages=all_messages)
         return resp.choices[0].message.content
 
     async def _call_anthropic(self, messages: list[dict], system: str) -> str:

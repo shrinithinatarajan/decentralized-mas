@@ -111,6 +111,100 @@ async def test_llm_client_system_prompt_included_in_cache_key(tmp_path):
     assert mock_client.chat.completions.create.call_count == 2
 
 
+# --- multi-provider routing ---
+
+@pytest.mark.asyncio
+async def test_groq_model_routes_to_groq_base_url(tmp_path):
+    with patch("src.llm.client.AsyncOpenAI") as MockOpenAI:
+        mock_client = AsyncMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=_openai_response("SENSITIVE"))
+        MockOpenAI.return_value = mock_client
+
+        client = LLMClient(model="groq:gemma2-9b-it", cache_db=tmp_path / "cache.db")
+        await client.complete(messages=[{"role": "user", "content": "predict"}])
+
+    _, kwargs = MockOpenAI.call_args
+    assert "groq.com" in kwargs["base_url"]
+
+
+@pytest.mark.asyncio
+async def test_groq_model_uses_groq_api_key(tmp_path, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    with patch("src.llm.client.AsyncOpenAI") as MockOpenAI:
+        mock_client = AsyncMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=_openai_response("SENSITIVE"))
+        MockOpenAI.return_value = mock_client
+
+        client = LLMClient(model="groq:gemma2-9b-it", cache_db=tmp_path / "cache.db")
+        await client.complete(messages=[{"role": "user", "content": "predict"}])
+
+    _, kwargs = MockOpenAI.call_args
+    assert kwargs["api_key"] == "gsk_test"
+
+
+@pytest.mark.asyncio
+async def test_groq_model_strips_prefix_before_api_call(tmp_path):
+    with patch("src.llm.client.AsyncOpenAI") as MockOpenAI:
+        mock_client = AsyncMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=_openai_response("ok"))
+        MockOpenAI.return_value = mock_client
+
+        client = LLMClient(model="groq:gemma2-9b-it", cache_db=tmp_path / "cache.db")
+        await client.complete(messages=[{"role": "user", "content": "x"}])
+
+    call_kwargs = mock_client.chat.completions.create.call_args[1]
+    assert call_kwargs["model"] == "gemma2-9b-it"
+
+
+@pytest.mark.asyncio
+async def test_gemini_model_routes_to_google_base_url(tmp_path):
+    with patch("src.llm.client.AsyncOpenAI") as MockOpenAI:
+        mock_client = AsyncMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=_openai_response("ok"))
+        MockOpenAI.return_value = mock_client
+
+        client = LLMClient(model="gemini:gemini-1.5-flash", cache_db=tmp_path / "cache.db")
+        await client.complete(messages=[{"role": "user", "content": "x"}])
+
+    _, kwargs = MockOpenAI.call_args
+    assert "googleapis.com" in kwargs["base_url"]
+
+
+@pytest.mark.asyncio
+async def test_gemini_model_strips_prefix_before_api_call(tmp_path):
+    with patch("src.llm.client.AsyncOpenAI") as MockOpenAI:
+        mock_client = AsyncMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=_openai_response("ok"))
+        MockOpenAI.return_value = mock_client
+
+        client = LLMClient(model="gemini:gemini-1.5-flash", cache_db=tmp_path / "cache.db")
+        await client.complete(messages=[{"role": "user", "content": "x"}])
+
+    call_kwargs = mock_client.chat.completions.create.call_args[1]
+    assert call_kwargs["model"] == "gemini-1.5-flash"
+
+
+@pytest.mark.asyncio
+async def test_different_providers_same_model_name_have_independent_cache(tmp_path):
+    # groq:gemma2-9b-it and gemini:gemma2-9b-it should not share cache entries
+    with patch("src.llm.client.AsyncOpenAI") as MockOpenAI:
+        mock_client = AsyncMock()
+        mock_client.chat.completions.create = AsyncMock(
+            side_effect=[_openai_response("groq-answer"), _openai_response("gemini-answer")]
+        )
+        MockOpenAI.return_value = mock_client
+
+        messages = [{"role": "user", "content": "same"}]
+        c1 = LLMClient(model="groq:gemma2-9b-it", cache_db=tmp_path / "cache.db")
+        c2 = LLMClient(model="gemini:gemma2-9b-it", cache_db=tmp_path / "cache.db")
+        r1 = await c1.complete(messages=messages)
+        r2 = await c2.complete(messages=messages)
+
+    assert r1 == "groq-answer"
+    assert r2 == "gemini-answer"
+    assert mock_client.chat.completions.create.call_count == 2
+
+
 # --- helpers ---
 
 def _openai_response(text: str):
