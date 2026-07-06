@@ -1,0 +1,48 @@
+========================================================================
+DEBATE TRACE — A375 + Dabrafenib
+Ground truth label : SENSITIVE  (z=-4.169)
+Notes              : BRAF V600E melanoma — canonical BRAF inhibitor sensitivity
+========================================================================
+
+── ROUND 0: Independent Analysis (agents cannot see each other) ──
+    genomics_agent                 verdict=SENSITIVE    conf=0.90  tier=T1_STRUCTURAL
+      findings: BRAF=p.V600E (activating mutation, predicts sensitivity to BRAF inhibitors like Dabrafenib)
+      caveats:  none
+    transcriptomics_agent          verdict=SENSITIVE    conf=0.80  tier=T2_TRANSCRIPTIONAL
+      findings: BRAF=expressed (target engagement likely)
+      caveats:  none
+    pharmacology_agent             verdict=SENSITIVE    conf=0.85  tier=T4_PHARMACOLOGICAL
+      findings: IC50=-3.457455 (low IC50 indicates sensitivity)
+      caveats:  none
+    pathway_agent                  verdict=UNCERTAIN    conf=0.00  tier=T3_PATHWAY
+      findings: (no findings)
+      caveats:  No bypass routes found in database for these targets
+
+── ROUND 1: Axiom Resolution ──
+   Axiom applied  : T1_STRUCTURAL
+   Winning agent  : genomics_agent
+   Forced verdict : SENSITIVE
+   Agent states after resolution:
+    genomics_agent                 verdict=SENSITIVE    conf=0.90  tier=T1_STRUCTURAL
+      findings: BRAF=p.V600E (activating mutation, predicts sensitivity to BRAF inhibitors like Dabrafenib)
+      caveats:  none
+    transcriptomics_agent          verdict=SENSITIVE    conf=0.80  tier=T2_TRANSCRIPTIONAL
+      findings: BRAF=expressed (target engagement likely)
+      caveats:  none
+    pharmacology_agent             verdict=SENSITIVE    conf=0.85  tier=T4_PHARMACOLOGICAL
+      findings: IC50=-3.457455 (low IC50 indicates sensitivity)
+      caveats:  none
+    pathway_agent                  verdict=SENSITIVE    conf=0.00  tier=T3_PATHWAY
+      findings: (no findings)
+      caveats:  No bypass routes found in database for these targets
+
+========================================================================
+FINAL VERDICT
+========================================================================
+  Verdict         : SENSITIVE
+  Confidence      : 0.637
+  Winning agent   : genomics_agent
+  Rounds taken    : 1
+  Forced          : False
+  Dissenting      : pathway_agent
+  Correct         : YES

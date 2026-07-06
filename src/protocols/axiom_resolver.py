@@ -14,9 +14,13 @@ class ResolutionResult:
 
 class AxiomResolver:
     def resolve(self, packs: list[EvidencePack]) -> ResolutionResult:
-        # pick winner: highest axiom tier, break ties by confidence
+        from src.schemas.evidence_pack import Verdict
+        # An UNCERTAIN vote (no evidence) should not override a decisive verdict
+        # from a lower-tier agent — absence of DNA data ≠ DNA evidence of resistance
+        decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN and p.confidence > 0]
+        candidates = decisive if decisive else packs  # fall back if all are uncertain
         winner = max(
-            packs,
+            candidates,
             key=lambda p: (
                 AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]],
                 p.confidence,

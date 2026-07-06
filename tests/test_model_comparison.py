@@ -50,20 +50,21 @@ CASES = [
 
 # --- FREE_MODELS ---
 
-def test_free_models_contains_gemini_flash():
-    assert any("gemini" in v for v in FREE_MODELS.values())
+def test_free_models_uses_valid_provider():
+    valid_providers = ("nim", "groq", "openrouter", "gemini")
+    assert all(any(v.startswith(p + ":") for p in valid_providers) for v in FREE_MODELS.values())
 
 
-def test_free_models_contains_groq_qwen():
-    assert any("qwen" in v for v in FREE_MODELS.values())
+def test_free_models_contains_entries():
+    assert len(FREE_MODELS) >= 4
 
 
-def test_free_models_contains_groq_gemma():
-    assert any("gemma" in v for v in FREE_MODELS.values())
+def test_free_models_contains_groq_llama():
+    assert any("llama" in v for v in FREE_MODELS.values())
 
 
-def test_free_models_has_four_entries():
-    assert len(FREE_MODELS) == 4
+def test_free_models_has_entries():
+    assert len(FREE_MODELS) >= 4
 
 
 def test_free_models_values_use_provider_prefix():

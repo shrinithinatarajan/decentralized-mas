@@ -47,12 +47,36 @@ def plot_ablation_comparison(
     metrics: dict[str, EvaluationMetrics],
 ) -> matplotlib.figure.Figure:
     labels = list(metrics.keys())
-    aurocs = [m.auroc for m in metrics.values()]
-    fig, ax = plt.subplots()
-    ax.bar(labels, aurocs)
-    ax.set_ylabel("AUROC")
-    ax.set_title("Ablation Comparison")
-    ax.set_ylim(0, 1)
+    aurocs  = [m.auroc for m in metrics.values()]
+    kappas  = [m.cohens_kappa for m in metrics.values()]
+
+    x = range(len(labels))
+    width = 0.38
+
+    fig, ax = plt.subplots(figsize=(max(7, len(labels) * 1.4), 5))
+    bars1 = ax.bar([i - width/2 for i in x], aurocs, width, label="AUROC", color="#2196F3")
+    bars2 = ax.bar([i + width/2 for i in x], kappas, width, label="Cohen's κ", color="#FF9800")
+
+    ax.axhline(0, color="grey", linewidth=0.8, linestyle="--")
+    ax.axhline(0.5, color="#2196F3", linewidth=0.6, linestyle=":", alpha=0.5, label="AUROC=0.5 (chance)")
+
+    for bar in bars1:
+        h = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, h + 0.01, f"{h:.2f}",
+                ha="center", va="bottom", fontsize=8)
+    for bar in bars2:
+        h = bar.get_height()
+        offset = 0.01 if h >= 0 else -0.03
+        ax.text(bar.get_x() + bar.get_width()/2, h + offset, f"{h:.2f}",
+                ha="center", va="bottom", fontsize=8)
+
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(labels, rotation=35, ha="right", fontsize=9)
+    ax.set_ylabel("Score")
+    ax.set_title("Model Comparison — AUROC & Cohen's κ")
+    ax.set_ylim(-0.3, 1.05)
+    ax.legend(fontsize=9)
+    plt.tight_layout()
     return fig
 
 

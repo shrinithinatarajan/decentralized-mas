@@ -54,30 +54,44 @@ async def main():
     RESULTS.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)
 
-    cases = load_cases(Path("data/cases.yaml"))
+    cases = load_cases(Path("cases.yaml"))
     print(f"Loaded {len(cases)} cases.")
 
     factory = make_agent_factory()
+    # skip models already saved or known to be unavailable
+    SKIP = {"mixtral-8x7b", "gemma-3n-4b", "gemini-2.5-flash", "gemini-2.5-flash-lite"}  # quota limited
+    existing = json.loads((RESULTS / "model_comparison.json").read_text()) if (RESULTS / "model_comparison.json").exists() else {}
+    run_models = {k: v for k, v in FREE_MODELS.items() if k not in SKIP and k not in existing}
     comparison = await run_comparison(
-        FREE_MODELS,
+        run_models,
         cases,
         factory,
         cache_db=DATA / "llm_cache.db",
+        results_path=RESULTS / "model_comparison.json",
     )
 
     metrics = evaluate_comparison(comparison, cases)
 
-    # save metrics
-    out = {label: vars(m) for label, m in metrics.items()}
-    (RESULTS / "model_comparison.json").write_text(json.dumps(out, indent=2))
+    # merge with any previously saved results so partial runs accumulate
+    out_path = RESULTS / "model_comparison.json"
+    existing = json.loads(out_path.read_text()) if out_path.exists() else {}
+    existing.update({label: vars(m) for label, m in metrics.items()})
+    out_path.write_text(json.dumps(existing, indent=2))
     print("Metrics:")
     for label, m in metrics.items():
         print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}")
 
-    # ablation bar chart
-    fig = plot_ablation_comparison(metrics)
+    # plot using ALL saved results, not just current run
+    from src.evaluation.metrics import EvaluationMetrics
+    import math
+    all_metrics = {
+        label: EvaluationMetrics(**data)
+        for label, data in existing.items()
+        if not math.isnan(data.get("auroc", float("nan")))
+    }
+    fig = plot_ablation_comparison(all_metrics)
     fig.savefig(FIGURES / "model_comparison.pdf", bbox_inches="tight")
-    print(f"Figure saved to {FIGURES / 'model_comparison.pdf'}")
+    print(f"Figure saved to {FIGURES / 'model_comparison.pdf'} ({len(all_metrics)} models)")
 
 
 if __name__ == "__main__":

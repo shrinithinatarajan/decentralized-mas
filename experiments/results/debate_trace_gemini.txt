@@ -1,0 +1,48 @@
+========================================================================
+DEBATE TRACE — HCC-827 + Gefitinib
+Ground truth label : SENSITIVE  (z=-4.865)
+Notes              : EGFR exon 19 del NSCLC — canonical EGFR TKI sensitivity
+========================================================================
+
+── ROUND 0: Independent Analysis (agents cannot see each other) ──
+    genomics_agent                 verdict=SENSITIVE    conf=0.95  tier=T1_STRUCTURAL
+      findings: EGFR=p.E746_A750del (Activating exon 19 deletion, a primary driver of sensitivity to EGFR TKIs.); EGFR=amplification (High copy number, which often enhances sensitivity to EGFR TKIs, especially in the presence of activating mutations.)
+      caveats:  none
+    transcriptomics_agent          verdict=SENSITIVE    conf=0.85  tier=T2_TRANSCRIPTIONAL
+      findings: EGFR=Expressed (EGFR, the target of Gefitinib, is expressed (z-score 1.94), indicating it is functionally present and therefore a potential drug target for inhibition.)
+      caveats:  none
+    pharmacology_agent             verdict=UNCERTAIN    conf=0.00  tier=T5_STATISTICAL
+      findings: (no findings)
+      caveats:  parse_failed: {"agent_id": "pharmacology_agent", "cell_line": "HCC-827", "drug": "Gefitinib", "verdict": "SENSITIVE", "confidence": 0.9, "evidence_tier": "T4_PHARMACOLOGICAL", "key_findings": [{"biomarker": "IC50 S
+    pathway_agent                  verdict=UNCERTAIN    conf=0.50  tier=T3_PATHWAY
+      findings: (no findings)
+      caveats:  No bypass routes found in database for these targets.
+
+── ROUND 1: Axiom Resolution ──
+   Axiom applied  : T1_STRUCTURAL
+   Winning agent  : genomics_agent
+   Forced verdict : SENSITIVE
+   Agent states after resolution:
+    genomics_agent                 verdict=SENSITIVE    conf=0.95  tier=T1_STRUCTURAL
+      findings: EGFR=p.E746_A750del (Activating exon 19 deletion, a primary driver of sensitivity to EGFR TKIs.); EGFR=amplification (High copy number, which often enhances sensitivity to EGFR TKIs, especially in the presence of activating mutations.)
+      caveats:  none
+    transcriptomics_agent          verdict=SENSITIVE    conf=0.85  tier=T2_TRANSCRIPTIONAL
+      findings: EGFR=Expressed (EGFR, the target of Gefitinib, is expressed (z-score 1.94), indicating it is functionally present and therefore a potential drug target for inhibition.)
+      caveats:  none
+    pharmacology_agent             verdict=SENSITIVE    conf=0.00  tier=T5_STATISTICAL
+      findings: (no findings)
+      caveats:  parse_failed: {"agent_id": "pharmacology_agent", "cell_line": "HCC-827", "drug": "Gefitinib", "verdict": "SENSITIVE", "confidence": 0.9, "evidence_tier": "T4_PHARMACOLOGICAL", "key_findings": [{"biomarker": "IC50 S
+    pathway_agent                  verdict=SENSITIVE    conf=0.42  tier=T3_PATHWAY
+      findings: (no findings)
+      caveats:  No bypass routes found in database for these targets.
+
+========================================================================
+FINAL VERDICT
+========================================================================
+  Verdict         : SENSITIVE
+  Confidence      : 0.556
+  Winning agent   : genomics_agent
+  Rounds taken    : 1
+  Forced          : False
+  Dissenting      : pathway_agent, pharmacology_agent
+  Correct         : YES

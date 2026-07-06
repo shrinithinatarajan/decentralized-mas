@@ -14,6 +14,11 @@ class TranscriptomicsAgent(BaseAgent):
     def system_prompt(self) -> str:
         return _SYSTEM
 
-    async def _fetch_evidence(self, cell_line: str, drug: str) -> dict:
-        expression = await self._call_tool("get_expression", {"cell_line": cell_line})
+    async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
+        if target_genes:
+            expression = []
+            for gene in target_genes:
+                expression += await self._call_tool("get_expression", {"cell_line": cell_line, "gene": gene}) or []
+        else:
+            expression = await self._call_tool("get_high_expression_genes", {"cell_line": cell_line, "z_threshold": 1.0}) or []
         return {"expression": expression}

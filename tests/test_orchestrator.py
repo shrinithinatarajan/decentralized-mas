@@ -53,7 +53,7 @@ async def test_run_case_calls_all_agents():
     orch = Orchestrator(agents=agents)
     await orch.run_case("A375", "Vemurafenib")
     for agent in agents:
-        agent.analyze.assert_called_once_with("A375", "Vemurafenib")
+        agent.analyze.assert_called_once_with("A375", "Vemurafenib", None)
 
 
 @pytest.mark.asyncio
@@ -65,7 +65,7 @@ async def test_run_case_agents_called_concurrently():
         a = MagicMock()
         a.agent_id = aid
 
-        async def _analyze(cl, dr):
+        async def _analyze(cl, dr, target_genes=None):
             call_order.append(("start", aid))
             await asyncio.sleep(0)  # yield to event loop
             call_order.append(("end", aid))
@@ -99,7 +99,7 @@ async def test_run_all_processes_multiple_cases():
             async def _analyze(cl, dr):
                 return _pack(aid)
             return _analyze
-        agent.analyze = AsyncMock(side_effect=lambda cl, dr, _id=agent.agent_id: _pack(_id))
+        agent.analyze = AsyncMock(side_effect=lambda cl, dr, tg=None, _id=agent.agent_id: _pack(_id))
 
     orch = Orchestrator(agents=agents)
     results = await orch.run_all(cases)

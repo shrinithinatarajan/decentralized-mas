@@ -231,4 +231,4 @@ async def test_pathway_agent_prompt_includes_pathway_data(pathways_db, monkeypat
         await agent.analyze("A375", "Vemurafenib")
 
     prompt_text = captured_messages[0]["content"]
-    assert "BRAF" in prompt_text or "hsa04010" in prompt_text
+    assert "bypass_check" in prompt_text or "pathway_membership" in prompt_text

@@ -14,7 +14,7 @@ class PharmacologyAgent(BaseAgent):
     def system_prompt(self) -> str:
         return _SYSTEM
 
-    async def _fetch_evidence(self, cell_line: str, drug: str) -> dict:
+    async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
         ic50 = await self._call_tool("get_ic50", {"cell_line": cell_line, "drug": drug})
         drug_info = await self._call_tool("get_drug_info", {"drug": drug})
         return {"ic50": ic50, "drug_info": drug_info}

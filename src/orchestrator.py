@@ -5,33 +5,52 @@ from pathlib import Path
 from src.protocols.debate_engine import ConsensusResult, DebateEngine
 from src.schemas.evidence_pack import EvidencePack
 
+# Toggle: True = agents run one at a time (safe for strict API rate limits)
+#         False = agents run concurrently (faster, needs higher RPM allowance)
+SEQUENTIAL_AGENTS = True
+
 
 class Orchestrator:
     def __init__(self, agents: list, engine: DebateEngine | None = None) -> None:
         self.agents = agents
         self.engine = engine or DebateEngine()
 
-    async def run_case(self, cell_line: str, drug: str) -> ConsensusResult:
-        packs: list[EvidencePack] = list(
-            await asyncio.gather(*[a.analyze(cell_line, drug) for a in self.agents])
-        )
+    async def run_case(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> ConsensusResult:
+        if SEQUENTIAL_AGENTS:
+            packs: list[EvidencePack] = []
+            for agent in self.agents:
+                packs.append(await agent.analyze(cell_line, drug, target_genes))
+        else:
+            packs = list(await asyncio.gather(*[a.analyze(cell_line, drug, target_genes) for a in self.agents]))
         return self.engine.run(packs)
 
     async def run_all(
         self,
         cases,
         output_path: Path | None = None,
+        traces_path: Path | None = None,
     ) -> list[ConsensusResult]:
-        results = []
-        for case in cases:
-            result = await self.run_case(case.cell_line, case.drug)
-            results.append(result)
-
         if output_path is not None:
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            with output_path.open("w") as f:
-                for r in results:
-                    f.write(json.dumps(_result_to_dict(r)) + "\n")
+        if traces_path is not None:
+            traces_path.parent.mkdir(parents=True, exist_ok=True)
+            traces_path.write_text("")  # reset file each run
+
+        results = []
+        for i, case in enumerate(cases, 1):
+            targets = [g.strip() for g in case.putative_target.split(",")] if case.putative_target else None
+            print(f"  [{i}/{len(cases)}] {case.cell_line} + {case.drug}", flush=True)
+            result = await self.run_case(case.cell_line, case.drug, target_genes=targets)
+            results.append(result)
+            record = _result_to_dict(result)
+            record["true_label"] = case.label
+            record["axiom_tier"] = case.axiom_tier
+            if output_path is not None:
+                with output_path.open("a") as f:
+                    f.write(json.dumps(record) + "\n")
+            if traces_path is not None:
+                with traces_path.open("a") as f:
+                    f.write(json.dumps(record) + "\n")
 
         return results
 
