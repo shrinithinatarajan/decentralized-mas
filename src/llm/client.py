@@ -101,7 +101,8 @@ class LLMClient:
             return cached
 
         response = await self._call_api(messages, system)
-        self._cache.set(self.model, messages, response, system)
+        if response:  # don't cache empty responses (token limit fallback)
+            self._cache.set(self.model, messages, response, system)
         return response
 
     async def _call_api(self, messages: list[dict], system: str) -> str:
@@ -111,6 +112,8 @@ class LLMClient:
             try:
                 if self._is_anthropic():
                     coro = self._call_anthropic(messages, system)
+                elif self.model.startswith("vertex:"):
+                    coro = self._call_vertex(messages, system)
                 elif self.model.startswith("gemini:"):
                     coro = self._call_gemini_native(messages, system)
                 else:
@@ -125,7 +128,8 @@ class LLMClient:
                 status = getattr(e, "status_code", None) or getattr(e, "code", None)
                 is_conn = "connection" in str(e).lower() or "nodename" in str(e).lower()
                 is_quota = "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)
-                if (status in (429, 500, 503) or is_conn or is_quota) and attempt < 4:
+                is_transient = "ServiceUnavailable" in str(e) or "DeadlineExceeded" in str(e)
+                if (status in (429, 500, 503) or is_conn or is_quota or is_transient) and attempt < 4:
                     wait = 2 ** attempt * 15  # 15s, 30s, 60s, 120s
                     await asyncio.sleep(wait)
                     continue
@@ -177,3 +181,59 @@ class LLMClient:
             client.models.generate_content, model=model_name, contents=contents, config=config
         )
         return resp.text
+
+    async def _call_vertex(self, messages: list[dict], system: str) -> str:
+        """Google Cloud Vertex AI via REST API with Application Default Credentials.
+        Model string format: vertex:gemini-2.5-flash
+        Requires: gcloud auth application-default login
+        """
+        import subprocess
+        import json as _json
+        try:
+            import aiohttp
+        except ImportError:
+            import subprocess as _sp
+            _sp.run(["pip", "install", "aiohttp", "-q"], check=True)
+            import aiohttp
+
+        project = os.getenv("VERTEX_PROJECT")
+        model_id = self.model.split(":", 1)[1]  # strip "vertex:" prefix
+
+        # Get bearer token via gcloud
+        token = await asyncio.to_thread(
+            lambda: subprocess.check_output(
+                ["gcloud", "auth", "application-default", "print-access-token"],
+                text=True
+            ).strip()
+        )
+
+        url = (
+            f"https://aiplatform.googleapis.com/v1/projects/{project}"
+            f"/locations/global/publishers/google/models/{model_id}:generateContent"
+        )
+
+        # Build request body in native Gemini format
+        contents = [{"role": m["role"], "parts": [{"text": m["content"]}]} for m in messages]
+        body: dict = {
+            "contents": contents,
+            "generationConfig": {
+                "responseMimeType": "application/json",
+                "maxOutputTokens": 1024,
+            },
+        }
+        if system:
+            body["systemInstruction"] = {"parts": [{"text": system}]}
+
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=body, headers=headers) as resp:
+                data = await resp.json()
+                if resp.status == 400:
+                    return ""  # token limit or invalid argument — parse_pack returns UNCERTAIN
+                if resp.status != 200:
+                    raise RuntimeError(f"Vertex API error {resp.status}: {data}")
+                return data["candidates"][0]["content"]["parts"][0]["text"]

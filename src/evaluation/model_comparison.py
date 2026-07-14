@@ -18,6 +18,7 @@ FREE_MODELS: dict[str, str] = {
     "llama-11b": "nim:meta/llama-3.2-11b-vision-instruct",
     "gemini-2.5-flash": "gemini:gemini-2.5-flash",
     "gemini-2.5-flash-lite": "gemini:gemini-2.5-flash-lite",
+    "gemini-3.1-flash-lite": "vertex:gemini-3.1-flash-lite",
     "glm-5.2": "nim:z-ai/glm-5.2",
     "minimax-m3": "nim:minimaxai/minimax-m3",
     "kimi-k2.6": "nim:moonshotai/kimi-k2.6",
@@ -55,8 +56,11 @@ async def run_comparison(
 def evaluate_comparison(
     comparison_results: dict[str, list[ConsensusResult]],
     cases: list[Case],
+    split: str | None = None,
 ) -> dict[str, EvaluationMetrics]:
+    """Evaluate all models. Pass split='test' to restrict to held-out cases only."""
+    gt = [c for c in cases if c.split == split] if split else cases
     return {
-        label: evaluate(results, cases)
+        label: evaluate(results, gt)
         for label, results in comparison_results.items()
     }

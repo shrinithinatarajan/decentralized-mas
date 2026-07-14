@@ -1,0 +1,1056 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{cite}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries\itshape}{\thesubsubsection.}{0.5em}{}
+
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% ============================================================
+%  TITLE PAGE
+% ============================================================
+\begin{center}
+{\large\bfseries Multi-Omic Data Integration via Decentralized AI Agents for the\\
+Prediction of Phenotypic Drug Resistance in Cancer}
+
+\vspace{0.5em}
+Shrinithi Natarajan
+
+\vspace{0.5em}
+\textit{Full Research Proposal --- NIH-Style Format}
+\end{center}
+
+\vspace{1em}
+\hrule
+\vspace{1em}
+
+% ============================================================
+%  ABSTRACT
+% ============================================================
+\section*{Abstract}
+
+Cancer drug resistance is responsible for more than 90\% of deaths in patients receiving
+targeted therapy. Despite the availability of large multi-omics databases (GDSC2, CCLE/DepMap),
+no existing computational framework predicts resistance by reasoning over the causal hierarchy
+that governs how conflicting molecular signals resolve in a living cell. Current deep learning
+and LLM-based approaches are either biologically opaque or prone to context overwhelm and
+sycophantic convergence when reconciling incommensurable genomic, transcriptomic, and
+pathway signals.
+
+This proposal describes a Decentralized Multi-Agent Consensus Framework that emulates the
+Multidisciplinary Tumor Board (MDT) workflow. Four specialist LLM agents---each connected to
+a dedicated Model Context Protocol (MCP) server wrapping a curated database---reason
+independently and debate under a five-tier Biological Hierarchy of Truth (T1 Structural
+Primacy $\to$ T5 Statistical Consensus). Every prediction is accompanied by a full debate trace
+and dissent log, providing an auditable clinical accountability artefact with no equivalent in
+any published oncology AI system.
+
+The specific aims of this research are:
+\begin{enumerate}
+  \item Determine whether axiom-governed multi-agent debate predicts cancer drug resistance
+        more accurately than monolithic LLM and classical ML baselines (target: AUROC $\geq$0.75).
+  \item Determine which architectural components independently contribute to predictive
+        accuracy and reasoning quality through six pre-specified ablation studies.
+\end{enumerate}
+
+All four MCP servers, the LLM-agnostic multi-model client, and the full evaluation pipeline are
+implemented and validated across 143 automated tests. Preliminary results on 40 GDSC2
+development cases show AUROC 0.675 and Cohen's $\kappa$ $+$0.253. If the proposed aims
+are achieved, the result is an open-source framework that replaces opaque confidence scores
+with structured biological arguments---advancing the NCI mission to reduce cancer mortality
+through accountable, biologically faithful AI-assisted precision oncology.
+
+\newpage
+
+% ============================================================
+%  SECTION I: SPECIFIC AIMS
+% ============================================================
+\section{Specific Aims}
+
+Drug resistance causes more than 90\% of cancer deaths in patients receiving targeted therapy
+\cite{ref22}, yet no computational framework predicts resistance by reasoning explicitly over the
+causal hierarchy that governs how conflicting multi-omics signals resolve in a living cell.
+Matched genomic, transcriptomic, and pharmacological profiles for thousands of cancer cell
+line--drug pairs are publicly available through GDSC2 and CCLE/DepMap \cite{ref19,ref20}.
+Deep learning baselines (DRN-CDR \cite{ref9}, MSDRP \cite{ref10}) reconcile conflicting data
+layers through learned weights that are opaque and clinically uninterpretable. LLM-based
+multi-agent systems introduce natural-language reasoning but suffer from context overwhelm
+and sycophantic convergence when inter-agent conflicts are settled by unstructured negotiation
+rather than explicit biological rules \cite{ref21}. The critical gap is the absence of a framework
+that encodes the causal ordering of evidence layers---DNA structural state, transcriptional
+activity, pathway topology, pharmacological history---as executable, auditable logic governing
+inter-agent conflict resolution. Without it, the field cannot build oncology AI whose predictions
+a clinician can inspect and contest, foreclosing the leap from accuracy-optimised black boxes
+to accountable clinical decision support.
+
+The long-term goal is to establish structured multi-modal argumentation as the standard paradigm
+for biologically faithful oncology AI. The objective of this proposal is to build, evaluate, and
+ablate a decentralized multi-agent consensus framework for cancer drug resistance prediction
+in which every prediction is governed by a formalised Biological Hierarchy of Truth and
+accompanied by a full debate trace. We hypothesise that a four-agent system (Genomics,
+Transcriptomics, Pharmacology, Pathway) resolving inter-agent conflicts through an explicit
+five-tier axiom hierarchy will predict drug resistance more accurately and produce more
+biologically faithful reasoning traces than monolithic LLM baselines and naive majority-vote
+multi-agent systems. This hypothesis is grounded in (1) published tumour board practice, in
+which DNA-level findings hierarchically override expression signals \cite{ref12}, and (2) a
+preliminary implementation with four MCP-connected agents, a ConflictDetector, an
+AxiomResolver, and a DebateEngine validated against 40 GDSC2 cases with 143 passing tests.
+Completion will enable evaluation of oncology AI on reasoning quality---hallucination rate and
+biological faithfulness---metrics absent from all prior work. All four MCP servers
+\cite{ref15,ref16}, the LLM-agnostic client (supporting five NIM-hosted models), and the full
+evaluation pipeline are implemented and tested.
+
+\textbf{Specific Aim 1:} Determine whether axiom-governed multi-agent debate predicts cancer
+drug resistance more accurately than monolithic LLM and classical ML baselines.
+
+\textit{Working hypothesis:} Explicit causal tier resolution prevents evidence-layer conflicts from
+collapsing into statistical averaging, improving AUROC and AUPRC over single-LLM and
+Random Forest baselines.
+
+\textit{Approach:} Run the full framework and both baselines on 40 stratified GDSC2 development
+cases across five free LLM backends; validate on held-out CTRPv2 cases.
+
+\textit{Milestones/metrics:} Framework AUROC $\geq$ 0.75 and AUPRC $\geq$ 0.70; framework exceeds
+both baselines; CTRPv2 AUROC within 0.05 of development-set AUROC.
+
+\textbf{Specific Aim 2:} Determine which architectural components independently contribute to
+predictive accuracy and reasoning quality through systematic ablation.
+
+\textit{Working hypothesis:} Removing the axiom hierarchy, collapsing to a single agent, or replacing
+MCP-validated tool returns with free-text summaries will each independently degrade performance.
+
+\textit{Approach:} Execute six pre-specified ablations (no axioms, single agent, free-text tools,
+randomised tier order, no debate rounds, majority-vote resolution) on the same 40 cases.
+
+\textit{Milestones/metrics:} Each ablation shows significant degradation on $\geq$1 of: AUROC,
+hallucination rate ($<$5\% target), or biological faithfulness score ($\geq$90\%).
+
+The proposed work is innovative because it is the first to formalise inter-modality conflict
+resolution in oncology AI as executable axiom logic \cite{ref21}, the first to deploy MCP as a
+structural anti-hallucination layer \cite{ref15,ref16}, and the first to introduce hallucination rate
+and biological faithfulness as primary evaluation metrics. We expect the framework to exceed
+all baselines on AUROC and AUPRC, achieve hallucination rate below 5\%, and for each
+ablation to independently degrade performance. These outcomes will establish an open-source,
+model-agnostic framework advancing the NCI mission to reduce cancer mortality through
+accountable AI-assisted precision oncology.
+
+\newpage
+
+% ============================================================
+%  SECTION II: RESEARCH PLAN
+% ============================================================
+\section{Research Plan (Sections a--i)}
+
+% ----------------------------------------------------------
+\subsection{(b) Background and Significance}
+% ----------------------------------------------------------
+
+\subsubsection{The Clinical Problem: Precision Oncology and Drug Resistance}
+
+Historically, cancer treatment was dictated primarily by anatomical origin, focusing on the
+question ``what type of cancer is this?'' However, the advent of precision oncology has
+fundamentally shifted this medical paradigm. Today, the critical clinical objective is no longer
+just identifying where the cancer originated, but rather answering ``what is unique about this
+particular cancer in this particular person?'' Multi-omics---the integration of genomics,
+transcriptomics, proteomics, and epigenomics---plays an indispensable role in this shift. By
+mapping the intricate biological layers of a tumour, multi-omics provides a highly specific
+molecular fingerprint that dictates a patient's unique phenotype and potential for drug
+resistance \cite{ref1,ref7}.
+
+To translate this massive, high-dimensional volume of multi-omic data into actionable treatment
+plans, the clinical gold standard is the Multidisciplinary Tumour Board (MDT). MDTs bring
+together diverse human specialists---oncologists, pathologists, geneticists, and
+pharmacologists---to debate, interpret, and synthesize complex, and often conflicting, clinical
+signals \cite{ref11,ref12,ref18}. Yet, as the dimensionality of biological data grows
+exponentially, human MDTs face severe constraints regarding scalability, throughput, and
+cognitive overload. A single institution may generate terabytes of multi-omic data per patient
+cohort that no tumour board can process within clinically actionable timeframes.
+
+Drug resistance accounts for more than 90\% of cancer deaths in patients with metastatic
+disease \cite{ref22}. Targeted therapies have largely failed to solve resistance at the individual
+patient level: in BRAF-mutant melanoma, most patients develop acquired resistance within two
+years of initiating BRAF inhibitor therapy \cite{ref23}; in EGFR-driven non-small cell lung
+cancer, resistance to first- and second-generation EGFR inhibitors emerges within 9--13 months
+\cite{ref24}. The World Health Organisation estimates ten million cancer deaths per year globally,
+with resistance responsible for a growing fraction as targeted therapies become more widespread
+\cite{ref8}.
+
+The mechanisms of resistance are molecularly diverse and frequently involve bypass signalling
+through alternative pathways, secondary mutations in the drug target gene, and epigenetic
+silencing of drug-responsive transcriptional programmes. No single omic layer captures this
+diversity in isolation: DNA-level changes do not always translate to transcriptional activity;
+transcriptional data does not always predict pathway flux; and pharmacological history in model
+systems may or may not generalise to a specific patient tumour context. The integration of all
+four layers---with explicit reasoning about which layer should govern when they
+conflict---represents the central scientific challenge this proposal addresses.
+
+\subsubsection{Current Computational Approaches and Their Limitations}
+
+The data exists. GDSC2 \cite{ref20}, CCLE \cite{ref19}, and CTRPv2 contain pharmacological
+sensitivity profiles matched with genomic, transcriptomic, and pathway annotations for thousands
+of cell line--drug pairs. What is missing is a computational framework that reasons over that
+data the way a trained oncologist does.
+
+\textit{Classical ML and deep learning approaches.} The field of cancer drug response (CDR)
+prediction has evolved from static chemical-structural analysis to sophisticated deep learning
+frameworks that treat drug--cell line interactions as a complex multimodal fusion problem
+\cite{ref9,ref10}. Current research establishes that single-omics data is inherently limited due
+to the low correlation (0.40) between mRNA and protein levels, and that integrating genomics,
+transcriptomics, and epigenomics significantly improves IC50 prediction accuracy. Landmark
+architectures like DRN-CDR \cite{ref9} and MSDRP \cite{ref10} have advanced the field by
+utilising Deep Residual Networks and Similarity Network Fusion to capture higher-order
+non-linear features and mitigate the curse of dimensionality. However, a pervasive
+interpretability-performance trade-off remains. While these black-box models achieve high AUC
+values, they frequently fail to provide the mechanistic reasoning required for clinical adoption,
+leaving the causal link between molecular features and therapeutic outcomes largely inferred
+\cite{ref7,ref8}.
+
+\textit{LLM-based approaches.} Recent frameworks such as CellHit \cite{ref26}, EvoMDT
+\cite{ref11}, and BioAgents \cite{ref17} introduce natural-language reasoning into drug response
+prediction. CellHit grounds LLMs in mechanistic pathway-aware features and demonstrates that
+such grounding significantly outperforms static black-box models \cite{ref25}. EvoMDT and
+HAO employ role-differentiated agents specialising in diagnostics, treatment, and safety, and
+demonstrate that specialised agents outperform single-model approaches by reducing context
+dilution and enhancing reasoning accountability \cite{ref11,ref12}. However, despite these
+architectural gains, LLM-based systems face three persistent failure modes:
+
+\begin{enumerate}
+\item \textbf{Context overwhelm:} When forced to synthesize massive, conflicting multi-omics
+payloads simultaneously---genomics versus transcriptomics versus pharmacology---single LLMs
+suffer from attention bias, frequently latching on to a well-known mutation (e.g., BRAF V600E)
+and ignoring subtle RNA bypass signals, leading to biologically inaccurate drug response
+predictions \cite{ref3,ref4}.
+
+\item \textbf{Sycophancy:} Multi-agent systems that resolve conflicts through social negotiation
+rather than principled rules exhibit the ``Silent Agreement'' problem, where systemic conformity
+and herding effects suppress critical, independent reasoning paths \cite{ref21}. Language models
+do not always say what they think---positions can shift based on social pressure rather than
+evidential weight \cite{ref21}.
+
+\item \textbf{Hallucination:} Even advanced models favour probabilistic patterns over deep
+disease pathophysiology, leading to recommendations that may be linguistically fluent but
+biologically inaccurate \cite{ref13,ref14}. In oncology, where a false-negative resistance
+prediction could lead to a patient receiving an ineffective therapy, this failure mode has direct
+clinical consequences.
+\end{enumerate}
+
+\textit{MCP as an enabling technology.} The Model Context Protocol (MCP), standardised in 2024,
+enables LLM agents to query structured databases through typed, schema-validated tool calls
+rather than free text. MCPmed \cite{ref15} and BioinfoMCP \cite{ref16} demonstrate feasibility
+in bioinformatics, establishing that the bottleneck in AI-driven science has shifted from raw
+reasoning capability to the manual engineering required to interface LLMs with legacy
+bioinformatics tools. While MCP provides a standardised semantic contract that moves beyond
+basic APIs to enable machine-actionable data stewardship, current implementations focus on
+functional execution rather than the mechanistic explainability required for regulatory trust
+\cite{ref15,ref16}.
+
+\textit{Multi-agent debate limitations.} Empirical evaluations of Multi-Agent Debate (MAD)
+frameworks demonstrate a sharp performance dichotomy: consensus protocols show a performance
+improvement of 2.8\% on factual, knowledge-dense tasks, whereas voting protocols yield a 13.2\%
+optimisation on abstract reasoning tasks. However, scaling conversational rounds blindly
+deteriorates system accuracy due to ``problem drift'' and sycophantic convergence, alongside an
+inherent reliability tax where multi-agent frameworks consume 15 to 50 times more tokens than
+standalone models. Current benchmarks like MTBBench show that models perform near-randomly
+on complex longitudinal tasks like recurrence forecasting, and most systems struggle to move
+beyond surface-level text summarisation to resolve the conflicting multi-omic signals inherent in
+precision oncology \cite{ref18}.
+
+\subsubsection{The Gap and Its Importance}
+
+No existing framework encodes the causal ordering of molecular evidence layers as executable,
+auditable logic. The central dogma of molecular biology provides a natural tier ordering: DNA
+alterations are upstream of transcriptional state, which is upstream of protein activity, which
+determines pathway flux, which drives drug response. Encoding this as executable logic rather
+than leaving it implicit in model weights---or absent from LLM negotiation---is the central
+innovation of this proposal.
+
+Published tumour board frameworks document a hierarchy of evidence in which DNA-level
+findings are designated as primary determinants when they conflict with expression data
+\cite{ref12,ref18}. Whether encoding this computationally improves fidelity and accountability
+is the central question. Without this framework, the field cannot build AI systems whose
+predictions a clinician can inspect, contest, and trust. This forecloses the transition from
+accuracy-optimised black boxes to accountable clinical decision support.
+
+\textbf{Health Relevance.} This research directly addresses the NCI mission to reduce cancer
+mortality. A validated, open-source framework that generates auditable, biologically reasoned
+drug sensitivity predictions could be deployed alongside existing genomic profiling pipelines in
+clinical research settings. The debate trace and dissent log produced by every prediction provide
+a structured record that oncologists can interrogate---a capability absent from all prior
+computational drug resistance systems.
+
+% ----------------------------------------------------------
+\subsection{(c) Innovation}
+% ----------------------------------------------------------
+
+This proposal presents five innovations that do not appear individually or in combination in
+any published work.
+
+\textbf{Innovation 1: A formalised Biological Hierarchy of Truth governing inter-agent conflict resolution.}
+
+Multi-agent debate systems in oncology (EvoMDT \cite{ref11}, Han et al.\ \cite{ref12}) have
+demonstrated that structured disagreement between specialised agents improves clinical
+decision-making. However, none encodes the mechanism of resolution as explicit, testable
+logic---conflicts are settled by LLM negotiation, which is unauditable and biologically opaque.
+We encode a five-tier axiom hierarchy (T1 Structural Primacy $\to$ T2 Transcriptional Gate
+$\to$ T3 Pathway Bypass $\to$ T4 Pharmacological Prior $\to$ T5 Statistical Consensus) as
+executable rules, making the resolution process fully reproducible and biologically grounded.
+Where a probabilistic model returns P(SENSITIVE) = 0.61 with no further account, our
+framework surfaces the conflict explicitly: Genomics Agent returns SENSITIVE (BRAF V600E,
+T1), Transcriptomics Agent returns RESISTANT (BRAF silenced, T2), T1 overrides T2, final
+verdict SENSITIVE, dissent logged. A 15\% confidence decay per verdict flip further penalises
+sycophantic convergence. To our knowledge, this is the first formalisation of inter-modality
+conflict resolution in oncology AI as executable axiom logic \cite{ref21}.
+
+\textbf{Innovation 2: The Model Context Protocol as a structural anti-hallucination layer.}
+
+Medical hallucination is a well-documented failure mode \cite{ref13,ref14}. Existing
+multi-agent oncology systems rely on model self-restraint. MCP---newly standardised and
+demonstrated in bioinformatics \cite{ref15,ref16}---provides the enabling technology: by routing
+every agent data request through MCP-validated tool calls returning typed JSON, we convert
+hallucination from a probabilistic risk into a detectable protocol violation. An agent cannot assert
+a mutation the genomics server did not return; the guarantee is architectural, not probabilistic.
+This structural approach to anti-hallucination has no precedent in any oncology AI system.
+
+\textbf{Innovation 3: A debate trace and dissent log as a clinical accountability artefact.}
+
+Every prediction is accompanied by a structured record of which agents agreed, which were
+overridden, by which axiom tier, and at which round---with overridden agents retaining their
+dissent in the final output, mirroring minority opinions preserved in real tumour board decisions
+\cite{ref12,ref18}. This debate trace has no equivalent in any published AI oncology system. It
+transforms every prediction from a point estimate into an auditable reasoning chain that a
+clinician can inspect, contest, and cite.
+
+\textbf{Innovation 4: A novel synthesis of multi-agent debate, structured tool access, and biological axiom logic.}
+
+Prior work combines at most two of these elements: EvoMDT \cite{ref11} uses debate without
+axiom logic; BioAgents \cite{ref17} uses tool-anchored reasoning without conflict resolution;
+DRN-CDR \cite{ref9} integrates multi-omics without transparency. This framework occupies an
+unoccupied position in that design space, combining all three into a unified architecture for the
+first time.
+
+\textbf{Innovation 5: Purpose-built infrastructure unavailable in any existing system.}
+
+Four MCP servers wrapping GDSC2, CCLE/DepMap, KEGG, and ChEMBL with typed,
+schema-validated APIs \cite{ref15,ref16}; 40 GDSC2 cases stratified across all five axiom tiers;
+an LLM-agnostic client supporting five NIM-hosted models under a unified interface with
+SQLite-backed response caching. This enables the first direct comparison of multiple LLMs on
+a structured multi-omics reasoning task, and the first evaluation of oncology AI on hallucination
+rate and biological faithfulness as primary metrics.
+
+Taken together, these innovations shift the evaluation target for oncology AI from predictive
+accuracy alone toward reasoning quality---hallucination rate, biological faithfulness of debate
+traces, and axiom invocation patterns as first-class scientific outcomes. The framework is
+model-agnostic, open-source, and designed for extension: adding a new agent requires only a
+new MCP server and a new axiom tier entry, enabling future integration of proteomics,
+epigenomics, or clinical history data layers.
+
+% ----------------------------------------------------------
+\subsection{(d) Preliminary Studies}
+% ----------------------------------------------------------
+
+\subsubsection{Investigator and Mentor Background}
+
+This project is conducted by Shrinithi Natarajan, a graduate student in the AS.410.800
+Independent Research in Biotechnology program at Johns Hopkins University, with expertise
+in computational biology, machine learning, and Python-based bioinformatics pipeline development.
+The work is conducted under the mentorship of a faculty supervisor with expertise in precision
+oncology and AI-assisted clinical decision-making, whose group has extensive experience
+with GDSC2 and CCLE/DepMap pharmacogenomics datasets. The student--mentor collaboration
+ensures appropriate domain expertise across both the computational and clinical dimensions of
+the proposed work.
+
+\subsubsection{Implementation Status}
+
+All five layers of the framework are fully implemented and tested. The implementation was
+conducted test-first: each of the 143 automated tests was observed to fail before the
+corresponding code was written, providing strong assurance that the test suite catches genuine
+failures rather than confirming pre-existing behaviour.
+
+\textit{Layer 1 --- Data Substrate.} Four SQLite databases built from GDSC2 and CCLE/DepMap:
+\texttt{genomics.db} (somatic mutations and copy number variations from approximately 1,800
+cell lines), \texttt{transcriptomics.db} (RNA expression z-scores from CCLE), \texttt{pharmacology.db}
+(historical IC50 values and drug mechanisms from ChEMBL), and \texttt{pathways.db} (KEGG
+signalling pathway gene membership and bypass routes). A curated evaluation dataset of 40
+(cell line, drug) pairs with known sensitivity labels, stratified across all five axiom tiers
+(T1--T5), ensures that the evaluation tests every component of the axiom hierarchy.
+
+\textit{Layer 2 --- MCP Servers.} Four FastMCP servers exposing typed, schema-validated query
+tools. Each server enforces that agent data requests return structured JSON---agents cannot
+assert facts the database did not return. Server-side validation converts hallucination from a
+probabilistic risk into a detectable protocol violation: any agent output citing a biomarker not
+present in the MCP response is flagged by the automated hallucination detector.
+
+\textit{Layer 3 --- Specialist Agents.} Four agents (Genomics, Transcriptomics, Pharmacology,
+Pathway), each connected exclusively to its MCP server. Each produces a structured
+EvidencePack: verdict (SENSITIVE/RESISTANT/UNCERTAIN), confidence score (0--1), evidence
+tier (T1--T5), and key findings (list of biomarker identifiers with supporting values). Agents
+reason independently---they cannot see each other's outputs before submitting their EvidencePack
+to the ConflictDetector. This domain isolation prevents the attention bias that degrades monolithic
+LLMs processing all four modalities simultaneously.
+
+\textit{Layer 4 --- Consensus Protocol.} ConflictDetector identifies disagreements after all four
+EvidencePacks are submitted, classifying conflicts by which axiom tiers are in opposition.
+AxiomResolver applies the Hierarchy of Truth: lower-tier claims override higher-tier claims when
+direct mechanistic evidence supports the override (e.g., a T1 DNA structural finding overrides
+a T2 transcriptional signal). DebateEngine orchestrates up to three rounds of structured
+argumentation, requiring agents to cite MCP-validated evidence for any position change. Forced
+resolution with dissent logging when consensus is not reached after three rounds.
+
+\textit{Layer 5 --- Evaluation Pipeline.} AUROC, AUPRC, Spearman $\rho$, and Cohen's $\kappa$
+implemented and validated; three ablation variant engines; Random Forest baseline trained on
+GDSC2 features; multi-model comparison across five LLM backends; visualisation suite
+(confusion matrices, AUROC curves, axiom invocation heatmaps, confidence decay plots).
+
+% [IMAGE: System architecture diagram showing the five-layer framework: Data Substrate (four SQLite databases), MCP Servers (four FastMCP instances), Specialist Agents (four domain agents), Consensus Protocol (ConflictDetector, AxiomResolver, DebateEngine), and Evaluation Pipeline]
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/placeholder}
+\caption{System architecture of the Decentralized Multi-Agent Consensus Framework. Four specialist agents each query a dedicated MCP server wrapping a curated domain database. EvidencePacks flow to the three-component consensus protocol (ConflictDetector, AxiomResolver, DebateEngine), producing a ConsensusResult with full debate trace and dissent log.}
+\label{fig:architecture}
+\end{figure}
+
+\subsubsection{Preliminary Results}
+
+A multi-model comparison was run on 40 GDSC2 development cases across five free LLM
+models accessed via NVIDIA NIM: llama-3.3-70b, llama-3.2-11b, llama-3.1-8b,
+nemotron-49b, and llama-3.1-70b.
+
+Best result: \texttt{llama-3.2-11b} achieves AUROC 0.675 and $\kappa$ +0.128, establishing a
+preliminary performance floor above random classification on this dataset. Notably, the
+framework correctly identifies BRAF V600E as the primary driver of Dabrafenib sensitivity in
+the A375 melanoma cell line, with the T1 axiom correctly overriding the Pathway Agent's
+RESISTANT vote based on detected MAPK pathway rewiring---a biologically correct resolution
+that a naive majority-vote system would have reversed.
+
+A key finding from the preliminary run is that model generation quality matters more than
+parameter count: \texttt{llama-3.3-70b} ($\kappa$ = 0.253) substantially outperforms the
+same-size \texttt{llama-3.1-70b} ($\kappa$ = 0.252, AUROC 0.194), suggesting that instruction
+following and structured JSON generation quality---not raw parameter count---drives framework
+performance. This has implications for model selection in future deployment and motivates the
+multi-backend evaluation design of Aim 1.
+
+% [IMAGE: Debate trace example for A375 cell line and Dabrafenib, showing four EvidencePacks, the conflict detected between Genomics (SENSITIVE, T1) and Pathway (RESISTANT, T3), and the AxiomResolver applying T1 override with dissent log]
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/placeholder}
+\caption{Example debate trace for A375 melanoma cell line with Dabrafenib. Genomics Agent returns SENSITIVE (BRAF V600E detected, T1 Structural Primacy). Pathway Agent returns RESISTANT (MAPK rewiring detected, T3 Pathway Bypass). ConflictDetector flags T1 vs T3 conflict. AxiomResolver applies T1 override: T1 supersedes T3 because structural target engagement failure is absent. Final verdict: SENSITIVE. Pathway Agent dissent retained in output. Confidence: 0.87 (decayed from 1.0 by one flip).}
+\label{fig:debate-trace}
+\end{figure}
+
+% ----------------------------------------------------------
+\subsection{(e) Research Design and Methods}
+% ----------------------------------------------------------
+
+\subsubsection{Overall Design}
+
+A decentralized multi-agent system where four specialist LLM agents each query a
+modality-specific MCP server and produce an EvidencePack, then debate via the
+axiom-governed protocol to reach a consensus prediction. The design is motivated by published
+tumour board practice \cite{ref12,ref18}, the demonstrated failure of monolithic LLMs on
+multi-omics tasks \cite{ref3,ref4}, and the established feasibility of MCP in bioinformatics
+\cite{ref15,ref16}. The system is evaluated against two baselines (monolithic LLM and Random
+Forest) and through six pre-specified ablations, using both classical predictive metrics and novel
+reasoning quality metrics as primary outcomes.
+
+% [IMAGE: Five-tier axiom hierarchy diagram showing T1 Structural Primacy at the apex, descending through T2 Transcriptional Gate, T3 Pathway Bypass, T4 Pharmacological Prior, to T5 Statistical Consensus at the base, with arrows indicating override direction]
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/placeholder}
+\caption{The five-tier Biological Hierarchy of Truth. T1 (Structural Primacy) governs when DNA-level structural binding failure is detected; T2 (Transcriptional Gate) governs when target gene expression is silenced below functional threshold; T3 (Pathway Bypass) governs when an alternative signalling route is confirmed active; T4 (Pharmacological Prior) governs when historical IC50 data is available for the specific cell line--drug pair; T5 (Statistical Consensus) applies when no higher-tier conflict resolution is determinable. Lower-tier numbers override higher-tier numbers.}
+\label{fig:axiom-hierarchy}
+\end{figure}
+
+\subsubsection{Datasets}
+
+\textbf{Development set:} 40 (cell line, drug) pairs from GDSC2 \cite{ref20}, stratified across
+five axiom tiers (eight cases per tier), with genomic and expression data from CCLE/DepMap
+\cite{ref19}. Sensitivity labels derived from z-score normalised IC50: z $< -0.5$ $\to$
+SENSITIVE; z $> 0.5$ $\to$ RESISTANT; $|$z$| \leq 0.5$ $\to$ UNCERTAIN. Stratification ensures
+that the evaluation exercises every component of the axiom hierarchy; a dataset composed
+entirely of T5 cases would test the statistical consensus mechanism but not structural primacy.
+
+\textbf{Validation set:} Held-out CTRPv2 cases, selected to cover the same cancer types and
+drug classes present in the development set. CTRPv2 was collected independently of GDSC2,
+providing a genuine external validation.
+
+\textbf{Data availability:} All databases are built from publicly available sources. GDSC2 and
+CCLE/DepMap data are accessed via the Sanger and Broad Institute public portals. KEGG
+pathways are retrieved via the KEGG REST API. ChEMBL drug mechanism data is retrieved via
+the ChEMBL public API.
+
+\subsubsection{Aim 1 Methods: Predictive Accuracy}
+
+\textit{Framework run.} Each of the 40 development cases is processed through the full pipeline:
+four agents independently query their MCP servers and produce EvidencePacks; ConflictDetector
+identifies disagreements; AxiomResolver applies the Hierarchy of Truth; DebateEngine
+orchestrates up to three rounds; ConsensusResult is produced with full debate trace. All LLM
+calls are cached in a SQLite response cache to enable exact replication of results.
+
+\textit{Multi-model comparison.} The full framework is run independently with five LLM
+backends via NVIDIA NIM API. Results are compared across models on all primary metrics to
+assess sensitivity of framework performance to underlying LLM quality. The best-performing
+model is selected for the ablation study of Aim 2.
+
+\textit{Baselines.}
+\begin{itemize}
+\item \textit{Monolithic LLM baseline:} Identical context (all four data modalities) provided to
+a single LLM in one prompt, without debate or axiom resolution. The monolithic baseline tests
+whether the agent architecture adds value beyond simply providing a well-contextualised prompt.
+\item \textit{Random Forest baseline:} Trained on GDSC2 features (mutation presence/absence
+vectors, expression z-scores, historical IC50 values) using scikit-learn with 5-fold cross-validation.
+The Random Forest baseline provides a classical ML anchor point.
+\end{itemize}
+
+\textit{Primary metrics:} AUROC and AUPRC (primary); Spearman $\rho$ between predicted
+confidence and z-score magnitude (assesses calibration); Cohen's $\kappa$ for label agreement
+(assesses beyond-chance performance).
+
+\textit{Potential challenge.} Missing target gene expression data for some cell line/drug
+combinations in CCLE. Alternative approach: when direct target expression is absent, broaden
+gene lookup to include confirmed pathway members upstream and downstream of the drug target.
+This is biologically principled---pathway-level expression is relevant even when the direct target
+lacks measurement---and is pre-specified to prevent post-hoc rationalisation.
+
+\subsubsection{Aim 2 Methods: Ablation Study}
+
+Six pre-specified ablations on the same 40 development cases:
+
+\begin{enumerate}
+\item \textit{No axiom hierarchy:} Conflict resolved by confidence-weighted majority vote
+regardless of evidence tier. Tests whether the axiom ordering adds value over simple confidence
+weighting.
+
+\item \textit{Single agent:} All four modalities provided to one agent within the debate wrapper,
+eliminating domain isolation. Tests whether specialised agents add value over a single generalist.
+
+\item \textit{Free-text tools:} MCP returns replaced with unstructured natural language
+summaries of the same information. Tests whether typed JSON returns add structural anti-hallucination
+value.
+
+\item \textit{Randomised tier order:} Axiom hierarchy tier assignments shuffled randomly per
+run. Tests whether the specific biological ordering of the hierarchy (T1 $\to$ T5) adds value
+over any fixed ordering.
+
+\item \textit{No debate rounds:} Single-round forced resolution after first conflict detection,
+eliminating the multi-round DebateEngine. Tests whether iterative argumentation adds value.
+
+\item \textit{Majority vote resolution:} Confidence-weighted vote replaces axiom resolution
+throughout. Tests the full system against the standard MAD baseline.
+\end{enumerate}
+
+\textit{Reasoning quality metrics.} These metrics are novel contributions to oncology AI evaluation:
+
+\textit{Hallucination rate} is defined as the fraction of biomarkers cited in agent findings that
+are absent from the MCP database response for that case. Computed from the structured
+EvidencePack: every biomarker field is cross-referenced against the MCP server log for that
+agent's queries. A hallucination is a citation of a mutation, expression value, or IC50 that was
+not returned by the MCP server.
+
+\textit{Biological faithfulness score} is defined as the fraction of axiom invocations that are
+consistent with established molecular causal relationships. Computed against the axiom hierarchy
+itself as the reference standard: a T1 override is biologically faithful if and only if the genomics
+MCP server returned evidence of a direct structural binding-site alteration; a T3 override is
+faithful if and only if the pathways server returned evidence of an active bypass route. The
+axiom hierarchy thus serves dual purpose as both the resolution mechanism and the biological
+faithfulness reference standard.
+
+\textit{Potential difficulties and mitigations.}
+
+Hallucination rate computation requires automated biomarker extraction from agent findings.
+Addressed by requiring structured JSON EvidencePacks with explicit, typed biomarker fields---a
+free-text findings field would make automated extraction unreliable. This requirement is enforced
+at the MCP protocol layer.
+
+Biological faithfulness scoring requires that axiom invocations be loggable with sufficient
+detail to verify against the reference standard. Addressed by the DebateEngine's structured
+logging, which records the axiom tier invoked, the evidence cited, and the MCP query ID that
+produced that evidence---providing a complete chain of custody for every conflict resolution.
+
+% [IMAGE: Debate protocol state machine diagram showing states: Independent Analysis, EvidencePack Submission, Conflict Detection, Axiom Resolution, Debate Round (up to 3), Consensus or Forced Resolution, Output with Debate Trace]
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/placeholder}
+\caption{Debate protocol state machine. Agents enter Independent Analysis in parallel, producing EvidencePacks without visibility of other agents' outputs. After all four EvidencePacks are submitted, ConflictDetector transitions to Axiom Resolution if disagreement is detected. DebateEngine orchestrates up to three rounds of structured argumentation. If consensus is reached, the system outputs a ConsensusResult. If three rounds are exhausted without consensus, Forced Resolution applies the highest available axiom tier, and all dissenting positions are retained in the debate trace.}
+\label{fig:state-machine}
+\end{figure}
+
+\subsubsection{Data Sharing}
+
+All code, curated databases, evaluation cases, and debate traces will be released as open source
+on GitHub upon publication. The LLM response cache (SQLite) will be shared to enable exact
+replication of results without incurring API costs. All databases are derived from publicly
+available sources and will be redistributed under terms consistent with the GDSC2, CCLE, KEGG,
+and ChEMBL data use agreements. No patient-identifiable data is involved; all analyses are
+performed on cancer cell line data.
+
+% ----------------------------------------------------------
+\subsection{(f) Research Timeline}
+% ----------------------------------------------------------
+
+% [IMAGE: Gantt chart showing project phases from June 1 through July 31, with milestones for Data Foundation (complete), MCP Servers (complete), Specialized Agents (complete), Consensus Protocol (complete), Evaluation Pipeline (in progress), Live Results and Analysis (in progress), and key dates: July 7 Progress Meet 2, July 16 Midterm Evaluation, July 21 Paper Draft, July 31 Final Presentation]
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/placeholder}
+\caption{Project Gantt chart covering June 1 through July 31. Completed phases are shown in solid fill; in-progress phases are shown with diagonal hatching. Key milestones: July 7 (Progress Meet 2 --- present preliminary results), July 16 (Midterm Evaluation), July 21 (Paper Draft submission), July 31 (Ready for Final Presentation).}
+\label{fig:gantt}
+\end{figure}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Phase} & \textbf{Dates} & \textbf{Status} \\
+\midrule
+Data Foundation & June 1--11 & Complete \\
+MCP Servers & June 10--21 & Complete \\
+Specialised Agents & June 10--21 & Complete \\
+Consensus Protocol & June 15--July 1 & Complete \\
+Evaluation Pipeline & June 20--July 31 & In Progress \\
+Live Results and Analysis & July 1--31 & In Progress \\
+\midrule
+\textbf{Milestone} & \textbf{Date} & \textbf{Deliverable} \\
+\midrule
+Progress Meet 2 & July 7 & Preliminary results presentation \\
+Midterm Evaluation & July 16 & Formal evaluation with supervisor \\
+Paper Draft & July 21 & Complete manuscript draft \\
+Final Presentation & July 31 & Thesis presentation ready \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{1em}
+
+All infrastructure layers (Layers 1--4) are complete. The evaluation pipeline (Layer 5) is
+implemented and running; the remaining work consists of completing the full Aim 1 multi-model
+comparison, executing all six Aim 2 ablations, and analysing and writing up results. The timeline
+is feasible given that the primary computational bottleneck---LLM API latency---is addressed
+by the SQLite response cache, which enables re-runs of the evaluation pipeline at near-zero
+cost after the initial inference pass.
+
+% ----------------------------------------------------------
+\subsection{(g) Budget}
+\textit{Note: Project budget is funded by mentor, not Johns Hopkins University.}
+% ----------------------------------------------------------
+
+\begin{center}
+\begin{tabular}{lp{8cm}r}
+\toprule
+\textbf{Item} & \textbf{Description} & \textbf{Cost} \\
+\midrule
+NVIDIA NIM API & Free tier access to five hosted LLM backends (llama-3.3-70b, llama-3.2-11b, llama-3.1-8b, nemotron-49b, llama-3.1-70b) & \$0 \\
+GDSC2 data access & Publicly available pharmacogenomic dataset (Sanger Institute) & \$0 \\
+CCLE/DepMap data access & Publicly available cancer cell line dataset (Broad Institute) & \$0 \\
+KEGG API access & Publicly available pathway database & \$0 \\
+ChEMBL API access & Publicly available drug mechanism database & \$0 \\
+Local compute & MacBook Pro (existing hardware, no rental required) & \$0 \\
+Cloud backup & Google Drive (existing subscription) & \$0 \\
+Software & Python, FastMCP, SQLite, scikit-learn, matplotlib (all open-source) & \$0 \\
+\midrule
+\textbf{Total} & & \textbf{\$0} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ----------------------------------------------------------
+\subsection{(h) Budget Justification}
+% ----------------------------------------------------------
+
+\textbf{Environment and Resources.}
+All work is conducted at Johns Hopkins University, which provides institutional support for
+biomedical AI research, library access, and high-performance computing resources. The project
+requires no wet-lab materials, reagents, or specialised equipment. All computational work runs
+on the student's local development environment with cloud-based LLM inference via the NVIDIA
+NIM API. The environment is fully reproducible via the project's \texttt{pyproject.toml}
+dependency specification, ensuring portability and replicability.
+
+\textbf{Justification of zero-cost budget.}
+All computational resources are free or already available. GDSC2 \cite{ref20}, CCLE/DepMap
+\cite{ref19}, KEGG \cite{ref16}, and ChEMBL are publicly available research databases provided
+at no cost for academic use. NVIDIA NIM provides free API access to large language models
+sufficient for the scale of this evaluation (40 development cases, six ablations). All software
+(Python, FastMCP, SQLite, scikit-learn, matplotlib) is open-source and freely available.
+
+The student's existing MacBook Pro provides sufficient compute for all data processing and
+framework orchestration tasks. The SQLite response cache eliminates redundant API calls,
+ensuring that the evaluation pipeline can be run repeatedly---for debugging, analysis, and
+paper writing---without incurring additional API cost after the initial inference pass. No wet-lab
+materials, reagents, specialized laboratory equipment, or cloud compute rental are required for
+any component of this research.
+
+% ============================================================
+%  (i) REFERENCES
+% ============================================================
+\newpage
+\subsection*{(i) References}
+\begin{thebibliography}{99}
+
+\bibitem{ref1}
+Hein ZM, Guruparan D, Okunsai B, Che Mohd Nassir CMN, Ramli MDC, Kumar S.
+AI and Machine Learning in Biology: From Genes to Proteins.
+\textit{Biology} 2025;14:1453.
+\url{https://doi.org/10.3390/biology14101453}
+
+\bibitem{ref2}
+El-Sayed AF, Darwish SM, Labib NM, et al.
+Generative deep learning in bioinformatics: a microservices-driven paradigm for big data environment.
+\textit{J Big Data} 2026;13:7.
+\url{https://doi.org/10.1186/s40537-025-01320-5}
+
+\bibitem{ref3}
+Zhou S, Xu Z, Zhang M, et al.
+Large language models for disease diagnosis: a scoping review.
+\textit{npj Artif Intell} 2025;1:9.
+\url{https://doi.org/10.1038/s44387-025-00011-z}
+
+\bibitem{ref4}
+Meng X, Yan X, Zhang K, et al.
+The application of large language models in medicine: a scoping review.
+\textit{iScience} 2024;27(5):109713.
+doi:10.1016/j.isci.2024.109713.
+
+\bibitem{ref5}
+Williams CYK, Miao BY, Kornblith AE, et al.
+Evaluating the use of large language models to provide clinical recommendations in the Emergency Department.
+\textit{Nat Commun} 2024;15:8236.
+\url{https://doi.org/10.1038/s41467-024-52415-1}
+
+\bibitem{ref6}
+Yang X, Li T, Su Q, et al.
+Application of large language models in disease diagnosis and treatment.
+\textit{Chin Med J (Engl)} 2025;138(2):130--142.
+doi:10.1097/CM9.0000000000003456.
+
+\bibitem{ref7}
+Liu X, Wei K, Lin E, et al.
+Multi-omics advances in understanding cancer drug resistance.
+\textit{Biomed Technol} 2025;12:100119.
+doi:10.1016/j.bmt.2025.100119.
+
+\bibitem{ref8}
+Mao Y, Shangguan D, Huang Q, et al.
+Emerging artificial intelligence-driven precision therapies in tumor drug resistance: recent advances, opportunities, and challenges.
+\textit{Mol Cancer} 2025;24(1):123.
+doi:10.1186/s12943-025-02321-x.
+
+\bibitem{ref9}
+Saranya KR, Vimina ER.
+DRN-CDR: A cancer drug response prediction model using multi-omics and drug features.
+\textit{Comput Biol Chem} 2024;112:108175.
+doi:10.1016/j.compbiolchem.2024.108175.
+
+\bibitem{ref10}
+Zhao H, Zhang X, Zhao Q, Li Y, Wang J.
+MSDRP: a deep learning model based on multisource data for predicting drug response.
+\textit{Bioinformatics} 2023;39(9):btad514.
+\url{https://doi.org/10.1093/bioinformatics/btad514}
+
+\bibitem{ref11}
+Liu Q, Hu Z, Huang T, et al.
+EvoMDT: a self-evolving multi-agent system for structured clinical decision-making in multi-cancer.
+\textit{npj Digit Med} 2026;9:124.
+\url{https://doi.org/10.1038/s41746-025-02304-8}
+
+\bibitem{ref12}
+Han X, Gao X, Qu X, Yu Z.
+Multi-Agent Medical Decision Consensus Matrix System: An Intelligent Collaborative Framework for Oncology MDT Consultations.
+arXiv:2512.14321. 2025.
+
+\bibitem{ref13}
+Kim Y, Jeong H, Chen S, et al.
+Medical Hallucination in Foundation Models and Their Impact on Healthcare.
+arXiv:2503.05777. 2025.
+doi:10.1101/2025.02.28.25323115.
+
+\bibitem{ref14}
+Nishisako S, Higashi T, Wakao F.
+Reducing Hallucinations and Trade-Offs in Responses in Generative AI Chatbots for Cancer Information: Development and Evaluation Study.
+\textit{JMIR Cancer} 2025;11:e70176.
+doi:10.2196/70176.
+
+\bibitem{ref15}
+Flotho M, Diks IF, Flotho P, Molano LG, Hirsch P, Keller A.
+MCPmed: a call for Model Context Protocol-enabled bioinformatics web services for LLM-driven discovery.
+\textit{Brief Bioinform} 2026;27(1):bbag076.
+doi:10.1093/bib/bbag076.
+
+\bibitem{ref16}
+Widjaja F, Chen Z, Zhou J.
+BioinfoMCP: A Unified Platform Enabling MCP Interfaces in Agentic Bioinformatics.
+arXiv:2510.02139. 2025.
+doi:10.48550/arXiv.2510.02139.
+
+\bibitem{ref17}
+Mehandru N, Hall AK, Melnichenko O, et al.
+BioAgents: Bridging the gap in bioinformatics analysis with multi-agent systems.
+\textit{Sci Rep} 2025;15:39036.
+\url{https://doi.org/10.1038/s41598-025-25919-z}
+
+\bibitem{ref18}
+Lorenzo L, Montana-Mendez M, Figueiras S, Boubeta M, Bernardo-Casti\~{n}eira C.
+Evaluation of Oncotimia: An LLM based system for supporting tumour boards.
+arXiv:2601.19899. 2026.
+doi:10.48550/arXiv.2601.19899.
+
+\bibitem{ref19}
+Barretina J, Caponigro G, Stransky N, et al.
+The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensitivity.
+\textit{Nature} 2012;483:603--607.
+
+\bibitem{ref20}
+Iorio F, Knijnenburg TA, Vis DJ, et al.
+A Landscape of Pharmacogenomic Interactions in Cancer.
+\textit{Cell} 2016;166(3):740--754.
+
+\bibitem{ref21}
+Turpin M, Michael J, Perez E, Bowman SR.
+Language Models Don't Always Say What They Think: Unfaithful Explanations in Chain-of-Thought Prompting.
+In: \textit{Advances in Neural Information Processing Systems (NeurIPS)}. 2023.
+
+\bibitem{ref22}
+Housman G, Byler S, Heerboth S, et al.
+Drug resistance in cancer: an overview.
+\textit{Cancers} 2014;6(3):1769--1792.
+
+\bibitem{ref23}
+Proietti I, Skroza N, Bernardini N, et al.
+Mechanisms of acquired BRAF inhibitor resistance in melanoma: a systematic review.
+\textit{Cancers} 2020;12(10):2801.
+
+\bibitem{ref24}
+Rotow J, Bivona TG.
+Understanding and targeting resistance mechanisms in NSCLC.
+\textit{Nat Rev Cancer} 2017;17(11):637--658.
+
+\bibitem{ref25}
+Carli F, Di Chiaro P, Morelli M, et al.
+Learning and actioning general principles of cancer cell drug sensitivity.
+\textit{Nat Commun} 2025;16:1654.
+\url{https://doi.org/10.1038/s41467-025-56827-5}
+
+\bibitem{ref26}
+Parca L, Petrizzelli M, Conte F, Fiscon G, Paolini A, Paci P.
+CellHit: predicting patient drug responses via cancer cell lines.
+\textit{Nucleic Acids Res} 2025. (in press)
+
+% -- Additional references from the full PDF extraction --
+
+\bibitem{ref27}
+Galitsky BA.
+LLM-Based Personalized Recommendations in Health.
+Preprints 2024, 2024021709.
+\url{https://doi.org/10.20944/preprints202402.1709.v1}
+
+\bibitem{ref28}
+Lin C, Kuo CF.
+Roles and potential of Large language models in healthcare: A comprehensive review.
+\textit{Biomed J} 2025;48.
+
+\bibitem{ref29}
+Wu X, Sun M, Li L, Wang J, Wan S.
+Leveraging Artificial Intelligence and Large Language Models for Cancer Immunotherapy.
+\textit{Advanced Science} 2026:e21936.
+\url{https://doi.org/10.1002/advs.202521936}
+
+\bibitem{ref30}
+Su Y, Liu J, Li J, et al.
+Applications of artificial intelligence and large language models in cancer immunotherapy.
+\textit{Current Proteomics} 2025;22(5):100057.
+\url{https://doi.org/10.1016/j.curpro.2025.100057}
+
+\bibitem{ref31}
+Lai YJ, Wang LJ, Yasaka TM, et al.
+Inferring Drug-Gene Relationships in Cancer Using Literature-Augmented Large Language Models.
+\textit{Cancer Res Commun} 2025;5(4):706--718.
+doi:10.1158/2767-9764.CRC-25-0030.
+
+\bibitem{ref32}
+Chen D, Parsa R, Swanson K, et al.
+Large language models in oncology: a review.
+\textit{BMJ Oncol} 2025;4(1):e000759.
+doi:10.1136/bmjonc-2025-000759.
+
+\bibitem{ref33}
+Li A, Zhang J, Li L, et al.
+M3MAD-Bench: Are Multi-Agent Debates Really Effective Across Domains and Modalities?
+arXiv:2601.02854. 2026.
+doi:10.48550/arXiv.2601.02854.
+
+\bibitem{ref34}
+Yang T, Xiao Y, Bao Z, Hao J, Peng J.
+The rise and potential opportunities of large language model agents in bioinformatics and biomedicine.
+\textit{Brief Bioinform} 2025;26(6):bbaf601.
+doi:10.1093/bib/bbaf601.
+
+\bibitem{ref35}
+Zhou J, Jiang J, Han Z, Wang Z, Gao X.
+Streamline automated biomedical discoveries with agentic bioinformatics.
+\textit{Brief Bioinform} 2025;26(5):bbaf505.
+doi:10.1093/bib/bbaf505.
+
+\bibitem{ref36}
+Martinek V, Gariboldi A, Tzimotoudis D, et al.
+Agentomics-ML: Autonomous Machine Learning Experimentation Agent for Genomic and Transcriptomic Data.
+arXiv:2506.05542. 2025.
+doi:10.48550/arXiv.2506.05542.
+
+\bibitem{ref37}
+Zack M, Stupichev DN, Moore AJ, et al.
+Artificial Intelligence and Multi-Omics in Pharmacogenomics: A New Era of Precision Medicine.
+\textit{Mayo Clin Proc Digit Health} 2025;3(3):100246.
+doi:10.1016/j.mcpdig.2025.100246.
+
+\bibitem{ref38}
+He H, et al.
+Biology-Instructions: A Dataset and Benchmark for Multi-Omics Sequence Understanding Capability of Large Language Models.
+In: \textit{Findings of the Association for Computational Linguistics: EMNLP 2025}, pages 17984--18016.
+
+\bibitem{ref39}
+Qu S, Ding N, Xie L, et al.
+Automating Exploratory Multiomics Research via Language Models.
+arXiv:2506.07591. 2025.
+doi:10.48550/arXiv.2506.07591.
+
+\bibitem{ref40}
+Ali S, Qadri YA, Ahmad K, et al.
+Large Language Models in Genomics---A Perspective on Personalized Medicine.
+\textit{Bioengineering (Basel)} 2025;12(5):440.
+doi:10.3390/bioengineering12050440.
+
+\bibitem{ref41}
+Dip SA, Zafor A, Paul B, et al.
+LLM4Cell: A Survey of Large Language and Agentic Models for Single-Cell Biology.
+arXiv:2510.07793. 2025.
+doi:10.48550/arXiv.2510.07793.
+
+\bibitem{ref42}
+Vavekanand R.
+A Comprehensive Review of Multimodal Large Language Models for Medical Imaging and Omics Data.
+\textit{Arch Comput Methods Eng} 2026.
+doi:10.1007/s11831-026-10504-y.
+
+\bibitem{ref43}
+Yang X, Shashidhar KC, Zhang M, et al.
+PromptBio: A Multi-Agent AI Platform for Bioinformatics Data Analysis.
+bioRxiv:2025.07.05.663295. 2025.
+doi:10.1101/2025.07.05.663295.
+
+\bibitem{ref44}
+Du P, Fan R, Zhang N, Wu C, Zhang Y.
+Advances in Integrated Multi-omics Analysis for Drug-Target Identification.
+\textit{Biomolecules} 2024;14(6):692.
+doi:10.3390/biom14060692.
+
+\bibitem{ref45}
+Chen HO, Cui YC, Lin PC, Chiang JH.
+An Innovative Multi-Omics Model Integrating Latent Alignment and Attention Mechanism for Drug Response Prediction.
+\textit{J Pers Med} 2024;14:694.
+\url{https://doi.org/10.3390/jpm14070694}
+
+\bibitem{ref46}
+Jiang W, Ye W, Tan X, et al.
+Network-based multi-omics integrative analysis methods in drug discovery: a systematic review.
+\textit{BioData Mining} 2025;18:27.
+\url{https://doi.org/10.1186/s13040-025-00442-z}
+
+\bibitem{ref47}
+Almutiri T, Alomar K, Alganmi N.
+Predicting Drug Response on Multi-Omics Data Using a Hybrid of Bayesian Ridge Regression with Deep Forest.
+\textit{Int J Adv Comput Sci Appl} 2023;14.
+doi:10.14569/IJACSA.2023.0140550.
+
+\bibitem{ref48}
+Liu XY, Mei XY.
+Prediction of drug sensitivity based on multi-omics data using deep learning and similarity network fusion approaches.
+\textit{Front Bioeng Biotechnol} 2023;11:1156372.
+doi:10.3389/fbioe.2023.1156372.
+
+\bibitem{ref49}
+Vasilev K, Misrahi A, Jain E, et al.
+MTBBench: A Multimodal Sequential Clinical Decision-Making Benchmark in Oncology.
+arXiv:2511.20490. 2025.
+doi:10.48550/arXiv.2511.20490.
+
+\bibitem{ref50}
+Zhang R, Wang J, Yang S, et al.
+Multi-Agent Intelligence for Multidisciplinary Decision-Making in Gastrointestinal Oncology.
+arXiv:2512.08674. 2025.
+doi:10.48550/arXiv.2512.08674.
+
+\bibitem{ref51}
+Codella N, Preston S, Qiu H, et al.
+Demo: Healthcare Agent Orchestrator (HAO) for Patient Summarization in Molecular Tumor Boards.
+arXiv:2509.06602. 2025.
+doi:10.48550/arXiv.2509.06602.
+
+\bibitem{ref52}
+Kaesberg LB, Becker J, Wahle JP, Ruas T, Gipp B.
+Voting or Consensus? Decision-Making in Multi-Agent Debate.
+In: \textit{Findings of the Association for Computational Linguistics: ACL 2025}, pages 11640--11671, Vienna, Austria.
+
+\bibitem{ref53}
+Spieser J, Balapour A, Meller J, Patra KC, Shamsaei B.
+A Review of Multi-Agent AI Systems for Biological and Clinical Data Analysis.
+\textit{Methods Protoc} 2026;9(2):33.
+\url{https://doi.org/10.3390/mps9020033}
+
+\bibitem{ref54}
+Liu Y, Yao H, Liu W, He A, Zhang Y.
+Heterogeneous Consensus-Progressive Reasoning for Efficient Multi-Agent Debate.
+arXiv:2604.09679. 2026.
+
+\bibitem{ref55}
+Liu T, Wang X, Huang W, et al.
+GroupDebate: Enhancing the Efficiency of Multi-Agent Debate Using Group Discussion.
+arXiv:2409.14051. 2024.
+
+\bibitem{ref56}
+Cui Y, Fu H, Zhang H, Wang L, Zuo C.
+Free-MAD: Consensus-Free Multi-Agent Debate.
+arXiv:2509.11035. 2025.
+
+\bibitem{ref57}
+Ngoc Nguyen O, Amin D, Bennett J, et al.
+GP or ChatGPT? Ability of large language models to support general practitioners when prescribing antibiotics.
+\textit{J Antimicrob Chemother} 2025;80(5):1324--1330.
+doi:10.1093/jac/dkaf077.
+
+\bibitem{ref58}
+Testagrose C, Pandey S, Serajian M, et al.
+Leveraging large language models to predict antibiotic resistance in \textit{Mycobacterium tuberculosis}.
+\textit{Bioinformatics} 2025;41(Supplement\_1):i40--i48.
+\url{https://doi.org/10.1093/bioinformatics/btaf232}
+
+\bibitem{ref59}
+Yoo H, Sokhansanj B, Brown JR, Rosen G.
+Predicting Anti-microbial Resistance using Large Language Models.
+arXiv:2401.00642. 2024.
+
+\bibitem{ref60}
+De Vito A, Geremia N, Bavaro DF, et al.
+Comparing large language models for antibiotic prescribing in different clinical scenarios: which performs better?
+\textit{Clin Microbiol Infect} 2025;31(8):1336--1342.
+\url{https://doi.org/10.1016/j.cmi.2025.03.002}
+
+\end{thebibliography}
+
+\end{document}

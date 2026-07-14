@@ -4,13 +4,27 @@ from abc import ABC, abstractmethod
 
 from fastmcp import Client
 
+from src.agents.gcs import compute_gcs
 from src.llm.client import LLMClient
 from src.schemas.evidence_pack import EvidencePack, EvidenceTier, Verdict
+
+def _truncate_evidence(evidence: dict, max_items: int = 20) -> dict:
+    result = {}
+    for k, v in evidence.items():
+        if isinstance(v, list):
+            result[k] = v[:max_items]
+        elif isinstance(v, dict):
+            result[k] = _truncate_evidence(v, max_items)
+        else:
+            result[k] = v
+    return result
+
 
 _SCHEMA_EXAMPLE = json.dumps({
     "agent_id": "<your_agent_id e.g. genomics_agent>",
     "cell_line": "<cell_line name>",
     "drug": "<drug name>",
+    "reasoning": "<step-by-step: (1) what evidence did MCP return? (2) what does it imply for drug sensitivity? (3) are there contradictions? (4) final verdict rationale>",
     "verdict": "SENSITIVE or RESISTANT or UNCERTAIN",
     "confidence": 0.85,
     "evidence_tier": "T1_STRUCTURAL or T2_TRANSCRIPTIONAL or T3_PATHWAY or T4_PHARMACOLOGICAL or T5_STATISTICAL",
@@ -36,10 +50,18 @@ class BaseAgent(ABC):
             messages=[{"role": "user", "content": prompt}],
             system=self.system_prompt,
         )
-        return self._parse_pack(raw, cell_line, drug)
+        pack = self._parse_pack(raw, cell_line, drug)
+        pack.confidence = compute_gcs(
+            pack.key_findings, evidence, pack.evidence_tier, self._compute_signal(evidence)
+        )
+        return pack
 
     @abstractmethod
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
+        ...
+
+    @abstractmethod
+    def _compute_signal(self, evidence: dict) -> float:
         ...
 
     @property
@@ -50,7 +72,7 @@ class BaseAgent(ABC):
     def _build_prompt(self, cell_line: str, drug: str, evidence: dict) -> str:
         return (
             f"Cell line: {cell_line}\nDrug: {drug}\n\n"
-            f"Evidence data:\n{json.dumps(evidence, indent=2)}\n\n"
+            f"Evidence data:\n{json.dumps(_truncate_evidence(evidence), indent=2)}\n\n"
             f"Respond with ONLY a JSON object in this exact format (no prose, no markdown):\n{_SCHEMA_EXAMPLE}"
         )
 

@@ -12,7 +12,15 @@ CRITICAL RULES:
 - If you have no database evidence of an active bypass, do not vote RESISTANT.
 
 Apply the T3_PATHWAY_BYPASS axiom ONLY when bypass_exists=true in the provided data.
-Return ONLY a JSON object matching the EvidencePack schema. No prose."""
+
+REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding the verdict:
+1. Which pathways contain the drug's target gene(s)? List them from pathway_membership.
+2. Does bypass_check show bypass_exists=true for any pathway? Name the bypass gene if so.
+3. If bypass found in database: vote RESISTANT (pathway circumvents the drug's target).
+4. If no bypass in database: vote UNCERTAIN — absence of bypass data is NOT evidence of sensitivity.
+5. Conclude with your verdict and why, referencing only the data provided.
+
+Return ONLY a JSON object matching the EvidencePack schema. No prose outside the JSON."""
 
 
 class PathwayAgent(BaseAgent):
@@ -46,3 +54,11 @@ class PathwayAgent(BaseAgent):
             "pathway_membership": pathway_membership,
             "bypass_check": bypass_results if bypass_results else {"bypass_exists": False, "note": "No bypass routes found in database for these targets"},
         }
+
+    def _compute_signal(self, evidence: dict) -> float:
+        bypass_check = evidence.get("bypass_check", {})
+        if isinstance(bypass_check, dict) and bypass_check.get("bypass_exists"):
+            return 1.0
+        if isinstance(bypass_check, dict):
+            return 1.0 if any(v.get("bypass_exists") for v in bypass_check.values() if isinstance(v, dict)) else 0.0
+        return 0.0

@@ -59,7 +59,7 @@ async def main():
 
     factory = make_agent_factory()
     # skip models already saved or known to be unavailable
-    SKIP = {"mixtral-8x7b", "gemma-3n-4b", "gemini-2.5-flash", "gemini-2.5-flash-lite"}  # quota limited
+    SKIP = {k for k in FREE_MODELS if k != "gemini-3.1-flash-lite"}  # run only gemini-3.1-flash-lite
     existing = json.loads((RESULTS / "model_comparison.json").read_text()) if (RESULTS / "model_comparison.json").exists() else {}
     run_models = {k: v for k, v in FREE_MODELS.items() if k not in SKIP and k not in existing}
     comparison = await run_comparison(
@@ -70,18 +70,29 @@ async def main():
         results_path=RESULTS / "model_comparison.json",
     )
 
-    metrics = evaluate_comparison(comparison, cases)
+    # Evaluate on held-out TEST split only — dev split was used for prompt tuning
+    test_metrics = evaluate_comparison(comparison, cases, split="test")
+    dev_metrics  = evaluate_comparison(comparison, cases, split="dev")
 
-    # merge with any previously saved results so partial runs accumulate
+    # Persist test-split metrics (primary) and dev-split metrics (diagnostic)
     out_path = RESULTS / "model_comparison.json"
     existing = json.loads(out_path.read_text()) if out_path.exists() else {}
-    existing.update({label: vars(m) for label, m in metrics.items()})
+    existing.update({label: vars(m) for label, m in test_metrics.items()})
     out_path.write_text(json.dumps(existing, indent=2))
-    print("Metrics:")
-    for label, m in metrics.items():
-        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}")
 
-    # plot using ALL saved results, not just current run
+    dev_path = RESULTS / "model_comparison_dev.json"
+    dev_existing = json.loads(dev_path.read_text()) if dev_path.exists() else {}
+    dev_existing.update({label: vars(m) for label, m in dev_metrics.items()})
+    dev_path.write_text(json.dumps(dev_existing, indent=2))
+
+    print("\nMetrics (TEST split — held-out):")
+    for label, m in test_metrics.items():
+        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  n={m.n_evaluated}")
+    print("Metrics (DEV split — tuning set, not used for final reporting):")
+    for label, m in dev_metrics.items():
+        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  n={m.n_evaluated}")
+
+    # plot using ALL saved test-split results
     from src.evaluation.metrics import EvaluationMetrics
     import math
     all_metrics = {

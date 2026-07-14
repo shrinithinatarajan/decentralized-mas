@@ -21,6 +21,9 @@ def _conn() -> sqlite3.Connection:
 def get_mutations(cell_line: str, gene: str | None = None) -> str:
     """Fetch mutations for a cell line, optionally filtered by gene."""
     with _conn() as conn:
+        cell_in_db = conn.execute(
+            "SELECT COUNT(*) FROM mutations WHERE cell_line=?", (cell_line,)
+        ).fetchone()[0] > 0
         if gene:
             rows = conn.execute(
                 "SELECT * FROM mutations WHERE cell_line=? AND gene=?",
@@ -30,7 +33,14 @@ def get_mutations(cell_line: str, gene: str | None = None) -> str:
             rows = conn.execute(
                 "SELECT * FROM mutations WHERE cell_line=?", (cell_line,)
             ).fetchall()
-    return json.dumps([dict(r) for r in rows])
+    mutations = [dict(r) for r in rows]
+    result: dict = {"mutations": mutations, "cell_line_in_db": cell_in_db}
+    if not mutations and cell_in_db and gene:
+        result["interpretation"] = (
+            f"{gene} has no somatic mutations in {cell_line} — wild-type status. "
+            "Absence of an oncogenic driver mutation may indicate resistance to targeted inhibitors."
+        )
+    return json.dumps(result)
 
 
 @mcp.tool()

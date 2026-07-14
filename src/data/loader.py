@@ -17,6 +17,7 @@ class Case:
     pathway: str = ""
     putative_target: str = ""
     axiom_tier: str = ""
+    split: str = "test"   # "dev" (tuning) or "test" (held-out evaluation)
 
     def __post_init__(self):
         if self.label not in VALID_LABELS:

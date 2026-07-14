@@ -2,12 +2,26 @@ import asyncio
 import json
 from pathlib import Path
 
+from src.data.gene_aliases import GENE_ALIASES, SKIP_TARGETS
 from src.protocols.debate_engine import ConsensusResult, DebateEngine
 from src.schemas.evidence_pack import EvidencePack
 
-# Toggle: True = agents run one at a time (safe for strict API rate limits)
-#         False = agents run concurrently (faster, needs higher RPM allowance)
-SEQUENTIAL_AGENTS = True
+
+def _normalize_targets(raw: list[str]) -> list[str] | None:
+    result: list[str] = []
+    for t in raw:
+        t = t.strip()
+        if t in SKIP_TARGETS:
+            continue
+        alias = GENE_ALIASES.get(t, t)
+        if isinstance(alias, list):
+            result.extend(alias)
+        else:
+            result.append(alias)
+    return result if result else None
+
+# Agents run concurrently per case; shared rate limiter keeps API quota safe.
+SEQUENTIAL_AGENTS = False
 
 
 class Orchestrator:
@@ -38,7 +52,8 @@ class Orchestrator:
 
         results = []
         for i, case in enumerate(cases, 1):
-            targets = [g.strip() for g in case.putative_target.split(",")] if case.putative_target else None
+            raw_targets = [g.strip() for g in case.putative_target.split(",")] if case.putative_target else None
+            targets = _normalize_targets(raw_targets) if raw_targets else None
             print(f"  [{i}/{len(cases)}] {case.cell_line} + {case.drug}", flush=True)
             result = await self.run_case(case.cell_line, case.drug, target_genes=targets)
             results.append(result)

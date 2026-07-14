@@ -7,10 +7,14 @@ from pathlib import Path
 
 # cases.yaml name -> (CCLE CellLineName, CCLE ModelID)
 ALIASES: dict[str, tuple[str, str]] = {
-    "A375":       ("A-375",      "ACH-000219"),
-    "MCF7":       ("MCF-7",      "ACH-000019"),
-    "PANC-04-03": ("Panc 04.03", "ACH-000235"),
-    "EoL-1-cell": ("EOL-1",      "ACH-000198"),
+    "A375":         ("A-375",      "ACH-000219"),
+    "MCF7":         ("MCF-7",      "ACH-000019"),
+    "PANC-04-03":   ("Panc 04.03", "ACH-000235"),
+    "EoL-1-cell":   ("EOL-1",      "ACH-000198"),
+    "SUP-B8":       ("SUP-B8",     "ACH-002308"),
+    "HCE-4":        ("HCE-4",      "ACH-002243"),
+    "SW872":        ("SW872",      "ACH-002310"),
+    "COLO-320-HSR": ("COLO-320",   "ACH-000202"),
 }
 
 RAW = Path("src/data/raw/ccle")
@@ -142,9 +146,49 @@ def patch_transcriptomics():
     conn.close()
 
 
+def discover_missing(cases_path: Path = Path("cases.yaml")) -> None:
+    """Cross-reference every cell line in cases.yaml against CCLE model.csv.
+
+    Prints any cell line that is absent from the DB under its cases.yaml name
+    so it can be added to ALIASES. Run this whenever cases.yaml changes.
+    """
+    import yaml
+    model_df = pd.read_csv(RAW / "model.csv", usecols=["ModelID", "CellLineName", "StrippedCellLineName"])
+    # Build lookup: lowercase stripped name → canonical CCLE CellLineName
+    ccle_names = {row["StrippedCellLineName"].lower(): row["CellLineName"]
+                  for _, row in model_df.iterrows()
+                  if pd.notna(row["StrippedCellLineName"])}
+
+    with open(cases_path) as f:
+        data = yaml.safe_load(f)
+    case_lines = sorted({c["cell_line"] for c in data["cases"]})
+
+    conn_gen = sqlite3.connect(DB_GEN)
+    conn_tran = sqlite3.connect(DB_TRAN)
+
+    print(f"\nCell line coverage audit ({len(case_lines)} unique lines in {cases_path}):")
+    print(f"  {'Cell line':<25}  {'In genomics DB':<16}  {'In transcriptomics DB':<22}  {'CCLE match'}")
+    print("  " + "-" * 85)
+    for cl in case_lines:
+        in_gen  = conn_gen.execute("SELECT COUNT(*) FROM mutations WHERE cell_line=?", (cl,)).fetchone()[0] > 0
+        in_tran = conn_tran.execute("SELECT COUNT(*) FROM expression WHERE cell_line=?", (cl,)).fetchone()[0] > 0
+        # Try to find the CCLE canonical name
+        stripped = cl.lower().replace("-", "").replace(" ", "").replace("_", "")
+        ccle_match = ccle_names.get(stripped, "NOT FOUND")
+        flag = "" if (in_gen and in_tran) else " ⚠️"
+        print(f"  {cl:<25}  {'yes' if in_gen else 'NO':<16}  {'yes' if in_tran else 'NO':<22}  {ccle_match}{flag}")
+
+    conn_gen.close()
+    conn_tran.close()
+
+
 if __name__ == "__main__":
-    print("Patching genomics DB...")
-    patch_genomics()
-    print("Patching transcriptomics DB...")
-    patch_transcriptomics()
-    print("Done.")
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "discover":
+        discover_missing()
+    else:
+        print("Patching genomics DB...")
+        patch_genomics()
+        print("Patching transcriptomics DB...")
+        patch_transcriptomics()
+        print("Done.")
