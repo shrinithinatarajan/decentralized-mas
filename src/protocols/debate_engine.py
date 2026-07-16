@@ -41,7 +41,14 @@ class DebateEngine:
     def __init__(self, resolver=None) -> None:
         self._resolver = resolver if resolver is not None else AxiomResolver()
 
-    async def run(self, packs: list[EvidencePack], agents: list | None = None) -> ConsensusResult:
+    async def run(
+        self,
+        packs: list[EvidencePack],
+        agents: list | None = None,
+        *,
+        run_logger=None,
+        case_id: str | None = None,
+    ) -> ConsensusResult:
         """Run the debate.
 
         Flow:
@@ -57,19 +64,32 @@ class DebateEngine:
         # --- Round 1 consensus check ---
         consensus_verdict = _check_consensus(packs)
         if consensus_verdict is not None:
-            return self._build_result(
+            result = self._build_result(
                 packs, consensus_verdict, cell_line, drug,
                 rounds_taken=1, forced=False,
                 resolution_method="CONSENSUS_R1", trace=trace,
             )
+            if run_logger:
+                run_logger.log_resolution(
+                    case_id=case_id, resolution_method=result.resolution_method,
+                    winning_agent=result.winning_agent, verdict=result.final_verdict.value,
+                    forced=result.forced,
+                )
+            return result
 
         trace.append(self._snapshot(packs, round_num=1, note="no_consensus"))
+        if run_logger:
+            run_logger.log_debate_round(case_id=case_id, round_num=1, note="no_consensus", snapshot=trace[-1])
 
         # --- Round 2: peer critique (Karpathy council style — verdicts locked, peers scored) ---
         peer_endorsements: dict[str, float] = {}
         if agents:
-            critiqued, peer_endorsements = await self._run_critique_round(packs, agents)
+            critiqued, peer_endorsements = await self._run_critique_round(
+                packs, agents, run_logger=run_logger, case_id=case_id
+            )
             trace.append(self._snapshot(critiqued, round_num=2, note="post_critique"))
+            if run_logger:
+                run_logger.log_debate_round(case_id=case_id, round_num=2, note="post_critique", snapshot=trace[-1])
             packs = critiqued  # updated confidence, peer_scores attached
 
         # --- Resolver tiebreak (last resort) ---
@@ -86,6 +106,11 @@ class DebateEngine:
             "winning_agent": resolution.winning_agent,
             "verdict": resolution.verdict.value,
         })
+        if run_logger:
+            run_logger.log_resolution(
+                case_id=case_id, resolution_method="RESOLVER_TIEBREAK",
+                winning_agent=resolution.winning_agent, verdict=resolution.verdict.value, forced=True,
+            )
         return ConsensusResult(
             final_verdict=resolution.verdict,
             final_confidence=avg_conf,
@@ -100,7 +125,7 @@ class DebateEngine:
         )
 
     async def _run_critique_round(
-        self, packs: list[EvidencePack], agents: list
+        self, packs: list[EvidencePack], agents: list, *, run_logger=None, case_id: str | None = None
     ) -> tuple[list[EvidencePack], dict[str, float]]:
         """Each agent scores peers' reasoning quality; verdicts stay locked."""
         agent_map = {a.agent_id: a for a in agents}
@@ -114,7 +139,9 @@ class DebateEngine:
                 async def _passthrough(p=pack): return p
                 tasks.append(_passthrough())
             else:
-                tasks.append(agent.critique(pack, peer_order[pack.agent_id]))
+                tasks.append(agent.critique(
+                    pack, peer_order[pack.agent_id], run_logger=run_logger, case_id=case_id
+                ))
 
         critiqued = list(await asyncio.gather(*tasks))
 

@@ -43,23 +43,44 @@ class BaseAgent(ABC):
         self.mcp_app = mcp_app
         self.llm = llm_client or LLMClient()
 
-    async def analyze(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> EvidencePack:
+    async def analyze(
+        self,
+        cell_line: str,
+        drug: str,
+        target_genes: list[str] | None = None,
+        *,
+        run_logger=None,
+        case_id: str | None = None,
+    ) -> EvidencePack:
+        self._run_logger = run_logger
+        self._case_id = case_id
         evidence = await self._fetch_evidence(cell_line, drug, target_genes)
         prompt = self._build_prompt(cell_line, drug, evidence)
         raw = await self.llm.complete(
             messages=[{"role": "user", "content": prompt}],
             system=self.system_prompt,
+            run_logger=run_logger,
+            agent_id=self.agent_id,
+            case_id=case_id,
         )
         pack = self._parse_pack(raw, cell_line, drug)
         pack.confidence = compute_gcs(
             pack.key_findings, evidence, pack.evidence_tier, self._compute_signal(evidence)
         )
+        if run_logger:
+            run_logger.log_agent_decision(
+                case_id=case_id, agent_id=self.agent_id, round_num=1,
+                verdict=pack.verdict.value, confidence=pack.confidence, reasoning=pack.reasoning,
+            )
         return pack
 
     async def critique(
         self,
         original_pack: EvidencePack,
         peer_packs: list[EvidencePack],
+        *,
+        run_logger=None,
+        case_id: str | None = None,
     ) -> EvidencePack:
         """Round-2 peer review: score peers' reasoning quality; verdict is LOCKED from round 1."""
         labels = [chr(ord('A') + i) for i in range(len(peer_packs))]
@@ -94,6 +115,9 @@ class BaseAgent(ABC):
         raw = await self.llm.complete(
             messages=[{"role": "user", "content": prompt}],
             system=self.system_prompt,
+            run_logger=run_logger,
+            agent_id=self.agent_id,
+            case_id=case_id,
         )
         cleaned = re.sub(r"^```(?:json)?\s*", "", raw.strip())
         cleaned = re.sub(r"\s*```$", "", cleaned.strip())
@@ -111,10 +135,17 @@ class BaseAgent(ABC):
             labels[i]: float(raw_scores.get(f"peer_{labels[i]}", 3.0))
             for i in range(len(labels))
         }
-        return original_pack.model_copy(update={
+        critiqued = original_pack.model_copy(update={
             "confidence": new_conf,
             "peer_scores": peer_score_map,
         })
+        if run_logger:
+            run_logger.log_agent_decision(
+                case_id=case_id, agent_id=self.agent_id, round_num=2,
+                verdict=critiqued.verdict.value, confidence=critiqued.confidence,
+                reasoning=data.get("peer_review_reasoning", ""),
+            )
+        return critiqued
 
     @abstractmethod
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
@@ -164,4 +195,11 @@ class BaseAgent(ABC):
     async def _call_tool(self, tool: str, args: dict) -> list | dict | None:
         async with Client(self.mcp_app) as client:
             result = await client.call_tool(tool, args)
-        return json.loads(result.data)
+        data = json.loads(result.data)
+        run_logger = getattr(self, "_run_logger", None)
+        if run_logger:
+            run_logger.log_tool_call(
+                case_id=getattr(self, "_case_id", None), agent_id=self.agent_id,
+                tool=tool, args=args, result=data,
+            )
+        return data

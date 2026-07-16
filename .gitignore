@@ -13,3 +13,6 @@ build/
 # Data
 src/data/raw/
 src/data/processed/
+
+# Run logs
+artifacts/
