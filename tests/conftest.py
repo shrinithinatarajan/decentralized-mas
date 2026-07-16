@@ -10,12 +10,13 @@ def genomics_db(tmp_path):
     conn.executescript("""
         CREATE TABLE mutations (
             cell_line TEXT, gene TEXT, mutation TEXT,
-            mutation_type TEXT, cosmic_id TEXT, is_driver INTEGER DEFAULT 0
+            mutation_type TEXT, cosmic_id TEXT, is_driver INTEGER DEFAULT 0,
+            civic_description TEXT, protein_change TEXT
         );
         CREATE TABLE cnv (
             cell_line TEXT, gene TEXT, cnv_value REAL, status TEXT
         );
-        INSERT INTO mutations VALUES ('A375','BRAF','V600E','missense','COSM476',1);
+        INSERT INTO mutations VALUES ('A375','BRAF','V600E','missense','COSM476',1,NULL,'p.V600E');
         INSERT INTO cnv VALUES ('A375','BRAF',2.0,'neutral');
     """)
     conn.commit()

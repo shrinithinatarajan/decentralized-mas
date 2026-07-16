@@ -56,6 +56,66 @@ class BaseAgent(ABC):
         )
         return pack
 
+    async def critique(
+        self,
+        original_pack: EvidencePack,
+        peer_packs: list[EvidencePack],
+    ) -> EvidencePack:
+        """Round-2 peer review: score peers' reasoning quality; verdict is LOCKED from round 1."""
+        labels = [chr(ord('A') + i) for i in range(len(peer_packs))]
+        peer_text = ""
+        for label, peer in zip(labels, peer_packs):
+            peer_text += (
+                f"\n--- Peer {label} ---\n"
+                f"Verdict: {peer.verdict.value}  Confidence: {peer.confidence:.2f}\n"
+                f"Reasoning: {peer.reasoning}\n"
+                f"Key findings: {json.dumps([f.model_dump() for f in peer.key_findings])}\n"
+            )
+
+        scores_schema = ", ".join(f'"peer_{l}": <int 1-5>' for l in labels)
+        prompt = (
+            f"Cell line: {original_pack.cell_line}\nDrug: {original_pack.drug}\n\n"
+            f"YOUR VERDICT (LOCKED — do NOT change): {original_pack.verdict.value}\n"
+            f"Your confidence: {original_pack.confidence:.2f}\n"
+            f"Your reasoning: {original_pack.reasoning}\n\n"
+            f"PEER ANALYSES (identities anonymized):\n{peer_text}\n"
+            "TASK: You are a scientific peer reviewer. Rate each peer's reasoning quality\n"
+            "on a scale of 1-5 (1=unsupported/flawed, 5=rigorous/well-evidenced).\n"
+            "Criteria: Is the evidence specific and data-driven? Does it address the drug's\n"
+            "mechanism of action? Are there logical gaps or unsupported leaps?\n\n"
+            "You may adjust your confidence by at most ±0.10 based on what peers found.\n"
+            "Your verdict is FINAL — do not change SENSITIVE/RESISTANT/UNCERTAIN.\n\n"
+            "Respond with ONLY this JSON (no prose, no markdown):\n"
+            f'{{"verdict": "{original_pack.verdict.value}", '
+            f'"confidence": <float>, '
+            f'"peer_scores": {{{scores_schema}}}, '
+            f'"peer_review_reasoning": "<one sentence per peer>"}}'  
+        )
+        raw = await self.llm.complete(
+            messages=[{"role": "user", "content": prompt}],
+            system=self.system_prompt,
+        )
+        cleaned = re.sub(r"^```(?:json)?\s*", "", raw.strip())
+        cleaned = re.sub(r"\s*```$", "", cleaned.strip())
+        data: dict = {}
+        for candidate in [cleaned] + [m.group(0) for m in re.finditer(r"\{.*?\}", raw, re.DOTALL)]:
+            try:
+                data = json.loads(candidate)
+                break
+            except Exception:
+                continue
+        new_conf = float(data.get("confidence", original_pack.confidence))
+        new_conf = max(0.0, min(1.0, new_conf))
+        raw_scores = data.get("peer_scores", {})
+        peer_score_map = {
+            labels[i]: float(raw_scores.get(f"peer_{labels[i]}", 3.0))
+            for i in range(len(labels))
+        }
+        return original_pack.model_copy(update={
+            "confidence": new_conf,
+            "peer_scores": peer_score_map,
+        })
+
     @abstractmethod
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
         ...
@@ -84,7 +144,10 @@ class BaseAgent(ABC):
             candidates.append(m.group(0))
         for candidate in candidates:
             try:
-                return EvidencePack.model_validate(json.loads(candidate))
+                data = json.loads(candidate)
+                pack = EvidencePack.model_validate(data)
+                pack.reasoning = data.get("reasoning", "")
+                return pack
             except Exception:
                 continue
         return EvidencePack(

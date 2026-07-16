@@ -33,10 +33,10 @@ def _mcp_apps():
     return genomics_app, transcriptomics_app, pharmacology_app, pathway_app
 
 
-async def main():
+async def main(cases_file: str = "cases_held_out.yaml"):
     RESULTS.mkdir(parents=True, exist_ok=True)
-    cases = load_cases(Path("cases_held_out.yaml"))
-    print(f"Loaded {len(cases)} held-out cases.")
+    cases = load_cases(Path(cases_file))
+    print(f"Loaded {len(cases)} held-out cases from {cases_file}.")
 
     limiter = make_rate_limiter()
     client  = LLMClient(model=MODEL, cache_db=CACHE, rate_limiter=limiter)
@@ -71,4 +71,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import sys
+    f = sys.argv[1] if len(sys.argv) > 1 else "cases_held_out.yaml"
+    asyncio.run(main(f))

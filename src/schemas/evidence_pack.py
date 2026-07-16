@@ -34,5 +34,7 @@ class EvidencePack(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     evidence_tier: EvidenceTier
     key_findings: list[Finding]
+    reasoning: str = ""
     caveats: list[str] = []
     conflict_flags: list[str] = []
+    peer_scores: dict = {}  # label ("A","B",...) -> quality score 1-5 given to that peer

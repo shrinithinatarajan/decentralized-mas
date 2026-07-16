@@ -1,0 +1,74 @@
+{
+  "full-system": {
+    "auroc": 0.82,
+    "auprc": 0.873,
+    "cohens_kappa": 0.7,
+    "n_evaluated": 20
+  },
+  "no-genomics": {
+    "auroc": 0.83,
+    "auprc": 0.811,
+    "cohens_kappa": 0.9,
+    "n_evaluated": 20
+  },
+  "no-transcriptomics": {
+    "auroc": 0.78,
+    "auprc": 0.84,
+    "cohens_kappa": 0.8,
+    "n_evaluated": 20
+  },
+  "no-pharmacology": {
+    "auroc": 0.657,
+    "auprc": 0.835,
+    "cohens_kappa": 0.214,
+    "n_evaluated": 20
+  },
+  "no-pathway": {
+    "auroc": 0.86,
+    "auprc": 0.915,
+    "cohens_kappa": 0.7,
+    "n_evaluated": 20
+  },
+  "only-genomics": {
+    "auroc": 0.688,
+    "auprc": 0.75,
+    "cohens_kappa": 0.125,
+    "n_evaluated": 20
+  },
+  "only-transcriptomics": {
+    "auroc": 0.8,
+    "auprc": 0.967,
+    "cohens_kappa": 0.118,
+    "n_evaluated": 20
+  },
+  "only-pharmacology": {
+    "auroc": 0.84,
+    "auprc": 0.886,
+    "cohens_kappa": 1.0,
+    "n_evaluated": 20
+  },
+  "only-pathway": {
+    "auroc": NaN,
+    "auprc": NaN,
+    "cohens_kappa": 0.0,
+    "n_evaluated": 20
+  },
+  "no-debate": {
+    "auroc": 0.8,
+    "auprc": 0.897,
+    "cohens_kappa": 0.7,
+    "n_evaluated": 20
+  },
+  "majority-vote": {
+    "auroc": 0.9,
+    "auprc": 0.95,
+    "cohens_kappa": 0.8,
+    "n_evaluated": 20
+  },
+  "no-civic": {
+    "auroc": 0.82,
+    "auprc": 0.873,
+    "cohens_kappa": 0.7,
+    "n_evaluated": 20
+  }
+}

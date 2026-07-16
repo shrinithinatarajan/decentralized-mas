@@ -36,7 +36,7 @@ class Orchestrator:
                 packs.append(await agent.analyze(cell_line, drug, target_genes))
         else:
             packs = list(await asyncio.gather(*[a.analyze(cell_line, drug, target_genes) for a in self.agents]))
-        return self.engine.run(packs)
+        return await self.engine.run(packs, agents=self.agents)
 
     async def run_all(
         self,
@@ -79,6 +79,7 @@ def _result_to_dict(r: ConsensusResult) -> dict:
         "winning_agent": r.winning_agent,
         "rounds_taken": r.rounds_taken,
         "forced": r.forced,
+        "resolution_method": r.resolution_method,
         "dissenting_agents": r.dissenting_agents,
         "trace": r.trace,
     }

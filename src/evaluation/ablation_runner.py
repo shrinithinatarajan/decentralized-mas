@@ -17,7 +17,7 @@ class AblationVariant(str, Enum):
 class NoDebateEngine:
     """Majority-vote aggregator — no debate rounds."""
 
-    def run(self, packs: list[EvidencePack]) -> ConsensusResult:
+    async def run(self, packs: list[EvidencePack], agents=None) -> ConsensusResult:
         counts: Counter = Counter(p.verdict for p in packs)
         # group confidence totals per verdict for tie-breaking
         conf_sum: dict = {}
@@ -38,13 +38,14 @@ class NoDebateEngine:
             rounds_taken=0,
             forced=False,
             dissenting_agents=[],
+            resolution_method="MAJORITY_VOTE",
         )
 
 
 class ConfidenceOnlyResolver:
     """Resolves conflicts purely by confidence — ignores axiom hierarchy."""
 
-    def resolve(self, packs: list[EvidencePack]) -> ResolutionResult:
+    def resolve(self, packs: list[EvidencePack], peer_endorsements: dict | None = None) -> ResolutionResult:
         winner = max(packs, key=lambda p: p.confidence)
         adjusted = [
             p if p.agent_id == winner.agent_id
@@ -65,7 +66,7 @@ class RandomAxiomResolver:
     def __init__(self, seed: int | None = None) -> None:
         self._rng = random.Random(seed)
 
-    def resolve(self, packs: list[EvidencePack]) -> ResolutionResult:
+    def resolve(self, packs: list[EvidencePack], peer_endorsements: dict | None = None) -> ResolutionResult:
         tiers = list(AXIOM_HIERARCHY.keys())
         values = list(AXIOM_HIERARCHY.values())
         self._rng.shuffle(values)

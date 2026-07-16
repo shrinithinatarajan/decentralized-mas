@@ -1,0 +1,181 @@
+cases:
+- cell_line: LAMA-84
+  drug: Nilotinib
+  label: SENSITIVE
+  z_score: -5.742
+  pathway: ABL signaling
+  putative_target: ABL
+  axiom_tier: T1_STRUCTURAL
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-5.742
+- cell_line: KASUMI-1
+  drug: Motesanib
+  label: SENSITIVE
+  z_score: -5.711
+  pathway: RTK signaling
+  putative_target: VEGFR, RET, KIT, PDGFR
+  axiom_tier: T3_PATHWAY_BYPASS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-5.711
+- cell_line: LC4-1
+  drug: Venetoclax
+  label: SENSITIVE
+  z_score: -4.414
+  pathway: Apoptosis regulation
+  putative_target: BCL2
+  axiom_tier: T4_PHARMACOLOGICAL_PRIOR
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-4.414
+- cell_line: FU97
+  drug: GDC0810
+  label: SENSITIVE
+  z_score: -3.535
+  pathway: Hormone-related
+  putative_target: ESR1, ESR2
+  axiom_tier: T2_TRANSCRIPTIONAL_GATE
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-3.535
+- cell_line: L-1236
+  drug: Ruxolitinib
+  label: SENSITIVE
+  z_score: -5.601
+  pathway: Other, kinases
+  putative_target: JAK1, JAK2
+  axiom_tier: T5_STATISTICAL_CONSENSUS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-5.601
+- cell_line: OCI-LY7
+  drug: Dabrafenib
+  label: SENSITIVE
+  z_score: -5.4
+  pathway: ERK MAPK signaling
+  putative_target: BRAF
+  axiom_tier: T1_STRUCTURAL
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-5.400
+- cell_line: NCI-H716
+  drug: AZD4547
+  label: SENSITIVE
+  z_score: -5.31
+  pathway: RTK signaling
+  putative_target: FGFR1, FGFR2, FGFR3
+  axiom_tier: T3_PATHWAY_BYPASS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-5.310
+- cell_line: SUP-B15
+  drug: Venetoclax
+  label: SENSITIVE
+  z_score: -4.384
+  pathway: Apoptosis regulation
+  putative_target: BCL2
+  axiom_tier: T4_PHARMACOLOGICAL_PRIOR
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-4.384
+- cell_line: NU-DUL-1
+  drug: Bicalutamide
+  label: SENSITIVE
+  z_score: -3.357
+  pathway: Hormone-related
+  putative_target: AR
+  axiom_tier: T2_TRANSCRIPTIONAL_GATE
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-3.357
+- cell_line: OCI-M1
+  drug: Ruxolitinib
+  label: SENSITIVE
+  z_score: -5.594
+  pathway: Other, kinases
+  putative_target: JAK1, JAK2
+  axiom_tier: T5_STATISTICAL_CONSENSUS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=-5.594
+- cell_line: H2722
+  drug: VX-11e
+  label: RESISTANT
+  z_score: 3.013
+  pathway: ERK MAPK signaling
+  putative_target: ERK2
+  axiom_tier: T1_STRUCTURAL
+  split: heldout
+  notes: Held-out test case; GDSC2 z=3.013
+- cell_line: SW1417
+  drug: SB216763
+  label: RESISTANT
+  z_score: 3.78
+  pathway: WNT signaling
+  putative_target: GSK3A, GSK3B
+  axiom_tier: T3_PATHWAY_BYPASS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=3.780
+- cell_line: NCI-H1793
+  drug: Mirin
+  label: RESISTANT
+  z_score: 3.958
+  pathway: Genome integrity
+  putative_target: MRE11
+  axiom_tier: T4_PHARMACOLOGICAL_PRIOR
+  split: heldout
+  notes: Held-out test case; GDSC2 z=3.958
+- cell_line: NCI-H2291
+  drug: Bicalutamide
+  label: RESISTANT
+  z_score: 2.91
+  pathway: Hormone-related
+  putative_target: AR
+  axiom_tier: T2_TRANSCRIPTIONAL_GATE
+  split: heldout
+  notes: Held-out test case; GDSC2 z=2.910
+- cell_line: SNU-449
+  drug: Romidepsin
+  label: RESISTANT
+  z_score: 5.216
+  pathway: Chromatin histone acetylation
+  putative_target: HDAC1, HDAC2, HDAC3, HDAC8
+  axiom_tier: T5_STATISTICAL_CONSENSUS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=5.216
+- cell_line: NCI-H441
+  drug: Osimertinib
+  label: RESISTANT
+  z_score: 2.984
+  pathway: EGFR signaling
+  putative_target: EGFR
+  axiom_tier: T1_STRUCTURAL
+  split: heldout
+  notes: Held-out test case; GDSC2 z=2.984
+- cell_line: VMRC-RCZ
+  drug: AZD8055
+  label: RESISTANT
+  z_score: 3.736
+  pathway: PI3K/MTOR signaling
+  putative_target: MTORC1, MTORC2
+  axiom_tier: T3_PATHWAY_BYPASS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=3.736
+- cell_line: NUGC-4
+  drug: Leflunomide
+  label: RESISTANT
+  z_score: 3.722
+  pathway: DNA replication
+  putative_target: Pyrimidine synthesis inhibitor
+  axiom_tier: T4_PHARMACOLOGICAL_PRIOR
+  split: heldout
+  notes: Held-out test case; GDSC2 z=3.722
+- cell_line: RMG-I
+  drug: GDC0810
+  label: RESISTANT
+  z_score: 2.847
+  pathway: Hormone-related
+  putative_target: ESR1, ESR2
+  axiom_tier: T2_TRANSCRIPTIONAL_GATE
+  split: heldout
+  notes: Held-out test case; GDSC2 z=2.847
+- cell_line: CL-11
+  drug: Romidepsin
+  label: RESISTANT
+  z_score: 5.083
+  pathway: Chromatin histone acetylation
+  putative_target: HDAC1, HDAC2, HDAC3, HDAC8
+  axiom_tier: T5_STATISTICAL_CONSENSUS
+  split: heldout
+  notes: Held-out test case; GDSC2 z=5.083

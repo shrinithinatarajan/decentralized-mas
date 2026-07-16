@@ -13,7 +13,8 @@ async def test_genomics_get_mutations_returns_braf(genomics_db, monkeypatch):
 
     async with Client(genomics_server.mcp) as client:
         result = await client.call_tool("get_mutations", {"cell_line": "A375"})
-        mutations = json.loads(result.data)
+        data = json.loads(result.data)
+    mutations = data["mutations"]
     assert len(mutations) == 1
     assert mutations[0]["gene"] == "BRAF"
     assert mutations[0]["mutation"] == "V600E"
@@ -27,7 +28,8 @@ async def test_genomics_get_mutations_filtered_by_gene(genomics_db, monkeypatch)
 
     async with Client(genomics_server.mcp) as client:
         result = await client.call_tool("get_mutations", {"cell_line": "A375", "gene": "BRAF"})
-        mutations = json.loads(result.data)
+        data = json.loads(result.data)
+    mutations = data["mutations"]
     assert len(mutations) == 1
     assert mutations[0]["gene"] == "BRAF"
 
@@ -40,8 +42,9 @@ async def test_genomics_get_mutations_unknown_cell_line_returns_empty(genomics_d
 
     async with Client(genomics_server.mcp) as client:
         result = await client.call_tool("get_mutations", {"cell_line": "UNKNOWN"})
-        mutations = json.loads(result.data)
-    assert mutations == []
+        data = json.loads(result.data)
+    assert data["mutations"] == []
+    assert data["cell_line_in_db"] is False
 
 
 @pytest.mark.asyncio

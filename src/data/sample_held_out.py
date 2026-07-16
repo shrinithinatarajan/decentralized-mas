@@ -23,7 +23,7 @@ GDSC2      = Path("src/data/raw/gdsc2/ic50.csv")
 DB_GEN     = Path("src/data/processed/genomics.db")
 DB_TRAN    = Path("src/data/processed/transcriptomics.db")
 DB_PHARM   = Path("src/data/processed/pharmacology.db")
-OUT_YAML   = Path("cases_held_out.yaml")
+OUT_YAML   = Path("cases_held_out_v2.yaml")
 
 RNG_SEED   = 42
 N_CASES    = 20   # 10 SENSITIVE + 10 RESISTANT
@@ -69,9 +69,15 @@ def _load_dev_pairs() -> set[tuple[str, str]]:
 
 
 def _load_dev_cell_lines() -> set[str]:
-    with open("cases.yaml") as f:
-        data = yaml.safe_load(f)
-    return {c["cell_line"] for c in data["cases"]}
+    excluded: set[str] = set()
+    for path in ("cases.yaml", "cases_held_out.yaml"):
+        try:
+            with open(path) as f:
+                data = yaml.safe_load(f)
+            excluded.update(c["cell_line"] for c in data["cases"])
+        except FileNotFoundError:
+            pass
+    return excluded
 
 
 def _sample_candidates(dev_lines: set[str], dev_pairs: set[tuple[str, str]]) -> pd.DataFrame:
@@ -172,10 +178,11 @@ def _patch_genomics(new_lines: list[str], model_id_map: dict[str, str]) -> None:
             if cl is None:
                 continue
             is_driver = int(bool(row.get("OncogeneHighImpact")) or bool(row.get("TumorSuppressorHighImpact")))
-            conn.execute("INSERT INTO mutations VALUES (?,?,?,?,?,?)",
+            civic = str(row["CivicDescription"]) if pd.notna(row.get("CivicDescription")) else None
+            conn.execute("INSERT INTO mutations VALUES (?,?,?,?,?,?,?)",
                 (cl, row.get("HugoSymbol", ""),
                  str(row["ProteinChange"]) if pd.notna(row.get("ProteinChange")) else "",
-                 row.get("VariantType", ""), "", is_driver))
+                 row.get("VariantType", ""), "", is_driver, civic))
             inserted_mut += 1
     print(f"    {inserted_mut} mutation rows inserted")
 
