@@ -68,7 +68,7 @@ class Orchestrator:
             output_path.parent.mkdir(parents=True, exist_ok=True)
         if traces_path is not None:
             traces_path.parent.mkdir(parents=True, exist_ok=True)
-            traces_path.write_text("")  # reset file each run
+            traces_path.unlink(missing_ok=True)  # start fresh; resumable callers manage their own file
 
         run_logger = run_logger or RunLogger()
         run_logger.log_run_start(n_cases=len(cases))

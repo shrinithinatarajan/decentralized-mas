@@ -23,7 +23,7 @@ GDSC2      = Path("src/data/raw/gdsc2/ic50.csv")
 DB_GEN     = Path("src/data/processed/genomics.db")
 DB_TRAN    = Path("src/data/processed/transcriptomics.db")
 DB_PHARM   = Path("src/data/processed/pharmacology.db")
-OUT_YAML   = Path("cases_held_out_v2.yaml")
+OUT_YAML   = Path("data/cases/cases_held_out_v2.yaml")
 
 RNG_SEED   = 42
 N_CASES    = 20   # 10 SENSITIVE + 10 RESISTANT
@@ -63,14 +63,14 @@ SKIP_TARGETS = {
 
 
 def _load_dev_pairs() -> set[tuple[str, str]]:
-    with open("cases.yaml") as f:
+    with open("data/cases/cases.yaml") as f:
         data = yaml.safe_load(f)
     return {(c["cell_line"], c["drug"]) for c in data["cases"]}
 
 
 def _load_dev_cell_lines() -> set[str]:
     excluded: set[str] = set()
-    for path in ("cases.yaml", "cases_held_out.yaml"):
+    for path in ("data/cases/cases.yaml", "data/cases/cases_held_out.yaml"):
         try:
             with open(path) as f:
                 data = yaml.safe_load(f)

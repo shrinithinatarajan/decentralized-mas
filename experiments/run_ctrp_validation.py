@@ -15,15 +15,13 @@ from pathlib import Path
 
 import os
 
-import yaml
-
 os.environ.setdefault("VERTEX_PROJECT", "project-d3bf2d5b-3451-46fd-8f3")
 
 from src.agents.genomics_agent import GenomicsAgent
 from src.agents.transcriptomics_agent import TranscriptomicsAgent
 from src.agents.pharmacology_agent import PharmacologyAgent
 from src.agents.pathway_agent import PathwayAgent
-from src.data.loader import Case
+from src.data.loader import Case, load_ctrp_cases
 from src.evaluation.metrics import evaluate
 from src.llm.client import LLMClient, make_rate_limiter
 from src.orchestrator import Orchestrator
@@ -31,14 +29,7 @@ from src.orchestrator import Orchestrator
 MODEL = "vertex:gemini-3.1-flash-lite"
 DATA = Path("src/data/processed")
 RESULTS = Path("experiments/results")
-SET_FILES = [Path(f"experiments/cases_held_out_ctrp_{i}.yaml") for i in range(1, 6)]
-
-
-def load_ctrp_cases(path: Path) -> list[Case]:
-    """Load flat-list CTRP yaml (no 'cases:' wrapper)."""
-    with open(path) as f:
-        entries = yaml.safe_load(f)
-    return [Case(cell_line=e["cell_line"], drug=e["drug"], label=e["label"]) for e in entries]
+SET_FILES = [Path(f"data/cases/cases_held_out_ctrp_{i}.yaml") for i in range(1, 6)]
 
 
 def _mcp_apps():

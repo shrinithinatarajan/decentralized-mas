@@ -54,7 +54,7 @@ async def main():
     RESULTS.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)
 
-    cases = load_cases(Path("cases.yaml"))
+    cases = load_cases(Path("data/cases/cases.yaml"))
     print(f"Loaded {len(cases)} cases.")
 
     factory = make_agent_factory()

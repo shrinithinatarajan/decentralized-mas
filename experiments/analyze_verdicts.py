@@ -20,7 +20,7 @@ MODEL = "groq:llama-3.3-70b-versatile"
 
 
 async def main():
-    cases = load_cases(Path("cases.yaml"))
+    cases = load_cases(Path("data/cases/cases.yaml"))
     client = LLMClient(model=MODEL, cache_db=DATA / "llm_cache.db")
     agents = [
         GenomicsAgent(genomics_app, client),

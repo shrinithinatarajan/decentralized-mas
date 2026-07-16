@@ -146,7 +146,7 @@ def patch_transcriptomics():
     conn.close()
 
 
-def discover_missing(cases_path: Path = Path("cases.yaml")) -> None:
+def discover_missing(cases_path: Path = Path("data/cases/cases.yaml")) -> None:
     """Cross-reference every cell line in cases.yaml against CCLE model.csv.
 
     Prints any cell line that is absent from the DB under its cases.yaml name

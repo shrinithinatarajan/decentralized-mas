@@ -9,7 +9,7 @@ Usage:
     PYTHONPATH=. python src/data/sample_held_out_ctrp.py --n-sets 5 --seed 42 --dry-run
 
 Outputs:
-    experiments/cases_held_out_ctrp_{1..N}.yaml
+    data/cases/cases_held_out_ctrp_{1..N}.yaml
 """
 import argparse
 import random
@@ -22,7 +22,7 @@ import yaml
 CTRP_DB   = Path("src/data/processed/ground_truth_ctrp.db")
 PHARM_DB  = Path("src/data/processed/pharmacology.db")
 GENO_DB   = Path("src/data/processed/genomics.db")
-OUT_DIR   = Path("experiments")
+OUT_DIR   = Path("data/cases")
 
 CASES_PER_SET  = 20   # 10 SENSITIVE + 10 RESISTANT
 PER_LABEL      = CASES_PER_SET // 2
@@ -35,7 +35,7 @@ def _norm(s: str) -> str:
 def _load_existing_excluded() -> set[str]:
     """Cell lines already used in any existing cases YAML."""
     excluded: set[str] = set()
-    for p in Path("experiments").glob("cases*.yaml"):
+    for p in Path("data/cases").glob("cases*.yaml"):
         try:
             data = yaml.safe_load(p.read_text()) or []
             for case in data:

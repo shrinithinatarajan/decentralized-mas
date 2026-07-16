@@ -6,7 +6,6 @@ run_id and case_id so a single run/test-case can be reconstructed from the file.
 """
 import json
 import logging
-import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -71,9 +70,8 @@ class RunLogger:
             case_id=case_id,
             agent_id=agent_id,
             model=model,
-            system=system,
-            messages=messages,
-            response=response,
+            n_messages=len(messages),
+            response_len=len(response),
             cached=cached,
             latency_s=round(latency_s, 4),
             error=error,
@@ -113,10 +111,3 @@ class RunLogger:
             self._logger.removeHandler(handler)
 
 
-class Timer:
-    def __enter__(self):
-        self._start = time.monotonic()
-        return self
-
-    def __exit__(self, *exc):
-        self.elapsed = time.monotonic() - self._start

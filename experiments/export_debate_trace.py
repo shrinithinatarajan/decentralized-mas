@@ -143,7 +143,7 @@ async def main():
     import sys
     mode = sys.argv[1] if len(sys.argv) > 1 else "t1"
     use_model = GEMINI_MODEL if mode == "gemini" else MODEL
-    cases = load_cases(Path("cases.yaml"))
+    cases = load_cases(Path("data/cases/cases.yaml"))
     client = LLMClient(model=use_model, cache_db=DATA / "llm_cache.db")
     engine = TracingDebateEngine()
     agents = [

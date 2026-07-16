@@ -181,7 +181,6 @@ class LLMClient:
             client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
         kwargs: dict = {"model": self._api_model_name(), "messages": all_messages, "max_tokens": 1024}
-        provider = self._provider()
         # Only add json_object mode for providers/models known to support it.
         # Mixtral and some older models silently fail or return empty responses with this flag.
         model_name = self._api_model_name().lower()
@@ -221,13 +220,7 @@ class LLMClient:
         Requires: gcloud auth application-default login
         """
         import subprocess
-        import json as _json
-        try:
-            import aiohttp
-        except ImportError:
-            import subprocess as _sp
-            _sp.run(["pip", "install", "aiohttp", "-q"], check=True)
-            import aiohttp
+        import aiohttp
 
         project = os.getenv("VERTEX_PROJECT")
         model_id = self.model.split(":", 1)[1]  # strip "vertex:" prefix
