@@ -14,7 +14,9 @@ class EvaluationMetrics:
     auprc: float
     spearman_rho: float
     cohens_kappa: float
-    n_evaluated: int
+    n_total: int
+    n_decisive: int
+    coverage: float
 
 
 def _sensitivity_score(r: ConsensusResult) -> float:
@@ -44,10 +46,16 @@ def evaluate(results: list[ConsensusResult], ground_truth: list[Case]) -> Evalua
     all_labels = set(true_labels) | set(pred_labels)
     cohens_kappa = cohen_kappa_score(true_labels, pred_labels) if len(all_labels) >= 2 else float("nan")
 
+    n_total = len(matched)
+    n_decisive = len(binary)
+    coverage = n_decisive / n_total if n_total > 0 else 0.0
+
     return EvaluationMetrics(
         auroc=auroc,
         auprc=auprc,
         spearman_rho=spearman_rho,
         cohens_kappa=cohens_kappa,
-        n_evaluated=len(matched),
+        n_total=n_total,
+        n_decisive=n_decisive,
+        coverage=coverage,
     )

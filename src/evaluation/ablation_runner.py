@@ -17,7 +17,7 @@ class AblationVariant(str, Enum):
 class NoDebateEngine:
     """Majority-vote aggregator — no debate rounds."""
 
-    async def run(self, packs: list[EvidencePack], agents=None) -> ConsensusResult:
+    async def run(self, packs: list[EvidencePack], agents=None, **kwargs) -> ConsensusResult:
         counts: Counter = Counter(p.verdict for p in packs)
         # group confidence totals per verdict for tie-breaking
         conf_sum: dict = {}

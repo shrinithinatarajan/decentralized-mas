@@ -54,8 +54,8 @@ class AxiomResolver:
             winner = max(
                 candidates,
                 key=lambda p: (
-                    AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]],
                     (peer_endorsements or {}).get(p.agent_id, 0.0),
+                    AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]],
                     p.confidence,
                 ),
             )

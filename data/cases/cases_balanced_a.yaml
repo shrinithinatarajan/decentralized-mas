@@ -1,0 +1,55 @@
+# Set A: Mutation-driven — cases where driver mutations in DB connect to drug response
+# T1 genomics should contribute meaningful signal for each case
+# All cases from CTRPv2 held-out sets 4 & 5 (real labels preserved)
+
+# SENSITIVE cases
+- cell_line: JHH-1
+  drug: Trametinib
+  label: SENSITIVE
+  target_genes: [MAP2K1, MAP2K2]          # MEK inh; HCC has MAPK pathway activation
+
+- cell_line: NCI-H1666
+  drug: Afatinib
+  label: SENSITIVE
+  target_genes: [EGFR, ERBB2, RET]        # RET SNV driver in DB; Afatinib has RET activity
+
+- cell_line: HGC-27
+  drug: KU-55933
+  label: SENSITIVE
+  target_genes: [ATM]                      # TP53/MET/PIK3CA drivers; TP53 loss sensitises to ATM inh
+
+- cell_line: SW1271
+  drug: Tamoxifen
+  label: SENSITIVE
+  target_genes: [ESR1, NRAS]              # NRAS SNV driver; NRAS active in hormonal signalling
+
+- cell_line: SJSA-1
+  drug: Linsitinib
+  label: SENSITIVE
+  target_genes: [IGF1R, INSR]             # Osteosarcoma; IGF1R known to be overexpressed in OS
+
+# RESISTANT cases
+- cell_line: NCI-H1581
+  drug: Dasatinib
+  label: RESISTANT
+  target_genes: [ABL1, SRC]               # BCR SNV driver in DB (Dasatinib targets ABL1/BCR-ABL)
+
+- cell_line: AN3-CA
+  drug: Bosutinib
+  label: RESISTANT
+  target_genes: [ABL1, SRC, MTOR]         # PTEN deletion + MTOR mutation = pathway-level resistance
+
+- cell_line: SF295
+  drug: Lapatinib
+  label: RESISTANT
+  target_genes: [EGFR, ERBB2, PTEN]      # PTEN SNV driver; PTEN loss = known EGFR/HER2 inh resistance
+
+- cell_line: GI-1
+  drug: Tamoxifen
+  label: RESISTANT
+  target_genes: [ESR1, RB1]              # RB1 driver mutation = cell cycle bypass -> tamoxifen resistance
+
+- cell_line: HDQ-P1
+  drug: Teniposide
+  label: RESISTANT
+  target_genes: [TOP2A, TOP2B, TP53]     # TP53 driver mutation = impaired apoptosis -> topoII inh resistance

@@ -45,7 +45,7 @@ def make_agent_factory():
             GenomicsAgent(genomics_app, llm_client),
             TranscriptomicsAgent(transcriptomics_app, llm_client),
             PharmacologyAgent(pharmacology_app, llm_client),
-            PathwayAgent(pathway_app, llm_client),
+            PathwayAgent(pathway_app, llm_client, transcriptomics_mcp=transcriptomics_app),
         ]
     return factory
 
@@ -87,10 +87,10 @@ async def main():
 
     print("\nMetrics (TEST split — held-out):")
     for label, m in test_metrics.items():
-        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  n={m.n_evaluated}")
+        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  n={m.n_total}  cov={m.coverage:.0%}")
     print("Metrics (DEV split — tuning set, not used for final reporting):")
     for label, m in dev_metrics.items():
-        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  n={m.n_evaluated}")
+        print(f"  {label}: AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  n={m.n_total}  cov={m.coverage:.0%}")
 
     # plot using ALL saved test-split results
     from src.evaluation.metrics import EvaluationMetrics

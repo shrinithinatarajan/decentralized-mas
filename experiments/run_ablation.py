@@ -122,7 +122,7 @@ def _make_agents(variant: str, llm: LLMClient) -> tuple[list, DebateEngine]:
         "genomics":       GenomicsAgent(gen, llm),
         "transcriptomics": TranscriptomicsAgent(tran, llm),
         "pharmacology":   PharmacologyAgent(pharm, llm),
-        "pathway":        PathwayAgent(path, llm),
+        "pathway":        PathwayAgent(path, llm, transcriptomics_mcp=tran),
     }
     engine = DebateEngine()  # default
 
@@ -143,7 +143,7 @@ def _make_agents(variant: str, llm: LLMClient) -> tuple[list, DebateEngine]:
             NoCivicGenomicsAgent(gen, llm),
             TranscriptomicsAgent(tran, llm),
             PharmacologyAgent(pharm, llm),
-            PathwayAgent(path, llm),
+            PathwayAgent(path, llm, transcriptomics_mcp=tran),
         ]
     else:
         raise ValueError(f"Unknown variant: {variant!r}. Choose from: {VARIANTS}")
@@ -176,7 +176,7 @@ def _print_table(results: dict) -> None:
             if "error" in m:
                 print(f"    {key:<26}  ERROR")
             else:
-                print(f"    {key:<26}  {m['auroc']:>6.3f}  {m['auprc']:>6.3f}  {m['cohens_kappa']:>6.3f}  {m.get('n_evaluated',20):>4}")
+                print(f"    {key:<26}  {m['auroc']:>6.3f}  {m['auprc']:>6.3f}  {m['cohens_kappa']:>6.3f}  {m.get('n_total', m.get('n_evaluated',20)):>4}  {m.get('coverage',1.0):.0%}")
     print("="*70)
 
 
@@ -215,9 +215,11 @@ async def run_variant(variant: str) -> None:
             "auroc": round(m.auroc, 3),
             "auprc": round(m.auprc, 3),
             "cohens_kappa": round(m.cohens_kappa, 3),
-            "n_evaluated": m.n_evaluated,
+            "n_total": m.n_total,
+            "n_decisive": m.n_decisive,
+            "coverage": round(m.coverage, 3),
         }
-        print(f"  AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}")
+        print(f"  AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  cov={m.coverage:.0%}")
     except Exception as e:
         print(f"  ERROR: {e}")
         all_results[variant] = {"error": str(e)}

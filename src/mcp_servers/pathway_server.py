@@ -42,6 +42,25 @@ def check_bypass(pathway_id: str, blocked_gene: str) -> str:
 
 
 @mcp.tool()
+def find_pathways_for_gene(gene: str) -> str:
+    """Return all pathways that contain a given gene, with pathway name and category."""
+    conn = sqlite3.connect(_db())
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute(
+        """
+        SELECT pg.pathway_id, pg.role, pg.position,
+               pm.name AS pathway_name, pm.category
+        FROM pathway_genes pg
+        LEFT JOIN pathway_meta pm ON pg.pathway_id = pm.pathway_id
+        WHERE pg.gene = ?
+        """,
+        (gene,),
+    ).fetchall()
+    conn.close()
+    return json.dumps([dict(r) for r in rows])
+
+
+@mcp.tool()
 def get_upstream_regulators(gene: str) -> str:
     conn = sqlite3.connect(_db())
     conn.row_factory = sqlite3.Row

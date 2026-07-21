@@ -1,0 +1,43 @@
+# Set B: Pathway/expression-driven — IGF1R, IKK, MET, proteasome, MDM2 inhibitors
+# where T2/T3 expression and pathway context contribute signal
+# All cases drawn from CTRPv2 held-out sets 4 & 5 (real labels preserved)
+- cell_line: EBC-1
+  drug: Entinostat
+  label: SENSITIVE
+  target_genes: [HDAC1, HDAC2, HDAC3]
+- cell_line: RH-18
+  drug: BMS-536924
+  label: SENSITIVE
+  target_genes: [IGF1R]
+- cell_line: RCH-ACV
+  drug: NVP-ADW742
+  label: SENSITIVE
+  target_genes: [IGF1R]
+- cell_line: AsPC-1
+  drug: Linsitinib
+  label: SENSITIVE
+  target_genes: [IGF1R, INSR]
+- cell_line: A204
+  drug: BMS-345541
+  label: SENSITIVE
+  target_genes: [IKBKB]
+- cell_line: CAL-120
+  drug: BMS-754807
+  label: RESISTANT
+  target_genes: [IGF1R, INSR]
+- cell_line: LN-229
+  drug: Foretinib
+  label: RESISTANT
+  target_genes: [MET, KDR]
+- cell_line: CFPAC-1
+  drug: Veliparib
+  label: RESISTANT
+  target_genes: [PARP1, PARP2]
+- cell_line: ACHN
+  drug: MG-132
+  label: RESISTANT
+  target_genes: [PSMB5]
+- cell_line: SF268
+  drug: Serdemetan
+  label: RESISTANT
+  target_genes: [MDM2]

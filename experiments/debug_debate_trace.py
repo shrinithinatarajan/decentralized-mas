@@ -20,11 +20,9 @@ from src.schemas.evidence_pack import Verdict
 
 DATA = Path("src/data/processed")
 
-# 3 cases — mix of previously CONSENSUS_R1 and RESOLVER_TIEBREAK cases
+# Single case: TE-15 + Dabrafenib was wrong (T3 falsely voted RESISTANT) before pathway activity + quorum fixes
 CASES = [
-    {"cell_line": "SUP-T1",   "drug": "NVP-ADW742",  "label": "SENSITIVE"},   # was RESOLVER_TIEBREAK -> UNCERTAIN
-    {"cell_line": "A375",     "drug": "Vemurafenib",  "label": "SENSITIVE"},   # canonical BRAF V600E case
-    {"cell_line": "HCT-116",  "drug": "AGK2",         "label": "RESISTANT"},   # was RESOLVER_TIEBREAK -> UNCERTAIN
+    {"cell_line": "TE-15", "drug": "Dabrafenib", "label": "SENSITIVE", "target_genes": ["BRAF"]},
 ]
 
 SEP = "=" * 70
@@ -119,12 +117,12 @@ async def main():
         GenomicsAgent(g_app, client),
         TranscriptomicsAgent(t_app, client),
         PharmacologyAgent(p_app, client),
-        PathwayAgent(pw_app, client),
+        PathwayAgent(pw_app, client, transcriptomics_mcp=t_app),
     ]
     orch = InstrumentedOrchestrator(agents=agents)
 
     for case in CASES:
-        result = await orch.run_case(case["cell_line"], case["drug"])
+        result = await orch.run_case(case["cell_line"], case["drug"], target_genes=case.get("target_genes"))
         label = case["label"]
         match = "✓" if result.final_verdict.value == label else ("?" if result.final_verdict == Verdict.UNCERTAIN else "✗")
         print(f"\n  Ground truth: {label}  {match}")

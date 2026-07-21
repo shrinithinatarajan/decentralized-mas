@@ -1,0 +1,65 @@
+{
+  "full_system": {
+    "auroc": 0.8112244897959183,
+    "auprc": 0.8514205565676153,
+    "cohens_kappa": 0.375,
+    "spearman_rho": 0.5394007442285792,
+    "n_total": 30,
+    "n_decisive": 28,
+    "coverage": 0.9333333333333333
+  },
+  "no_debate": {
+    "auroc": NaN,
+    "auprc": NaN,
+    "cohens_kappa": 0.0714285714285714,
+    "spearman_rho": NaN,
+    "n_total": 30,
+    "n_decisive": 4,
+    "coverage": 0.13333333333333333
+  },
+  "no_axioms": {
+    "auroc": 0.8397435897435898,
+    "auprc": 0.8654882154882154,
+    "cohens_kappa": 0.5428571428571429,
+    "spearman_rho": 0.588453158981734,
+    "n_total": 30,
+    "n_decisive": 25,
+    "coverage": 0.8333333333333334
+  },
+  "no_genomics": {
+    "auroc": 0.6142857142857143,
+    "auprc": 0.7278517119848389,
+    "cohens_kappa": 0.09677419354838712,
+    "spearman_rho": 0.1979730461406427,
+    "n_total": 30,
+    "n_decisive": 29,
+    "coverage": 0.9666666666666667
+  },
+  "no_transcriptomics": {
+    "auroc": 0.7047619047619047,
+    "auprc": 0.7818811003933737,
+    "cohens_kappa": 0.16129032258064513,
+    "spearman_rho": 0.3548766099019969,
+    "n_total": 30,
+    "n_decisive": 29,
+    "coverage": 0.9666666666666667
+  },
+  "no_pathway": {
+    "auroc": 0.6627218934911243,
+    "auprc": 0.7017520877814996,
+    "cohens_kappa": 0.5294117647058824,
+    "spearman_rho": 0.28205128205128205,
+    "n_total": 30,
+    "n_decisive": 26,
+    "coverage": 0.8666666666666667
+  },
+  "no_pharmacology": {
+    "auroc": 0.5909090909090909,
+    "auprc": 0.7158873880130565,
+    "cohens_kappa": -0.02564102564102555,
+    "spearman_rho": 0.15751031234084012,
+    "n_total": 30,
+    "n_decisive": 21,
+    "coverage": 0.7
+  }
+}

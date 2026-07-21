@@ -72,7 +72,7 @@ async def run_query(query: str | None, cell_line: str | None, drug: str | None) 
         GenomicsAgent(genomics_app, llm),
         TranscriptomicsAgent(transcriptomics_app, llm),
         PharmacologyAgent(pharmacology_app, llm),
-        PathwayAgent(pathway_app, llm),
+        PathwayAgent(pathway_app, llm, transcriptomics_mcp=transcriptomics_app),
     ]
     orchestrator = Orchestrator(agents, DebateEngine())
     target_genes = _get_drug_target(drug)

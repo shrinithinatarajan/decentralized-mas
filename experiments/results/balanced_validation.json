@@ -1,0 +1,22 @@
+{
+  "sets": {
+    "c": {
+      "set": "c",
+      "label": "Set C: Mechanism-agnostic",
+      "n": 10,
+      "correct": 7,
+      "uncertain": 1,
+      "accuracy": 0.7,
+      "resolution_methods": {
+        "CONSENSUS_R1": 7,
+        "RESOLVER_TIEBREAK": 3
+      },
+      "winning_agents": {
+        "pharmacology_agent": 5,
+        "pathway_agent": 2,
+        "transcriptomics_agent": 2,
+        "pathway_agent_001": 1
+      }
+    }
+  }
+}

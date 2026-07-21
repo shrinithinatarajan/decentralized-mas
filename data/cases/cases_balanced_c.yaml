@@ -1,0 +1,43 @@
+# Set C: Mechanism-agnostic — Aurora kinase, checkpoint, DNA-damage, NAMPT inhibitors
+# T4 pharmacology is primary signal; new min-2-decisive rule forces these into Round 2
+# All cases drawn from CTRPv2 held-out sets 4 & 5 (real labels preserved)
+- cell_line: NAMALWA
+  drug: Temozolomide
+  label: SENSITIVE
+  target_genes: [MGMT]
+- cell_line: RT-112
+  drug: Alisertib
+  label: SENSITIVE
+  target_genes: [AURKA]
+- cell_line: DEL
+  drug: Alisertib
+  label: SENSITIVE
+  target_genes: [AURKA]
+- cell_line: NOMO-1
+  drug: Linsitinib
+  label: SENSITIVE
+  target_genes: [IGF1R, INSR]
+- cell_line: Daoy
+  drug: Gemcitabine
+  label: SENSITIVE
+  target_genes: [RRM1, RRM2]
+- cell_line: SK-MM-2
+  drug: AZD7762
+  label: RESISTANT
+  target_genes: [CHEK1]
+- cell_line: A375
+  drug: Ibrutinib
+  label: RESISTANT
+  target_genes: [BTK]
+- cell_line: NCI-H358
+  drug: Dacarbazine
+  label: RESISTANT
+  target_genes: [MGMT]
+- cell_line: GDM-1
+  drug: Daporinad
+  label: RESISTANT
+  target_genes: [NAMPT]
+- cell_line: TE-10
+  drug: Vorinostat
+  label: RESISTANT
+  target_genes: [HDAC1, HDAC2, HDAC3]

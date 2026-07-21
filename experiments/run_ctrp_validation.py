@@ -68,7 +68,7 @@ async def main():
             GenomicsAgent(g_app, client),
             TranscriptomicsAgent(t_app, client),
             PharmacologyAgent(p_app, client),
-            PathwayAgent(pw_app, client),
+            PathwayAgent(pw_app, client, transcriptomics_mcp=t_app),
         ]
         orch = Orchestrator(agents=agents)
         traces_path = RESULTS / f"traces_ctrp_set_{i}.jsonl"
@@ -79,10 +79,10 @@ async def main():
         all_output[key] = {
             "auroc": m.auroc, "auprc": m.auprc,
             "cohens_kappa": m.cohens_kappa, "spearman_rho": m.spearman_rho,
-            "n_evaluated": m.n_evaluated,
+            "n_total": m.n_total, "n_decisive": m.n_decisive, "coverage": m.coverage,
         }
         out_path.write_text(json.dumps(all_output, indent=2))
-        print(f"  AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  ρ={m.spearman_rho:.3f}  n={m.n_evaluated}")
+        print(f"  AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  ρ={m.spearman_rho:.3f}  n={m.n_total}  cov={m.coverage:.0%}")
 
     # aggregate
     def _agg(attr):

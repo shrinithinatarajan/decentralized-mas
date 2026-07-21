@@ -25,7 +25,10 @@ REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding t
    expression-level activity, pathway context, or IC50 history. Prefer UNCERTAIN unless
    other evidence (e.g. wild_type_note says the target requires mutation for activation).
 5. If the cell line is not in the database at all: state no data and lean UNCERTAIN.
-6. Weigh CNV: amplification of an oncogene target → sensitivity signal; deletion → resistance.
+6. Weigh CNV carefully by status field:
+   - Amplification (cnv_value > 2, status='amplification') → sensitivity signal: target overexpressed.
+   - HOMOZYGOUS deletion (status='homozygous_deletion') → RESISTANT: both copies gone, drug has no target.
+   - HEMIZYGOUS deletion (status='hemizygous_deletion') → UNCERTAIN: one copy remains, gene still expressed at reduced level. Do NOT vote RESISTANT on hemizygous deletion alone — the target is still present.
 7. Conclude with your verdict and why, explicitly citing any CIViC description used.
 
 Return ONLY a JSON object matching the EvidencePack schema. No prose outside the JSON."""
@@ -68,6 +71,14 @@ class GenomicsAgent(BaseAgent):
                 "(e.g. bypass pathway mutations, target gene deletion, or known "
                 "resistance alteration in this cell line)."
             )
+        if not target_genes:
+            evidence["data_status"] = "insufficient_evidence"
+        elif mutations:
+            evidence["data_status"] = "data_found"
+        elif wild_type_genes:
+            evidence["data_status"] = "target_wild_type"
+        else:
+            evidence["data_status"] = "cell_line_missing"
         return evidence
 
     def _compute_signal(self, evidence: dict) -> float:

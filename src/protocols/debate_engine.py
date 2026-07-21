@@ -22,18 +22,40 @@ class ConsensusResult:
 def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     """Return the verdict if a strict majority of decisive agents agree, else None.
 
-    Strict majority: more than half of decisive (non-UNCERTAIN) agents must agree.
-    With 4 agents this means >=3; with 2 agents this means >=2 (unanimity).
-    A 2-2 split or any tie is NOT a consensus.
+    Requires at least 2 decisive (non-UNCERTAIN) agents — a single decisive agent
+    always escalates to Round 2 peer critique rather than winning by default.
+
+    T3 self-attestation gate: pathway agent can only be decisive if its self_attestation
+    score >= 3. Replaces the blunt T1+T2 quorum rule with a grounded evidence check.
+
+    T1 veto: if a decisive T1 agent disagrees with the majority, route to resolver.
     """
+    from src.schemas.evidence_pack import EvidenceTier
     decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
     if not decisive:
         return None
+
+    # T3 self-attestation gate: demote pathway agent if checklist score < 3
+    filtered: list[EvidencePack] = []
+    for p in decisive:
+        if p.evidence_tier == EvidenceTier.T3_PATHWAY:
+            score = (p.self_attestation or {}).get("score", 0)
+            if score < 3:
+                continue
+        filtered.append(p)
+    decisive = filtered
+
+    if not decisive:
+        return None
+
     counts = Counter(p.verdict for p in decisive)
-    verdict, n = counts.most_common(1)[0]
-    if n > len(decisive) / 2:  # strict majority
-        return verdict
-    return None
+    majority_verdict, n = counts.most_common(1)[0]
+    if n <= len(decisive) / 2:
+        return None
+    t1_decisive = [p for p in decisive if p.evidence_tier == EvidenceTier.T1_STRUCTURAL]
+    if t1_decisive and all(p.verdict != majority_verdict for p in t1_decisive):
+        return None
+    return majority_verdict
 
 
 

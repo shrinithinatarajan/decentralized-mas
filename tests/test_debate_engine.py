@@ -130,6 +130,42 @@ def test_final_confidence_is_positive():
     assert 0.0 < result.final_confidence <= 1.0
 
 
+def test_t1_veto_blocks_consensus_when_t1_disagrees_with_majority():
+    """3 lower-tier agents agree but T1 (genomics) dissents -> resolver, not CONSENSUS_R1.
+
+    A confirmed structural finding is an axiological override, not a minority vote.
+    The resolver then picks T1's verdict via the axiom hierarchy.
+    """
+    packs = [
+        _pack("genomics_agent",        "RESISTANT", "T1_STRUCTURAL",      confidence=0.9),
+        _pack("transcriptomics_agent", "SENSITIVE", "T2_TRANSCRIPTIONAL", confidence=0.8),
+        _pack("pharmacology_agent",    "SENSITIVE", "T4_PHARMACOLOGICAL", confidence=0.7),
+        _pack("pathway_agent",         "SENSITIVE", "T3_PATHWAY",         confidence=0.6),
+    ]
+    engine = DebateEngine()
+    result = _run(engine.run(packs))
+    # Must NOT short-circuit to consensus — T1 veto forces resolver
+    assert result.resolution_method == "RESOLVER_TIEBREAK"
+    assert result.forced is True
+    # Resolver picks T1 (highest axiom tier) -> RESISTANT
+    assert result.final_verdict == Verdict.RESISTANT
+    assert result.winning_agent == "genomics_agent"
+
+
+def test_t1_veto_does_not_fire_when_t1_agrees_with_majority():
+    """T1 veto must not trigger when T1 is part of the majority."""
+    packs = [
+        _pack("genomics_agent",        "SENSITIVE", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "SENSITIVE", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent",    "SENSITIVE", "T4_PHARMACOLOGICAL"),
+        _pack("pathway_agent",         "RESISTANT", "T3_PATHWAY"),
+    ]
+    engine = DebateEngine()
+    result = _run(engine.run(packs))
+    assert result.resolution_method == "CONSENSUS_R1"
+    assert result.final_verdict == Verdict.SENSITIVE
+
+
 def test_result_records_cell_line_and_drug():
     packs = [_pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL")]
     engine = DebateEngine()

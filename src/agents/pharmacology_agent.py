@@ -27,7 +27,9 @@ class PharmacologyAgent(BaseAgent):
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
         ic50 = await self._call_tool("get_ic50", {"cell_line": cell_line, "drug": drug})
         drug_info = await self._call_tool("get_drug_info", {"drug": drug})
-        return {"ic50": ic50, "drug_info": drug_info}
+        ic50_data = ic50 if isinstance(ic50, dict) else {}
+        status = "data_found" if ic50_data and ic50_data.get("z_score") is not None else "cell_line_missing"
+        return {"ic50": ic50, "drug_info": drug_info, "data_status": status}
 
     def _compute_signal(self, evidence: dict) -> float:
         ic50 = evidence.get("ic50") or {}

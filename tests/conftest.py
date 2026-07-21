@@ -82,6 +82,10 @@ def pathways_db(tmp_path):
         CREATE TABLE upstream_regulators (
             gene TEXT, regulator TEXT, relationship TEXT, pathway TEXT
         );
+        CREATE TABLE pathway_meta (
+            pathway_id TEXT, name TEXT, category TEXT
+        );
+        INSERT INTO pathway_meta VALUES ('hsa04010','MAPK signaling pathway','Signal transduction');
         INSERT INTO pathway_genes VALUES ('hsa04010','BRAF','kinase','mid');
         INSERT INTO bypass_routes VALUES ('hsa04010','BRAF','MEK2',1);
         INSERT INTO upstream_regulators VALUES ('BRAF','RAS','activates','hsa04010');

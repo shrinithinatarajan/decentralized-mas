@@ -67,6 +67,9 @@ class BaseAgent(ABC):
         pack.confidence = compute_gcs(
             pack.key_findings, evidence, pack.evidence_tier, self._compute_signal(evidence)
         )
+        if pack.verdict == Verdict.UNCERTAIN:
+            pack.confidence = min(pack.confidence, 0.5)
+        pack = pack.model_copy(update={"data_status": evidence.get("data_status")})
         if run_logger:
             run_logger.log_agent_decision(
                 case_id=case_id, agent_id=self.agent_id, round_num=1,
@@ -82,35 +85,74 @@ class BaseAgent(ABC):
         run_logger=None,
         case_id: str | None = None,
     ) -> EvidencePack:
-        """Round-2 peer review: score peers' reasoning quality; verdict is LOCKED from round 1."""
+        """Round-2 peer review: verify peers' factual claims via binary checklist; verdict LOCKED."""
         labels = [chr(ord('A') + i) for i in range(len(peer_packs))]
+
+        CHECKLISTS = {
+            "T1_STRUCTURAL": [
+                "Did this peer name a specific mutation or CNV in the drug target gene (not just 'no mutation found')?",
+                "Did this peer cite a CIViC/OncoKB entry or known functional consequence linking the variant to drug response?",
+                "Did this peer confirm the variant is somatic (not germline or unclassified)?",
+                "Does the variant's functional direction (gain-of-function / loss-of-function) logically support the verdict given?",
+            ],
+            "T2_TRANSCRIPTIONAL": [
+                "Did this peer report a specific numeric z-score for the target gene expression?",
+                "Is the expression level (overexpressed / silenced / normal) consistent with the verdict direction?",
+                "Did this peer explicitly account for whether this drug is expression-driven vs mutation-driven?",
+                "Did this peer name at least one specific gene with its z-score value (not just 'expression is high')?",
+            ],
+            "T3_PATHWAY": [
+                "Did this peer name at least one specific bypass gene (not just 'bypass_exists=true')?",
+                "Did this peer report the pathway activity score or fraction of expressed pathway genes?",
+                "Does the bypass gene mechanistically connect to resistance for this specific drug class?",
+                "Is the bypass gene distinct from the primary drug target gene?",
+            ],
+            "T4_PHARMACOLOGICAL": [
+                "Did this peer report a specific IC50 z-score value (not just 'no data' or 'uncertain')?",
+                "Did this peer explicitly state the pre-computed IC50 label (SENSITIVE/RESISTANT/UNCERTAIN)?",
+                "Does the historical IC50 label match or logically support the verdict given?",
+                "Did this peer acknowledge that T4 pharmacological evidence can be overridden by T1-T3 molecular evidence?",
+            ],
+        }
+
         peer_text = ""
         for label, peer in zip(labels, peer_packs):
+            tier_key = peer.evidence_tier.value if hasattr(peer.evidence_tier, "value") else str(peer.evidence_tier)
+            checklist = CHECKLISTS.get(tier_key, CHECKLISTS["T4_PHARMACOLOGICAL"])
+            checklist_str = "\n".join(f"  {i+1}. {q}" for i, q in enumerate(checklist))
             peer_text += (
-                f"\n--- Peer {label} ---\n"
+                f"\n--- Peer {label} (tier: {tier_key}) ---\n"
                 f"Verdict: {peer.verdict.value}  Confidence: {peer.confidence:.2f}\n"
                 f"Reasoning: {peer.reasoning}\n"
                 f"Key findings: {json.dumps([f.model_dump() for f in peer.key_findings])}\n"
+                f"Checklist to verify (answer yes/no for each based on the reasoning above):\n{checklist_str}\n"
             )
 
-        scores_schema = ", ".join(f'"peer_{l}": <int 1-5>' for l in labels)
+        peer_schema_parts = []
+        for label in labels:
+            peer_schema_parts.append(
+                f'"peer_{label}_checks": [<bool q1>, <bool q2>, <bool q3>, <bool q4>], '
+                f'"peer_{label}_score": <float 0.0-1.0 = sum(checks)/4>'
+            )
+        peer_schema = ", ".join(peer_schema_parts)
+
         prompt = (
             f"Cell line: {original_pack.cell_line}\nDrug: {original_pack.drug}\n\n"
             f"YOUR VERDICT (LOCKED — do NOT change): {original_pack.verdict.value}\n"
             f"Your confidence: {original_pack.confidence:.2f}\n"
             f"Your reasoning: {original_pack.reasoning}\n\n"
-            f"PEER ANALYSES (identities anonymized):\n{peer_text}\n"
-            "TASK: You are a scientific peer reviewer. Rate each peer's reasoning quality\n"
-            "on a scale of 1-5 (1=unsupported/flawed, 5=rigorous/well-evidenced).\n"
-            "Criteria: Is the evidence specific and data-driven? Does it address the drug's\n"
-            "mechanism of action? Are there logical gaps or unsupported leaps?\n\n"
-            "You may adjust your confidence by at most ±0.10 based on what peers found.\n"
-            "Your verdict is FINAL — do not change SENSITIVE/RESISTANT/UNCERTAIN.\n\n"
+            f"PEER ANALYSES TO REVIEW:\n{peer_text}\n"
+            "TASK: For each peer, answer the checklist questions (true/false) based strictly on "
+            "what their reasoning text actually states — not what you think is biologically correct. "
+            "A claim scores true only if the peer explicitly made it in their reasoning.\n"
+            "Score = number of true answers / 4.\n\n"
+            "You may adjust your own confidence by at most ±0.10 based on what peers found.\n"
+            "Your verdict is FINAL — do not change it.\n\n"
             "Respond with ONLY this JSON (no prose, no markdown):\n"
             f'{{"verdict": "{original_pack.verdict.value}", '
             f'"confidence": <float>, '
-            f'"peer_scores": {{{scores_schema}}}, '
-            f'"peer_review_reasoning": "<one sentence per peer>"}}'  
+            f'{peer_schema}, '
+            f'"peer_review_reasoning": "<one sentence per peer explaining scores>"}}'
         )
         raw = await self.llm.complete(
             messages=[{"role": "user", "content": prompt}],
@@ -130,11 +172,19 @@ class BaseAgent(ABC):
                 continue
         new_conf = float(data.get("confidence", original_pack.confidence))
         new_conf = max(0.0, min(1.0, new_conf))
-        raw_scores = data.get("peer_scores", {})
-        peer_score_map = {
-            labels[i]: float(raw_scores.get(f"peer_{labels[i]}", 3.0))
-            for i in range(len(labels))
-        }
+        if original_pack.verdict == Verdict.UNCERTAIN:
+            new_conf = min(new_conf, 0.5)
+        peer_score_map = {}
+        for label in labels:
+            score = data.get(f"peer_{label}_score")
+            if score is not None:
+                peer_score_map[label] = float(score)
+            else:
+                checks = data.get(f"peer_{label}_checks", [])
+                if checks:
+                    peer_score_map[label] = sum(1 for c in checks if c) / 4.0
+                else:
+                    peer_score_map[label] = 0.5
         critiqued = original_pack.model_copy(update={
             "confidence": new_conf,
             "peer_scores": peer_score_map,
@@ -178,6 +228,8 @@ class BaseAgent(ABC):
                 data = json.loads(candidate)
                 pack = EvidencePack.model_validate(data)
                 pack.reasoning = data.get("reasoning", "")
+                if "self_attestation" in data:
+                    pack.self_attestation = data["self_attestation"]
                 return pack
             except Exception:
                 continue

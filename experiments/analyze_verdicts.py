@@ -26,7 +26,7 @@ async def main():
         GenomicsAgent(genomics_app, client),
         TranscriptomicsAgent(transcriptomics_app, client),
         PharmacologyAgent(pharmacology_app, client),
-        PathwayAgent(pathway_app, client),
+        PathwayAgent(pathway_app, client, transcriptomics_mcp=transcriptomics_app),
     ]
     orch = Orchestrator(agents=agents)
 
