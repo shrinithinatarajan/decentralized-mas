@@ -1,7 +1,7 @@
-"""Run 10 cases from each of 3 CTRP sets (30 total) with per-case debate traces.
+"""Run all 20 cases from each of 5 CTRP sets (100 total) with per-case debate traces.
 
 Target genes are looked up from drug_info so the pathway agent is fully active.
-Traces are saved to experiments/results/traces_mini_set_{1,2,3}.jsonl.
+Traces are saved to experiments/results/traces_full_set_{1..5}.jsonl.
 Full per-agent reasoning is captured in logs/run_<id>.log via RunLogger.
 
 Usage:
@@ -28,12 +28,14 @@ from src.run_logger import RunLogger
 DATA   = Path("src/data/processed")
 RESULTS = Path("experiments/results")
 MODEL  = "vertex:gemini-3.1-flash-lite"
-N_PER_SET = 10
+N_PER_SET = 20
 
 SETS = [
     (1, Path("data/cases/cases_held_out_ctrp_1.yaml")),
     (2, Path("data/cases/cases_held_out_ctrp_2.yaml")),
     (3, Path("data/cases/cases_held_out_ctrp_3.yaml")),
+    (4, Path("data/cases/cases_held_out_ctrp_4.yaml")),
+    (5, Path("data/cases/cases_held_out_ctrp_5.yaml")),
 ]
 
 
@@ -58,10 +60,10 @@ def _get_target_genes(drug: str) -> list[str] | None:
 
 async def run_set(set_num: int, yaml_path: Path, orch: Orchestrator, run_logger: RunLogger) -> list[dict]:
     all_cases = load_ctrp_cases(yaml_path)
-    cases = all_cases[N_PER_SET:N_PER_SET * 2]
+    cases = all_cases[:N_PER_SET]
     records = []
 
-    out_path = RESULTS / f"traces_mini_set_{set_num}.jsonl"
+    out_path = RESULTS / f"traces_full_set_{set_num}.jsonl"
     out_path.unlink(missing_ok=True)
 
     print(f"\n=== Set {set_num}: {yaml_path.name} — {len(cases)} cases ===")
@@ -89,6 +91,9 @@ async def run_set(set_num: int, yaml_path: Path, orch: Orchestrator, run_logger:
             "winning_agent": result.winning_agent,
             "rounds_taken": result.rounds_taken,
             "correct": result.final_verdict.value == case.label,
+            "winning_agent_is_t3": "pathway" in result.winning_agent.lower(),
+            "r1_agents": result.r1_agents,
+            "dissenting_agents": result.dissenting_agents,
         }
         records.append(record)
         with out_path.open("a") as f:
@@ -126,15 +131,24 @@ async def main():
     # Summary
     correct   = sum(1 for r in all_records if r["correct"])
     uncertain = sum(1 for r in all_records if r["final_verdict"] == "UNCERTAIN")
+    t3_wins   = sum(1 for r in all_records if r.get("winning_agent_is_t3"))
     methods   = {}
     for r in all_records:
         methods[r["resolution_method"]] = methods.get(r["resolution_method"], 0) + 1
+
+    # Per-agent winning breakdown
+    agent_wins: dict[str, int] = {}
+    for r in all_records:
+        if r["final_verdict"] != "UNCERTAIN":
+            agent_wins[r["winning_agent"]] = agent_wins.get(r["winning_agent"], 0) + 1
 
     print(f"\n{'='*60}")
     print(f"  Model: {MODEL}  |  Cases: {len(all_records)}")
     print(f"  Correct:   {correct}/{len(all_records)} ({correct/len(all_records):.0%})")
     print(f"  Uncertain: {uncertain}/{len(all_records)} ({uncertain/len(all_records):.0%})")
+    print(f"  T3 (pathway) decisive: {t3_wins}/{len(all_records)} ({t3_wins/len(all_records):.0%})")
     print(f"  Resolution methods: {methods}")
+    print(f"  Agent win breakdown: {agent_wins}")
     print(f"{'='*60}")
     print(f"  Traces: {RESULTS}/traces_mini_set_{{1,2,3}}.jsonl")
     print(f"  Full log: {run_logger.log_path}")

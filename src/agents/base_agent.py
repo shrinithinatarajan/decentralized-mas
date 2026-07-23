@@ -65,7 +65,8 @@ class BaseAgent(ABC):
         )
         pack = self._parse_pack(raw, cell_line, drug)
         pack.confidence = compute_gcs(
-            pack.key_findings, evidence, pack.evidence_tier, self._compute_signal(evidence)
+            self._compute_h(pack.key_findings, evidence),
+            evidence, pack.evidence_tier, self._compute_signal(evidence)
         )
         if pack.verdict == Verdict.UNCERTAIN:
             pack.confidence = min(pack.confidence, 0.5)
@@ -115,6 +116,20 @@ class BaseAgent(ABC):
             ],
         }
 
+        # Build cross-modal findings block: each agent sees what OTHER tiers found
+        own_tier = original_pack.evidence_tier.value if hasattr(original_pack.evidence_tier, "value") else str(original_pack.evidence_tier)
+        cross_modal_lines = []
+        for peer in peer_packs:
+            tier_key = peer.evidence_tier.value if hasattr(peer.evidence_tier, "value") else str(peer.evidence_tier)
+            if peer.key_findings:
+                findings_str = "; ".join(
+                    f"{f.biomarker}={f.value} ({f.interpretation})" for f in peer.key_findings
+                )
+            else:
+                findings_str = "none reported"
+            cross_modal_lines.append(f"  [{tier_key}] {peer.verdict.value} (conf={peer.confidence:.2f}): {findings_str}")
+        cross_modal_block = "\n".join(cross_modal_lines)
+
         peer_text = ""
         for label, peer in zip(labels, peer_packs):
             tier_key = peer.evidence_tier.value if hasattr(peer.evidence_tier, "value") else str(peer.evidence_tier)
@@ -138,19 +153,26 @@ class BaseAgent(ABC):
 
         prompt = (
             f"Cell line: {original_pack.cell_line}\nDrug: {original_pack.drug}\n\n"
-            f"YOUR VERDICT (LOCKED — do NOT change): {original_pack.verdict.value}\n"
-            f"Your confidence: {original_pack.confidence:.2f}\n"
+            f"YOUR ROUND-1 VERDICT: {original_pack.verdict.value}  (confidence: {original_pack.confidence:.2f})\n"
+            f"Your tier: {own_tier}\n"
             f"Your reasoning: {original_pack.reasoning}\n\n"
+            f"CROSS-MODAL FINDINGS FROM ALL SPECIALISTS:\n{cross_modal_block}\n\n"
             f"PEER ANALYSES TO REVIEW:\n{peer_text}\n"
-            "TASK: For each peer, answer the checklist questions (true/false) based strictly on "
-            "what their reasoning text actually states — not what you think is biologically correct. "
-            "A claim scores true only if the peer explicitly made it in their reasoning.\n"
+            "ROUND 2 TASKS:\n"
+            "1. CROSS-MODAL SYNTHESIS: Review the cross-modal findings above from tiers OTHER than "
+            "your own. If a finding from a different tier (e.g., a CIViC entry from Genomics, a "
+            "Chronos score from DepMap, an IC50 label from Pharmacology) directly contradicts your "
+            "Round-1 conclusion with specific biological evidence, you SHOULD revise your verdict. "
+            "Set verdict_revised=true and name the specific finding in revision_reason.\n"
+            "2. PEER SCORING: For each peer, answer the checklist questions (true/false) based "
+            "strictly on what their reasoning text actually states.\n"
             "Score = number of true answers / 4.\n\n"
-            "You may adjust your own confidence by at most ±0.10 based on what peers found.\n"
-            "Your verdict is FINAL — do not change it.\n\n"
+            "You may adjust your own confidence by at most ±0.15 based on what peers found.\n\n"
             "Respond with ONLY this JSON (no prose, no markdown):\n"
-            f'{{"verdict": "{original_pack.verdict.value}", '
+            f'{{"verdict": "<SENSITIVE|RESISTANT|UNCERTAIN — may differ from Round 1 if cross-modal evidence warrants>", '
             f'"confidence": <float>, '
+            f'"verdict_revised": <true or false>, '
+            f'"revision_reason": "<specific cross-modal finding that caused revision, or null>", '
             f'{peer_schema}, '
             f'"peer_review_reasoning": "<one sentence per peer explaining scores>"}}'
         )
@@ -170,9 +192,19 @@ class BaseAgent(ABC):
                 break
             except Exception:
                 continue
+        # Parse verdict — revision allowed if cross-modal evidence warrants
+        new_verdict_str = data.get("verdict", original_pack.verdict.value)
+        try:
+            new_verdict = Verdict(new_verdict_str)
+        except Exception:
+            new_verdict = original_pack.verdict
+        verdict_revised = bool(data.get("verdict_revised", False)) and (new_verdict != original_pack.verdict)
+
         new_conf = float(data.get("confidence", original_pack.confidence))
         new_conf = max(0.0, min(1.0, new_conf))
-        if original_pack.verdict == Verdict.UNCERTAIN:
+        if verdict_revised:
+            new_conf = round(new_conf * 0.78, 4)  # penalty for switching under peer pressure
+        if new_verdict == Verdict.UNCERTAIN:
             new_conf = min(new_conf, 0.5)
         peer_score_map = {}
         for label in labels:
@@ -186,20 +218,26 @@ class BaseAgent(ABC):
                 else:
                     peer_score_map[label] = 0.5
         critiqued = original_pack.model_copy(update={
+            "verdict": new_verdict,
             "confidence": new_conf,
             "peer_scores": peer_score_map,
         })
         if run_logger:
+            rev_note = f" [REVISED from {original_pack.verdict.value}: {data.get('revision_reason', '')}]" if verdict_revised else ""
             run_logger.log_agent_decision(
                 case_id=case_id, agent_id=self.agent_id, round_num=2,
                 verdict=critiqued.verdict.value, confidence=critiqued.confidence,
-                reasoning=data.get("peer_review_reasoning", ""),
+                reasoning=data.get("peer_review_reasoning", "") + rev_note,
             )
         return critiqued
 
     @abstractmethod
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
         ...
+
+    def _compute_h(self, key_findings: list, evidence: dict) -> float:
+        from src.agents.gcs import compute_h
+        return compute_h(key_findings, evidence)
 
     @abstractmethod
     def _compute_signal(self, evidence: dict) -> float:
@@ -230,6 +268,15 @@ class BaseAgent(ABC):
                 pack.reasoning = data.get("reasoning", "")
                 if "self_attestation" in data:
                     pack.self_attestation = data["self_attestation"]
+                elif pack.evidence_tier.value == "T3_PATHWAY":
+                    # LLM may return individual boolean fields without the wrapper dict.
+                    # Reconstruct score so the T3 gate in _check_consensus has something to work with.
+                    sa = {
+                        k: data.get(k)
+                        for k in ("bypass_gene_expressed", "pathway_active", "mechanism_relevant", "bypass_distinct")
+                    }
+                    if any(v is not None for v in sa.values()):
+                        pack.self_attestation = {**sa, "score": sum(1 for v in sa.values() if v is True)}
                 return pack
             except Exception:
                 continue

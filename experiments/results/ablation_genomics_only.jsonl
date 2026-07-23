@@ -1,0 +1,30 @@
+{"set": 1, "cell_line": "SUP-T1", "drug": "NVP-ADW742", "target_genes": ["IGF1R"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 1, "cell_line": "NCI-H2087", "drug": "BIBR-1532", "target_genes": ["TERT"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 1, "cell_line": "EFO-21", "drug": "Crizotinib", "target_genes": ["MET", "ALK", "ROS1"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 1, "cell_line": "JHH-6", "drug": "Sorafenib", "target_genes": ["PDGFRB", "KIT", "KDR", "RAF"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 1, "cell_line": "NCI-H1563", "drug": "TW 37", "target_genes": ["BCL2", "BCL-XL", "MCL1"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 1, "cell_line": "NCI-H2030", "drug": "AZD8055", "target_genes": ["MTORC2"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 2, "cell_line": "J82", "drug": "CHIR-99021", "target_genes": ["GSK3A", "GSK3B"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.34, "correct": false}
+{"set": 2, "cell_line": "LS-411N", "drug": "Gefitinib", "target_genes": ["EGFR"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 2, "cell_line": "639-V", "drug": "Pevonedistat", "target_genes": null, "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 2, "cell_line": "HCC-15", "drug": "Serdemetan", "target_genes": ["MDM2"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 2, "cell_line": "K-562", "drug": "BIBR-1532", "target_genes": ["TERT"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 2, "cell_line": "RS4-11", "drug": "Nelarabine", "target_genes": null, "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 3, "cell_line": "IPC-298", "drug": "OSI-027", "target_genes": ["MTORC2"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 3, "cell_line": "JURL-MK1", "drug": "Navitoclax", "target_genes": ["BCL2", "BCL-XL", "BCL2L2"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 3, "cell_line": "EN", "drug": "BMS-536924", "target_genes": ["IGF1R", "IR"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 3, "cell_line": "CADO-ES1", "drug": "SN-38", "target_genes": ["TOP1"], "true_label": "SENSITIVE", "final_verdict": "SENSITIVE", "final_confidence": 0.9, "correct": true}
+{"set": 3, "cell_line": "TE-15", "drug": "Dabrafenib", "target_genes": ["BRAF"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 3, "cell_line": "PA-TU-8902", "drug": "Veliparib", "target_genes": ["PARP1", "PARP2"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 4, "cell_line": "RH-18", "drug": "BMS-536924", "target_genes": ["IGF1R", "IR"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 4, "cell_line": "NCI-H1581", "drug": "Dasatinib", "target_genes": ["DSP-AS1", "SRC", "Ephrins", "PDGFRB", "KIT"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 4, "cell_line": "EBC-1", "drug": "Entinostat", "target_genes": ["HDAC1", "HDAC3"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 4, "cell_line": "SF268", "drug": "Serdemetan", "target_genes": ["MDM2"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 4, "cell_line": "HGC-27", "drug": "KU-55933", "target_genes": ["ATM"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 4, "cell_line": "NAMALWA", "drug": "Temozolomide", "target_genes": null, "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 5, "cell_line": "SW1271", "drug": "Tamoxifen", "target_genes": ["ESR1"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 5, "cell_line": "SK-MEL-24", "drug": "Gefitinib", "target_genes": ["EGFR"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 5, "cell_line": "RL95-2", "drug": "Afatinib", "target_genes": ["EGFR", "ERBB2"], "true_label": "SENSITIVE", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 5, "cell_line": "SK-MM-2", "drug": "AZD7762", "target_genes": ["CHEK1", "CHEK2"], "true_label": "RESISTANT", "final_verdict": "SENSITIVE", "final_confidence": 0.9, "correct": false}
+{"set": 5, "cell_line": "LN-229", "drug": "Foretinib", "target_genes": ["MET", "KDR", "TEK", "VEGFR3/FLT4", "MST1R", "PDGFRB", "FGFR1", "EGFR"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}
+{"set": 5, "cell_line": "GI-1", "drug": "Tamoxifen", "target_genes": ["ESR1"], "true_label": "RESISTANT", "final_verdict": "UNCERTAIN", "final_confidence": 0.5, "correct": false}

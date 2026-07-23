@@ -214,6 +214,10 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
 .todo-item { display: flex; gap: 10px; padding: 8px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 0.86rem; }
 .todo-item:hover { background: #fef3c7; }
 .todo-box { width: 16px; height: 16px; border: 2px solid #d97706; border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+.todo-box.done { background: #16a34a; border-color: #16a34a; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; }
+.todo-item.done-item { opacity: 0.75; text-decoration-line: none; background: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; }
+.done-section { background: #f0fdf4; border: 2px solid #16a34a; border-radius: 10px; padding: 22px 26px; margin: 20px 0; }
+.done-section h3 { color: #14532d; margin-top: 0; }
 .todo-cat { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 1px 7px; border-radius: 10px; font-family: 'Helvetica Neue', sans-serif; flex-shrink: 0; margin-top: 2px; }
 .tc-code { background: #dbeafe; color: #1e40af; }
 .tc-eval { background: var(--green-bg); color: #14532d; }
@@ -340,10 +344,11 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
 
   <!-- MCP server boxes -->
   <rect x="22" y="102" width="168" height="82" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
-  <text x="106" y="122" text-anchor="middle" font-weight="700" fill="#991b1b" font-size="11">T1 MCP: CIViC</text>
-  <text x="106" y="138" text-anchor="middle" fill="#7f1d1d" font-size="10">Somatic mutations</text>
-  <text x="106" y="153" text-anchor="middle" fill="#7f1d1d" font-size="10">Copy number variants</text>
-  <text x="106" y="168" text-anchor="middle" fill="#7f1d1d" font-size="10">Clinical drug annotations</text>
+  <text x="106" y="118" text-anchor="middle" font-weight="700" fill="#991b1b" font-size="11">T1 MCP: CIViC + DepMap + OT</text>
+  <text x="106" y="133" text-anchor="middle" fill="#7f1d1d" font-size="10">Somatic mutations &amp; CNV</text>
+  <text x="106" y="148" text-anchor="middle" fill="#7f1d1d" font-size="10">CIViC clinical annotations</text>
+  <text x="106" y="163" text-anchor="middle" fill="#7f1d1d" font-size="10">DepMap Chronos essentiality</text>
+  <text x="106" y="178" text-anchor="middle" fill="#7f1d1d" font-size="10">OpenTargets fallback</text>
 
   <rect x="204" y="102" width="168" height="82" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
   <text x="288" y="122" text-anchor="middle" font-weight="700" fill="#4c1d95" font-size="11">T2 MCP: CCLE</text>
@@ -352,7 +357,7 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
   <text x="288" y="168" text-anchor="middle" fill="#4c1d95" font-size="10">Silencing detection</text>
 
   <rect x="386" y="102" width="168" height="82" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
-  <text x="470" y="122" text-anchor="middle" font-weight="700" fill="#065f46" font-size="11">T3 MCP: KEGG</text>
+  <text x="470" y="122" text-anchor="middle" font-weight="700" fill="#065f46" font-size="11">T3 MCP: KEGG/Pathways</text>
   <text x="470" y="138" text-anchor="middle" fill="#065f46" font-size="10">Pathway membership</text>
   <text x="470" y="153" text-anchor="middle" fill="#065f46" font-size="10">Bypass gene check</text>
   <text x="470" y="168" text-anchor="middle" fill="#065f46" font-size="10">Activity scoring</text>
@@ -424,9 +429,12 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
 <table>
 <thead><tr><th>Tier</th><th>Database</th><th>What it stores</th><th>Key query</th><th>Returns</th></tr></thead>
 <tbody>
-<tr><td><span class="agent-badge t1b">T1</span></td><td>CIViC (Clinical Interpretation of Variants in Cancer)</td><td>Curated somatic mutation &rarr; drug sensitivity annotations from clinical evidence</td><td>cell line mutations + drug name</td><td>mutation list, CIViC entries with evidence level (A/B/C/D/E)</td></tr>
-<tr><td><span class="agent-badge t2b">T2</span></td><td>CCLE (Cancer Cell Line Encyclopedia)</td><td>mRNA expression z-scores for ~1700 cell lines across ~20,000 genes</td><td>cell line + gene list</td><td>z-score per gene; silencing flag if z &lt; &minus;2.0</td></tr>
-<tr><td><span class="agent-badge t3b">T3</span></td><td>KEGG (Kyoto Encyclopaedia of Genes and Genomes)</td><td>Signalling pathway topology &mdash; which genes belong to which pathways, interactions</td><td>drug target gene(s)</td><td>pathway membership list, bypass_check result, activity fraction</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>CCLE Mutations + CNV</td><td>Somatic point mutations and copy number variants from CCLE across ~1800 cell lines</td><td>cell line + target gene(s)</td><td>mutation list with driver status, CNV status (amplification/deletion)</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>CIViC (Clinical Interpretation of Variants in Cancer)</td><td>Curated somatic mutation &rarr; drug sensitivity annotations; ~6,000 evidence items, ~200 genes</td><td>gene + variant + drug name</td><td>CIViC evidence entries with level (A&ndash;E), significance, drug match</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>DepMap CRISPR Chronos (24Q4)</td><td>Genome-wide CRISPR knockout essentiality scores; 1,208 cell lines &times; 18,531 genes</td><td>cell line + target gene(s)</td><td>Chronos score per gene; &le;&minus;0.5 = essential &rarr; SENSITIVE signal</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>OpenTargets Platform (live API)</td><td>60M+ drug&ndash;gene evidence associations from clinical trials, literature, GWAS</td><td>Ensembl gene ID + drug name</td><td>matched drug rows with mechanismOfAction and clinical phase; queried only when CIViC + DepMap both empty</td></tr>
+<tr><td><span class="agent-badge t2b">T2</span></td><td>CCLE mRNA Expression</td><td>TPM + z-scores for ~1700 cell lines across ~20,000 genes</td><td>cell line + gene list</td><td>z-score per gene; silencing if z &lt; &minus;2.0; SENSITIVE if z &gt; 1.0 (moderate) or z &gt; 1.5 (strong)</td></tr>
+<tr><td><span class="agent-badge t3b">T3</span></td><td>Pathway DB (KEGG-derived)</td><td>Signalling pathway topology &mdash; gene membership, bypass routes, upstream regulators</td><td>drug target gene(s)</td><td>pathway membership list, bypass_check result; also queries T2 MCP for bypass gene expression</td></tr>
 <tr><td><span class="agent-badge t4b">T4</span></td><td>CTRPv2 / GDSC2</td><td>IC50 measurements for ~500 drugs across ~900 cell lines (CTRPv2) + GDSC2 supplement</td><td>cell line + drug name</td><td>ln_IC50, z-score, pre-computed label (SENSITIVE/RESISTANT/UNCERTAIN)</td></tr>
 </tbody>
 </table>
@@ -458,11 +466,12 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
   <div class="agent-card t1">
     <h4 style="color:var(--t1)">T1 &mdash; Genomics Agent <span>(axiom priority: 5)</span></h4>
     <ul>
-      <li>Queries CIViC for somatic mutations &amp; CNVs in the drug's target genes</li>
-      <li>Looks for: activating mutations (oncogene), loss-of-function (tumour suppressor), amplification</li>
-      <li>Strong signal: named CIViC entry with evidence level A or B linking variant to drug</li>
-      <li>UNCERTAIN when: wild-type at all target loci, or no CIViC annotation exists</li>
-      <li>High axiom weight: structural DNA-level evidence is most causally upstream</li>
+      <li>Queries CCLE mutations + CNV for somatic alterations in the drug's target genes</li>
+      <li>Enriches mutations with CIViC drug-specific clinical evidence (live lookup per variant+drug pair)</li>
+      <li>Strong signal: CIViC entry with evidence level A or B linking variant to this specific drug</li>
+      <li><strong>DepMap supplement</strong>: when CIViC has no match, queries Chronos CRISPR scores; Chronos &le; &minus;0.5 = gene essential in this cell line &rarr; SENSITIVE signal</li>
+      <li><strong>OpenTargets fallback</strong>: when CIViC + DepMap both thin, queries OpenTargets GraphQL API; phase &ge; 3 drug match = strong clinical signal; phase 1&ndash;2 = weak signal</li>
+      <li>UNCERTAIN only when all three sources (CIViC, DepMap, OpenTargets) return no actionable evidence</li>
     </ul>
   </div>
   <div class="agent-card t2">
@@ -470,7 +479,7 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
     <ul>
       <li>Queries CCLE for mRNA z-scores of the drug's target gene(s)</li>
       <li>Applies drug mechanism classification: <em>mutation-driven</em> vs <em>expression-driven</em></li>
-      <li>For expression-driven drugs: overexpression (z &gt; +1.5) &rarr; SENSITIVE</li>
+      <li>For expression-driven drugs: z &gt; 1.5 &rarr; SENSITIVE (confidence 0.75&ndash;0.85); z 1.0&ndash;1.5 &rarr; SENSITIVE (confidence 0.55&ndash;0.70)</li>
       <li>Silencing gate: z &lt; &minus;2.0 &rarr; target absent &rarr; RESISTANT</li>
       <li>For mutation-driven drugs: defers to T1; abstains if T1 is UNCERTAIN</li>
     </ul>
@@ -1190,6 +1199,27 @@ Result: CONSENSUS_R1 &rarr; SENSITIVE &mdash; Ground truth: SENSITIVE &check;</c
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="todo">TODO List</h2>
+
+<div class="done-section">
+<h3>&#x2705; Completed (Session 2026-07-21)</h3>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug A — R2 consensus check</strong> &mdash; Added <code>_check_consensus(packs)</code> call after peer critique round in <code>debate_engine.py</code>. Cases that reach majority after R2 now return <code>CONSENSUS_R2</code> instead of always falling to resolver.</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug E — T3 self-attestation silent demotion</strong> &mdash; Two-part fix: (1) <code>base_agent.py _parse_pack()</code> reconstructs <code>self_attestation</code> from individual boolean fields when LLM omits the wrapper dict; (2) <code>_check_consensus()</code> gate now treats absent score as &ldquo;unscored&rdquo; (pass through), not score=0 (demote). T3 decisive rate rose from ~0% to 20%.</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug D — avg_conf diluted by UNCERTAIN agents</strong> &mdash; <code>avg_conf</code> in resolver path now computed only over agents whose verdict agrees with the winner (not all packs).</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug B/F — endorsement default 3.0</strong> &mdash; Changed default peer score from 3.0 to 0.0 in <code>_run_critique_round()</code>. Absent reviewers no longer grant phantom endorsements to all peers.</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug H — winning_agent by confidence not axiom tier</strong> &mdash; <code>_build_result()</code> now selects winner by <code>(axiom_tier, confidence)</code> tuple so T1 beats T4 even if T4 has higher confidence.</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>T2 threshold widened</strong> &mdash; Changed from z &gt; 1.5 (SENSITIVE) to z 1.0&ndash;1.5 (moderate confidence 0.55&ndash;0.70) and z &gt; 1.5 (high confidence 0.75&ndash;0.85). <code>get_high_expression_genes</code> z_threshold lowered to 1.0. T2 decisiveness expected to increase.</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>DepMap CRISPR Chronos as T1 supplement</strong> &mdash; <code>scripts/prepare_depmap.py</code> downloads DepMap 24Q4 and builds <code>depmap.db</code> (21.5M rows, 1,208 cell lines &times; 18,531 genes). New <code>get_depmap_dependency</code> MCP tool; queried in T1 <code>_fetch_evidence()</code> when CIViC has no drug-specific match. Chronos &le; &minus;0.5 = SENSITIVE signal.</div></div>
+
+<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>OpenTargets as T1 fallback</strong> &mdash; New <code>get_opentargets_evidence</code> MCP tool: gene symbol &rarr; Ensembl ID (Ensembl REST) &rarr; drug associations (OpenTargets GraphQL API). Called only when CIViC + DepMap both produce no decisive signal. Phase &ge; 3 match = strong signal; phase 1&ndash;2 = weak.</div></div>
+
+</div>
 
 <div class="todo-section">
 

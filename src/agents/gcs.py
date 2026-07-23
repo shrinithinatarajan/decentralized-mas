@@ -39,12 +39,17 @@ def compute_e(evidence_raw: dict) -> float:
 
 
 def compute_gcs(
-    key_findings: list[Finding],
+    key_findings_or_h: "list[Finding] | float",
     evidence_raw: dict,
     tier: EvidenceTier,
     signal_strength: float,
 ) -> float:
-    h = compute_h(key_findings, evidence_raw)
+    # Accepts either a pre-computed h float (from agent _compute_h override)
+    # or the raw key_findings list (legacy path, computes h internally)
+    if isinstance(key_findings_or_h, float):
+        h = max(0.0, min(1.0, key_findings_or_h))
+    else:
+        h = compute_h(key_findings_or_h, evidence_raw)
     e = compute_e(evidence_raw)
     t = tier_weight(tier)
     s = max(0.0, min(1.0, signal_strength))

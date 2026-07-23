@@ -16,6 +16,10 @@ def _civic_db() -> Path:
     return Path(os.getenv("CIVIC_DB", "src/data/processed/civic.db"))
 
 
+def _depmap_db() -> Path:
+    return Path(os.getenv("DEPMAP_DB", "src/data/processed/depmap.db"))
+
+
 def _conn() -> sqlite3.Connection:
     conn = sqlite3.connect(_db())
     conn.row_factory = sqlite3.Row
@@ -50,10 +54,11 @@ def _lookup_civic(gene: str, protein_change: str, drug: str) -> list[dict]:
             (gene.upper(), variant_norm),
         ).fetchall()
         conn.close()
-        # Filter to rows whose drug_norm contains or is contained in the queried drug_norm
+        # Filter to rows whose drug_norm matches AND direction=Supports (Does Not Support inverts meaning)
         matches = [
             dict(r) for r in rows
-            if drug_norm in r["drug_norm"] or r["drug_norm"] in drug_norm
+            if (drug_norm in r["drug_norm"] or r["drug_norm"] in drug_norm)
+            and r["direction"] == "Supports"
         ]
         return matches
     except Exception:
@@ -117,6 +122,119 @@ def get_cnv(cell_line: str, gene: str | None = None) -> str:
                 "SELECT * FROM cnv WHERE cell_line=?", (cell_line,)
             ).fetchall()
     return json.dumps([dict(r) for r in rows])
+
+
+@mcp.tool()
+def get_depmap_dependency(cell_line: str, genes: list[str]) -> str:
+    """Return DepMap CRISPR Chronos gene-effect scores for a cell line.
+
+    Chronos ≤ -0.5 → gene is essential in this cell line → SENSITIVE signal.
+    Chronos > -0.5  → gene is non-essential → not informative for sensitivity.
+    Returns empty list if depmap.db is not present (run scripts/prepare_depmap.py first).
+    """
+    db_path = _depmap_db()
+    if not db_path.exists():
+        return json.dumps({"error": "depmap.db not found — run scripts/prepare_depmap.py", "scores": []})
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    results = []
+    # Normalize: strip spaces, hyphens, underscores and uppercase for fuzzy match
+    import re as _re
+    cl_norm = _re.sub(r"[\s\-_]", "", cell_line).upper()
+    for gene in genes:
+        row = conn.execute(
+            "SELECT depmap_id, cell_line, gene, chronos FROM chronos_scores "
+            "WHERE cell_line_norm=? AND gene=?",
+            (cl_norm, gene),
+        ).fetchone()
+        if row:
+            results.append(dict(row))
+    conn.close()
+    return json.dumps({"scores": results, "threshold_note": "Chronos <= -0.5 = gene essential = SENSITIVE signal"})
+
+
+_ENSEMBL_REST  = "https://rest.ensembl.org"
+_OT_GRAPHQL    = "https://api.platform.opentargets.org/api/v4/graphql"
+_JSON_HEADERS  = {"Content-Type": "application/json", "Accept": "application/json"}
+
+
+def _gene_to_ensembl(gene_symbol: str) -> str | None:
+    """Convert gene symbol to ENSG ID via Ensembl REST API."""
+    import requests as _req
+    try:
+        url = f"{_ENSEMBL_REST}/xrefs/symbol/homo_sapiens/{gene_symbol}"
+        r = _req.get(url, headers=_JSON_HEADERS, timeout=10)
+        r.raise_for_status()
+        ids = [row["id"] for row in r.json() if row.get("id", "").startswith("ENSG")]
+        return ids[0] if ids else None
+    except Exception:
+        return None
+
+
+@mcp.tool()
+def get_opentargets_evidence(genes: list[str], drug: str) -> str:
+    """Query OpenTargets for known drug-gene associations.
+
+    Used as T1 fallback when CIViC has no coverage for a drug.
+    Returns drug mechanism, clinical phase, and any sensitivity/resistance hints.
+    """
+    import requests as _req
+    import re
+
+    drug_norm = re.sub(r"[^a-z0-9]", "", drug.lower())
+    results = []
+
+    for gene in genes:
+        ensembl_id = _gene_to_ensembl(gene)
+        if not ensembl_id:
+            results.append({"gene": gene, "error": "ensembl_id_not_found"})
+            continue
+
+        query = """
+        {
+          target(ensemblId: "%s") {
+            knownDrugs(size: 100) {
+              rows {
+                drug { name prefName }
+                mechanismOfAction
+                phase
+                drugType
+                status
+              }
+            }
+          }
+        }
+        """ % ensembl_id
+
+        try:
+            r = _req.post(_OT_GRAPHQL, json={"query": query}, headers=_JSON_HEADERS, timeout=15)
+            r.raise_for_status()
+            data = r.json()
+            rows = (data.get("data") or {}).get("target", {}).get("knownDrugs", {}).get("rows", [])
+        except Exception as e:
+            results.append({"gene": gene, "ensembl_id": ensembl_id, "error": str(e)})
+            continue
+
+        # Find rows matching our drug (fuzzy name match)
+        matched = [
+            row for row in rows
+            if drug_norm in re.sub(r"[^a-z0-9]", "", (row.get("drug") or {}).get("name", "").lower())
+            or drug_norm in re.sub(r"[^a-z0-9]", "", (row.get("drug") or {}).get("prefName", "").lower())
+        ]
+
+        results.append({
+            "gene": gene,
+            "ensembl_id": ensembl_id,
+            "drug_matches": matched,
+            "total_known_drugs_for_gene": len(rows),
+            "note": (
+                "Drug found in OpenTargets with mechanism evidence" if matched
+                else "Drug not found in OpenTargets for this gene — no additional evidence"
+            ),
+        })
+
+    return json.dumps(results)
 
 
 @mcp.tool()

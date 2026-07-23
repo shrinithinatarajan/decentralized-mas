@@ -3,6 +3,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 
 from src.protocols.axiom_resolver import AxiomResolver
+from src.schemas.axiom_rules import AXIOM_HIERARCHY, EVIDENCE_TO_AXIOM_TIER
 from src.schemas.evidence_pack import EvidencePack, Verdict
 
 @dataclass
@@ -17,18 +18,88 @@ class ConsensusResult:
     dissenting_agents: list[str]
     resolution_method: str = ""  # "CONSENSUS_R1", "CONSENSUS_R2", "RESOLVER_TIEBREAK"
     trace: list[dict] = field(default_factory=list)
+    r1_agents: list[dict] = field(default_factory=list)  # per-agent R1 snapshot (always populated)
+
+
+# Threshold: if mean peer endorsement falls below this, the agent is eligible to revise its verdict
+_REVISION_ENDORSEMENT_THRESHOLD = 0.35
+# Confidence penalty applied when an agent revises under peer pressure
+_REVISION_CONFIDENCE_PENALTY = 0.70
+
+
+def _compute_peer_majority_verdicts(packs: list[EvidencePack]) -> dict[str, Verdict | None]:
+    """For each agent, return the strict majority verdict of all OTHER decisive agents, or None."""
+    result: dict[str, Verdict | None] = {}
+    for p in packs:
+        others_decisive = [q for q in packs if q.agent_id != p.agent_id and q.verdict != Verdict.UNCERTAIN]
+        if not others_decisive:
+            result[p.agent_id] = None
+            continue
+        counts = Counter(q.verdict for q in others_decisive)
+        majority_verdict, n = counts.most_common(1)[0]
+        result[p.agent_id] = majority_verdict if n > len(others_decisive) / 2 else None
+    return result
+
+
+def _apply_verdict_revision(
+    packs: list[EvidencePack],
+    endorsements: dict[str, float],
+    trace: list[dict],
+    skip_ids: set[str] | None = None,
+) -> list[EvidencePack]:
+    """Revise an agent's verdict when peers collectively reject its reasoning.
+
+    Flip conditions (ALL must hold):
+      1. Agent is decisive (not UNCERTAIN) — abstainers don't flip.
+      2. Mean peer endorsement < threshold — peers found the reasoning unconvincing.
+      3. A strict majority of OTHER decisive agents endorse a different verdict.
+    On flip: verdict adopts peer majority; confidence penalised to signal revised-under-pressure.
+    """
+    n_peers = len(packs) - 1
+    if n_peers <= 0:
+        return packs
+
+    peer_majorities = _compute_peer_majority_verdicts(packs)
+    revised: list[EvidencePack] = []
+    revisions: list[dict] = []
+
+    for p in packs:
+        if skip_ids and p.agent_id in skip_ids:
+            revised.append(p)
+            continue
+        mean_end = endorsements.get(p.agent_id, 0.0) / n_peers
+        peer_maj = peer_majorities.get(p.agent_id)
+        should_flip = (
+            p.verdict != Verdict.UNCERTAIN
+            and mean_end < _REVISION_ENDORSEMENT_THRESHOLD
+            and peer_maj is not None
+            and peer_maj != p.verdict
+        )
+        if should_flip:
+            new_conf = round(p.confidence * _REVISION_CONFIDENCE_PENALTY, 4)
+            revisions.append({
+                "agent": p.agent_id,
+                "from": p.verdict.value,
+                "to": peer_maj.value,  # type: ignore[union-attr]
+                "mean_endorsement": round(mean_end, 3),
+                "confidence_before": p.confidence,
+                "confidence_after": new_conf,
+            })
+            revised.append(p.model_copy(update={"verdict": peer_maj, "confidence": new_conf}))
+        else:
+            revised.append(p)
+
+    if revisions:
+        trace.append({"round": "R2_VERDICT_REVISION", "revisions": revisions})
+
+    return revised
 
 
 def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     """Return the verdict if a strict majority of decisive agents agree, else None.
 
-    Requires at least 2 decisive (non-UNCERTAIN) agents — a single decisive agent
-    always escalates to Round 2 peer critique rather than winning by default.
-
-    T3 self-attestation gate: pathway agent can only be decisive if its self_attestation
-    score >= 3. Replaces the blunt T1+T2 quorum rule with a grounded evidence check.
-
-    T1 veto: if a decisive T1 agent disagrees with the majority, route to resolver.
+    T3 self-attestation gate: pathway agent only decisive if self_attestation score >= 3.
+    T1 veto: if all decisive T1 agents disagree with the majority, route to resolver.
     """
     from src.schemas.evidence_pack import EvidenceTier
     decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
@@ -39,7 +110,8 @@ def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     filtered: list[EvidencePack] = []
     for p in decisive:
         if p.evidence_tier == EvidenceTier.T3_PATHWAY:
-            score = (p.self_attestation or {}).get("score", 0)
+            sa = p.self_attestation or {}
+            score = sa.get("score") or 0  # treat absent/None as 0 → fail gate
             if score < 3:
                 continue
         filtered.append(p)
@@ -84,12 +156,14 @@ class DebateEngine:
         trace: list[dict] = []
 
         # --- Round 1 consensus check ---
+        r1_agents = self._r1_agent_snapshot(packs)
         consensus_verdict = _check_consensus(packs)
         if consensus_verdict is not None:
             result = self._build_result(
                 packs, consensus_verdict, cell_line, drug,
                 rounds_taken=1, forced=False,
                 resolution_method="CONSENSUS_R1", trace=trace,
+                r1_agents=r1_agents,
             )
             if run_logger:
                 run_logger.log_resolution(
@@ -103,20 +177,56 @@ class DebateEngine:
         if run_logger:
             run_logger.log_debate_round(case_id=case_id, round_num=1, note="no_consensus", snapshot=trace[-1])
 
-        # --- Round 2: peer critique (Karpathy council style — verdicts locked, peers scored) ---
+        # --- Round 2: peer critique — only when there is genuine conflict (≥1 SENSITIVE and ≥1 RESISTANT) ---
+        r1_decisive_verdicts = [p.verdict for p in packs if p.verdict != Verdict.UNCERTAIN]
+        has_conflict = Verdict.SENSITIVE in r1_decisive_verdicts and Verdict.RESISTANT in r1_decisive_verdicts
+
         peer_endorsements: dict[str, float] = {}
-        if agents:
+        critique_revised: set[str] = set()
+        if agents and has_conflict:
+            pre_critique_verdicts = {p.agent_id: p.verdict for p in packs}
             critiqued, peer_endorsements = await self._run_critique_round(
                 packs, agents, run_logger=run_logger, case_id=case_id
             )
+            critique_revised = {p.agent_id for p in critiqued if p.verdict != pre_critique_verdicts[p.agent_id]}
             trace.append(self._snapshot(critiqued, round_num=2, note="post_critique"))
             if run_logger:
                 run_logger.log_debate_round(case_id=case_id, round_num=2, note="post_critique", snapshot=trace[-1])
-            packs = critiqued  # updated confidence, peer_scores attached
+            packs = critiqued
+
+        # --- R2 verdict revision: skip agents already revised by critique() to prevent cascade ---
+        if agents and has_conflict and peer_endorsements:
+            packs = _apply_verdict_revision(packs, peer_endorsements, trace, skip_ids=critique_revised)
+            if run_logger:
+                revision_entry = next((e for e in reversed(trace) if e.get("round") == "R2_VERDICT_REVISION"), None)
+                if revision_entry:
+                    run_logger.log_debate_round(case_id=case_id, round_num=3, note="verdict_revision", snapshot=revision_entry)
+
+        # --- Round 2 consensus check (Bug A fix) ---
+        consensus_verdict = _check_consensus(packs)
+        if consensus_verdict is not None:
+            result = self._build_result(
+                packs, consensus_verdict, cell_line, drug,
+                rounds_taken=2, forced=False,
+                resolution_method="CONSENSUS_R2", trace=trace,
+                r1_agents=r1_agents,
+            )
+            if run_logger:
+                run_logger.log_resolution(
+                    case_id=case_id, resolution_method="CONSENSUS_R2",
+                    winning_agent=result.winning_agent,
+                    verdict=result.final_verdict.value, forced=False,
+                )
+            return result
 
         # --- Resolver tiebreak (last resort) ---
         resolution = self._resolver.resolve(packs, peer_endorsements=peer_endorsements)
-        avg_conf = sum(p.confidence for p in resolution.adjusted_packs) / len(resolution.adjusted_packs)
+        # Use only agents agreeing with winner for confidence (Bug D fix)
+        agreeing = [p for p in resolution.adjusted_packs if p.verdict == resolution.verdict]
+        if not agreeing:
+            winning_pack = next((p for p in resolution.adjusted_packs if p.agent_id == resolution.winning_agent), None)
+            agreeing = [winning_pack] if winning_pack else resolution.adjusted_packs
+        avg_conf = sum(p.confidence for p in agreeing) / len(agreeing)
         dissenting = [
             p.agent_id for p in packs
             if p.agent_id != resolution.winning_agent and p.verdict != resolution.verdict
@@ -144,6 +254,7 @@ class DebateEngine:
             dissenting_agents=sorted(dissenting),
             resolution_method="RESOLVER_TIEBREAK",
             trace=trace,
+            r1_agents=r1_agents,
         )
 
     async def _run_critique_round(
@@ -173,7 +284,7 @@ class DebateEngine:
             peers = peer_order[reviewer.agent_id]
             for i, peer_pack in enumerate(peers):
                 label = chr(ord('A') + i)
-                endorsements[peer_pack.agent_id] += reviewer.peer_scores.get(label, 3.0)
+                endorsements[peer_pack.agent_id] += reviewer.peer_scores.get(label, 0.0)  # 0.0 not 3.0: absent reviewer contributes nothing (Bug B/F fix)
 
         return critiqued, endorsements
 
@@ -187,12 +298,16 @@ class DebateEngine:
         forced: bool,
         resolution_method: str,
         trace: list[dict],
+        r1_agents: list[dict] | None = None,
     ) -> ConsensusResult:
         agreeing   = [p for p in packs if p.verdict == verdict]
         dissenting = [p.agent_id for p in packs
                       if p.verdict != verdict and p.verdict != Verdict.UNCERTAIN]
         avg_conf   = sum(p.confidence for p in agreeing) / len(agreeing)
-        winning    = max(agreeing, key=lambda p: p.confidence).agent_id
+        winning    = max(
+            agreeing,
+            key=lambda p: (AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]], p.confidence),
+        ).agent_id  # axiom tier first, confidence as tiebreak (Bug H fix)
         return ConsensusResult(
             final_verdict=verdict,
             final_confidence=avg_conf,
@@ -204,6 +319,7 @@ class DebateEngine:
             dissenting_agents=sorted(dissenting),
             resolution_method=resolution_method,
             trace=trace,
+            r1_agents=r1_agents or [],
         )
 
     @staticmethod
@@ -212,7 +328,30 @@ class DebateEngine:
             "round": round_num,
             "note": note,
             "verdicts": {
-                p.agent_id: {"verdict": p.verdict.value, "confidence": round(p.confidence, 3)}
+                p.agent_id: {
+                    "verdict": p.verdict.value,
+                    "confidence": round(p.confidence, 3),
+                    "evidence_tier": p.evidence_tier.value if p.evidence_tier else None,
+                    "data_status": p.data_status,
+                    "key_findings": [f.model_dump() for f in p.key_findings],
+                    "reasoning": p.reasoning,
+                }
                 for p in packs
             },
         }
+
+    @staticmethod
+    def _r1_agent_snapshot(packs: list[EvidencePack]) -> list[dict]:
+        """Compact per-agent R1 record always stored regardless of resolution path."""
+        return [
+            {
+                "agent_id": p.agent_id,
+                "verdict": p.verdict.value,
+                "confidence": round(p.confidence, 3),
+                "evidence_tier": p.evidence_tier.value if p.evidence_tier else None,
+                "data_status": p.data_status,
+                "key_findings": [f.model_dump() for f in p.key_findings],
+                "reasoning": p.reasoning,
+            }
+            for p in packs
+        ]

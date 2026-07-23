@@ -6,6 +6,7 @@ from src.schemas.axiom_rules import (
     EVIDENCE_TO_AXIOM_TIER,
     T1_OVERRIDE_CONFIDENCE_THRESHOLD,
 )
+from src.schemas.drug_mechanism import is_targeted
 from src.schemas.evidence_pack import EvidencePack
 
 
@@ -38,12 +39,23 @@ class AxiomResolver:
                     # Unanimous lower-tier consensus contradicts weak T1 → use weighted vote
                     use_confidence_weighted = True
 
+        # For non-targeted drugs (cytotoxics, broad epigenetics, metabolic), T1 structural
+        # mutation evidence is not mechanistically relevant. Demote T1 to T3 priority so
+        # T4 IC50 data can win tiebreaks on these drugs.
+        drug = packs[0].drug if packs else ""
+        def _effective_priority(p: EvidencePack) -> int:
+            from src.schemas.evidence_pack import EvidenceTier
+            base = AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]]
+            if not is_targeted(drug) and p.evidence_tier == EvidenceTier.T1_STRUCTURAL:
+                return 1  # demote below T4 (priority 2); IC50 evidence wins on non-targeted drugs
+            return base
+
         if use_confidence_weighted:
-            # Confidence-weighted vote: sum confidence per verdict, pick highest
+            # Confidence-weighted vote: max confidence per verdict, pick highest
             from collections import defaultdict
             scores: dict = defaultdict(float)
             for p in candidates:
-                scores[p.verdict] += p.confidence
+                scores[p.verdict] = max(scores[p.verdict], p.confidence)
             winning_verdict = max(scores, key=lambda v: scores[v])
             winner = max(
                 [p for p in candidates if p.verdict == winning_verdict],
@@ -55,7 +67,7 @@ class AxiomResolver:
                 candidates,
                 key=lambda p: (
                     (peer_endorsements or {}).get(p.agent_id, 0.0),
-                    AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]],
+                    _effective_priority(p),
                     p.confidence,
                 ),
             )

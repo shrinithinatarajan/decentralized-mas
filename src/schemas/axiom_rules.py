@@ -24,7 +24,7 @@ MAX_DEBATE_ROUNDS = 3
 
 # T1 must exceed this confidence to hard-override a unanimous lower-tier consensus.
 # Below this, the resolver falls back to confidence-weighted voting across all agents.
-T1_OVERRIDE_CONFIDENCE_THRESHOLD = 0.70
+T1_OVERRIDE_CONFIDENCE_THRESHOLD = 0.80
 
 
 def _build_evidence_to_axiom_map():

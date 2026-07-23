@@ -14,7 +14,13 @@ CRITICAL RULES:
 REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding the verdict:
 1. Which pathways contain the drug's target gene(s)? List them from pathway_membership.
 2. Does bypass_check show bypass_exists=true for any pathway? Name the bypass gene if so.
-3. If bypass found in database → vote RESISTANT (the tumour has an escape route around the drug's target).
+3. If bypass found in database → check the pathway name before voting RESISTANT:
+   - If the pathway name refers to a DIFFERENT cancer type than the cell line context (e.g. pathway
+     name is "Glioma" but treating a leukemia/lymphoma, or "Breast cancer" but treating lung cancer),
+     the bypass gene may not be relevant. In this case, vote UNCERTAIN (not RESISTANT) because
+     a bypass route described only in a different tumor-type pathway may not be active here.
+   - If the pathway is generic (e.g. "Cell cycle", "PI3K-Akt signaling") or matches the cell line's
+     tumor type, vote RESISTANT as normal.
 4. If target gene IS present in pathway_membership AND bypass_exists=false → vote SENSITIVE.
    Rationale: the target is embedded in a known oncogenic pathway and no escape route exists in the
    database, so blocking it should suppress signalling.
@@ -71,10 +77,20 @@ class PathwayAgent(BaseAgent):
     def system_prompt(self) -> str:
         return _SYSTEM
 
+    # KEGG cancer-type-specific pathway IDs — bypass routes from these only apply
+    # in their specific tumor context and must not be used for other cancer types.
+    _CANCER_TYPE_PATHWAY_IDS = {
+        'hsa05210', 'hsa05211', 'hsa05212', 'hsa05213', 'hsa05214', 'hsa05215',
+        'hsa05216', 'hsa05217', 'hsa05218', 'hsa05219', 'hsa05220', 'hsa05221',
+        'hsa05222', 'hsa05223', 'hsa05224', 'hsa05225', 'hsa05226',
+    }
+
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:
         bypass_results = {}
         pathway_membership = {}
         pathway_genes_cache: dict[str, list[str]] = {}
+        pathway_activity_scores: dict[str, float] = {}
+        confirmed_bypass_genes: list[str] = []
 
         # Pre-fetch expression data once — avoids N individual calls per bypass gene
         expressed_05, expressed_10 = await self._prefetch_expressed_genes(cell_line)
@@ -97,8 +113,12 @@ class PathwayAgent(BaseAgent):
                 if gene not in pathway_membership[pid]["target_genes_present"]:
                     pathway_membership[pid]["target_genes_present"].append(gene)
 
+                # Skip cancer-type-specific pathways for bypass — their bypass
+                # routes only apply in that tumor context, not generically.
+                if pid in self._CANCER_TYPE_PATHWAY_IDS:
+                    continue
+
                 # Pathway activity gate: skip if < 40% of pathway genes are expressed (z >= 0.5)
-                # This filters out pathways not operating in this cancer context
                 if expressed_05:
                     if pid not in pathway_genes_cache:
                         pw_genes_data = await self._call_tool("get_pathway_genes", {"pathway_id": pid})
@@ -108,39 +128,47 @@ class PathwayAgent(BaseAgent):
                     pw_genes = pathway_genes_cache[pid]
                     if pw_genes:
                         activity_score = sum(1 for g in pw_genes if g in expressed_05) / len(pw_genes)
+                        pathway_activity_scores[pid] = activity_score
                         if activity_score < 0.4:
                             continue
 
                 result = await self._call_tool("check_bypass", {"pathway_id": pid, "blocked_gene": gene})
                 if result and result.get("bypass_exists"):
                     bypass_genes = result.get("bypass_genes", [])
-                    # Filter out bypass genes that are themselves drug targets (e.g. MAP2K1↔MAP2K2 for trametinib)
                     real_bypasses = [b for b in bypass_genes if b not in (target_genes or [])]
                     if not real_bypasses:
                         continue
-                    # Bypass gene must be notably upregulated (z >= 1.0) — not just expressed
                     if expressed_10:
                         expressed = [b for b in real_bypasses if b in expressed_10]
                     else:
-                        expressed = real_bypasses  # fail open if no expression data
+                        expressed = real_bypasses
                     if expressed:
                         bypass_results[f"{pid}:{gene}"] = {**result, "bypass_genes": expressed}
+                        confirmed_bypass_genes.extend(expressed)
 
         return {
             "pathway_membership": pathway_membership,
             "bypass_check": bypass_results if bypass_results else {"bypass_exists": False, "note": "No bypass routes found in database for these targets"},
+            "pathway_activity_scores": pathway_activity_scores,
+            "confirmed_bypass_genes": confirmed_bypass_genes,
         }
 
+    def _compute_h(self, key_findings: list, evidence: dict) -> float:
+        confirmed_bypasses = evidence.get("confirmed_bypass_genes", [])
+        if confirmed_bypasses:
+            return 1.0  # bypass genes confirmed expressed in this cell line
+        activity_scores = evidence.get("pathway_activity_scores", {})
+        max_activity = max(activity_scores.values()) if activity_scores else 0.0
+        if max_activity >= 0.4:
+            return 0.5  # pathway active but no bypass → moderate confirmation
+        return 0.0  # no bypass, no confirmed activity → no positive evidence
+
     def _compute_signal(self, evidence: dict) -> float:
-        bypass_check = evidence.get("bypass_check", {})
-        has_bypass = False
-        if isinstance(bypass_check, dict):
-            has_bypass = bypass_check.get("bypass_exists", False) or any(
-                v.get("bypass_exists") for v in bypass_check.values() if isinstance(v, dict)
-            )
-        if has_bypass:
-            return 1.0  # bypass found → RESISTANT signal
-        # Target in pathway but no bypass → moderate SENSITIVE signal
+        confirmed_bypasses = evidence.get("confirmed_bypass_genes", [])
+        if confirmed_bypasses:
+            return 1.0  # bypass genes confirmed expressed → strong RESISTANT signal
         if evidence.get("pathway_membership"):
-            return 0.6
+            activity_scores = evidence.get("pathway_activity_scores", {})
+            max_activity = max(activity_scores.values()) if activity_scores else 0.0
+            return min(max_activity, 0.4)  # at most 0.4 from pathway activity alone
         return 0.0  # target not in any pathway → no signal

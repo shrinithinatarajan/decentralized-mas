@@ -113,5 +113,6 @@ def _result_to_dict(r: ConsensusResult) -> dict:
         "forced": r.forced,
         "resolution_method": r.resolution_method,
         "dissenting_agents": r.dissenting_agents,
+        "r1_agents": r.r1_agents,
         "trace": r.trace,
     }
