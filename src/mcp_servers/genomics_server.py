@@ -91,8 +91,9 @@ def get_mutations(cell_line: str, gene: str | None = None, drug: str | None = No
     # Enrich with live CIViC lookup if drug is provided
     if drug:
         for mut in mutations:
-            protein_change = mut.get("protein_change") or mut.get("mutation", "")
-            civic_hits = _lookup_civic(mut.get("gene", ""), protein_change, drug)
+            # `mutation` is the only variant column production genomics.db has;
+            # there is no separate `protein_change` column.
+            civic_hits = _lookup_civic(mut.get("gene", ""), mut.get("mutation", ""), drug)
             if civic_hits:
                 # Prefer drug-matched CIViC over static column
                 mut["civic_description"] = " | ".join(h["description"] for h in civic_hits)

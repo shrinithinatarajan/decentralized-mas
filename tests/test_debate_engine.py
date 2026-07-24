@@ -31,6 +31,21 @@ def _pack(
     )
 
 
+def test_r1_agents_snapshot_includes_self_attestation():
+    """r1_agents must carry self_attestation so downstream trials can log it —
+    reasoning/data_status were already captured, self_attestation was silently dropped."""
+    packs = [
+        _pack("genomics_agent",        "SENSITIVE", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "SENSITIVE", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent",    "SENSITIVE", "T4_PHARMACOLOGICAL"),
+    ]
+    packs[0].self_attestation = {"score": 4, "checklist": {"a": True}}
+    engine = DebateEngine()
+    result = _run(engine.run(packs))
+    genomics_entry = next(a for a in result.r1_agents if a["agent_id"] == "genomics_agent")
+    assert genomics_entry["self_attestation"] == {"score": 4, "checklist": {"a": True}}
+
+
 def test_three_of_four_agree_gives_consensus_r1():
     """>=3 agents agreeing in round 1 -> CONSENSUS_R1, resolver never fires."""
     packs = [

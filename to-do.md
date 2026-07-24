@@ -9,27 +9,47 @@ sequencing — see rationale in each phase.
 
 ## Phase 0 — zero-dependency, do immediately (hygiene + cheap bug fixes)
 
-- [ ] **Fix `EvaluationMetrics` / test drift.** Dataclass now has
+- [x] **Fix `EvaluationMetrics` / test drift.** Dataclass now has
   `n_total`/`n_decisive`/`coverage`; tests still pass `n_evaluated`. 23/174
   tests currently fail. Blocks trustworthy CI signal for every other fix
   below — do this first so regressions from later fixes are detectable.
-- [ ] **Fix `NoDebateEngine.run()` UNCERTAIN-as-vote bug**
+  Done: updated `tests/test_metrics.py` and `tests/test_visualize.py` to the
+  current field names/plot shape (production code was already correct — this
+  was pure test-side drift). Also fixed two more masked `test_visualize.py`
+  assertions (bar count, ylabel) that a `TypeError` had been hiding.
+- [x] **Fix `NoDebateEngine.run()` UNCERTAIN-as-vote bug**
   (`src/evaluation/ablation_runner.py:20-27`). `Counter(p.verdict for p in
   packs)` counts UNCERTAIN as a votable verdict. Reuse `_check_consensus`'s
   decisive-only filter. Confirmed this session: suppressed 4 previously-correct
   pharmacology verdicts (cases a6, a9, a10, b1) by letting 2 abstentions
   outvote 1 correct decisive answer. Every exp2-style ablation number
   generated before this fix is invalid.
-- [ ] **Fix `mutation`/`protein_change` silent fallback**
+  Done: `NoDebateEngine.run()` now filters to decisive packs before voting;
+  falls back to UNCERTAIN only when zero agents are decisive. Verified with
+  RED tests reproducing the exact 2-abstain/1-decisive scenario.
+- [x] **Fix `mutation`/`protein_change` silent fallback**
   (`genomics_server.py::get_mutations`) — `mut.get("protein_change") or
   mut.get("mutation", "")` silently masks a schema mismatch (no such column).
   Timeboxed audit: grep all MCP servers for the same `.get(x) or .get(y)`
   pattern; fix what's found, don't open-end this into a full rewrite.
-- [ ] **Log `reasoning`, `self_attestation`, `data_status` in
+  Done: audit found only this one instance across all MCP servers. Confirmed
+  via `PRAGMA table_info(mutations)` that production `genomics.db` has no
+  `protein_change` column at all — the fallback was silently always firing.
+  Removed the dead fallback; also fixed `tests/conftest.py`'s `genomics_db`
+  fixture, which had fabricated a `protein_change` column that doesn't exist
+  in production (that drift is exactly why this bug went undetected).
+- [x] **Log `reasoning`, `self_attestation`, `data_status` in
   `trials/*.jsonl` outputs**, not just verdict/confidence/tier. Needed to
   debug non-determinism (case a8 flipped outcome between exp1 isolated run
   and exp3 debate run with no way to tell why) and is a hard dependency for
   the reasoning-scorer work in Phase 4.
+  Done: `debate_engine.py`'s snapshot helpers (`_snapshot`, and the extracted
+  module-level `agent_snapshot()`) now include `self_attestation` alongside
+  the already-present `reasoning`/`data_status`. `NoDebateEngine` was
+  silently dropping `r1_agents` entirely (defaulted to `[]`) — now populates
+  it via the same shared `agent_snapshot()` helper. `exp1/exp2/exp3` scripts
+  updated to write these fields (exp1: per-agent pack fields directly; exp2/
+  exp3: `result.r1_agents` and, for exp3, `result.trace`).
 
 ## Phase 1 — must land before any large re-run (invalidates current results)
 

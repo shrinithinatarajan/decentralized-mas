@@ -335,6 +335,7 @@ class DebateEngine:
                     "data_status": p.data_status,
                     "key_findings": [f.model_dump() for f in p.key_findings],
                     "reasoning": p.reasoning,
+                    "self_attestation": p.self_attestation,
                 }
                 for p in packs
             },
@@ -343,15 +344,25 @@ class DebateEngine:
     @staticmethod
     def _r1_agent_snapshot(packs: list[EvidencePack]) -> list[dict]:
         """Compact per-agent R1 record always stored regardless of resolution path."""
-        return [
-            {
-                "agent_id": p.agent_id,
-                "verdict": p.verdict.value,
-                "confidence": round(p.confidence, 3),
-                "evidence_tier": p.evidence_tier.value if p.evidence_tier else None,
-                "data_status": p.data_status,
-                "key_findings": [f.model_dump() for f in p.key_findings],
-                "reasoning": p.reasoning,
-            }
-            for p in packs
-        ]
+        return agent_snapshot(packs)
+
+
+def agent_snapshot(packs: list[EvidencePack]) -> list[dict]:
+    """Compact per-agent record (verdict/confidence/reasoning/data_status/self_attestation).
+
+    Shared by DebateEngine's r1_agents and NoDebateEngine so every engine variant
+    logs the same per-agent trace fields regardless of aggregation method.
+    """
+    return [
+        {
+            "agent_id": p.agent_id,
+            "verdict": p.verdict.value,
+            "confidence": round(p.confidence, 3),
+            "evidence_tier": p.evidence_tier.value if p.evidence_tier else None,
+            "data_status": p.data_status,
+            "key_findings": [f.model_dump() for f in p.key_findings],
+            "reasoning": p.reasoning,
+            "self_attestation": p.self_attestation,
+        }
+        for p in packs
+    ]

@@ -94,7 +94,7 @@ def test_evaluate_n_evaluated_counts_matched_cases():
         _case("C", "D3", "SENSITIVE"),
     ]
     metrics = evaluate(results, cases)
-    assert metrics.n_evaluated == 3
+    assert metrics.n_total == 3
 
 
 def test_evaluate_spearman_rho_monotone_near_1():
@@ -128,8 +128,9 @@ def test_evaluate_uncertain_excluded_from_binary_metrics():
         _case("C", "D3", "SENSITIVE"),
     ]
     metrics = evaluate(results, cases)
-    # UNCERTAIN result excluded from binary metrics — n_evaluated still counts all matched
-    assert metrics.n_evaluated == 3
+    # UNCERTAIN result excluded from binary metrics — n_total still counts all matched
+    assert metrics.n_total == 3
+    assert metrics.n_decisive == 2
     assert metrics.auroc == pytest.approx(1.0)  # only 2 non-uncertain used
 
 
@@ -141,4 +142,4 @@ def test_evaluate_unmatched_results_ignored():
     ]
     cases = [_case("A", "D1", "SENSITIVE")]
     metrics = evaluate(results, cases)
-    assert metrics.n_evaluated == 1
+    assert metrics.n_total == 1

@@ -46,6 +46,7 @@ async def main():
             "confidence": result.final_confidence,
             "winning_agent": result.winning_agent,
             "resolution_method": result.resolution_method,
+            "r1_agents": result.r1_agents,
         }
         records.append(record)
         with out_path.open("a") as f:

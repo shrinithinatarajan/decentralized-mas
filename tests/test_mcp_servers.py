@@ -35,6 +35,32 @@ async def test_genomics_get_mutations_filtered_by_gene(genomics_db, monkeypatch)
 
 
 @pytest.mark.asyncio
+async def test_genomics_get_mutations_drug_lookup_uses_mutation_column(genomics_db, monkeypatch):
+    # Production genomics.db has no `protein_change` column — the mutations table
+    # only has `mutation`. get_mutations must derive the CIViC lookup variant from
+    # `mutation`, not from a `protein_change` key that doesn't exist in real data
+    # (the test fixture's `protein_change='p.V600E'` is a stale artifact of a
+    # schema that was never actually shipped — real cell lines only have
+    # `mutation='V600E'`).
+    monkeypatch.setenv("GENOMICS_DB", str(genomics_db))
+    from src.mcp_servers import genomics_server
+    importlib.reload(genomics_server)
+
+    captured = {}
+
+    def fake_lookup_civic(gene, protein_change, drug):
+        captured["protein_change"] = protein_change
+        return []
+
+    monkeypatch.setattr(genomics_server, "_lookup_civic", fake_lookup_civic)
+
+    async with Client(genomics_server.mcp) as client:
+        await client.call_tool("get_mutations", {"cell_line": "A375", "drug": "Vemurafenib"})
+
+    assert captured["protein_change"] == "V600E"
+
+
+@pytest.mark.asyncio
 async def test_genomics_get_mutations_unknown_cell_line_returns_empty(genomics_db, monkeypatch):
     monkeypatch.setenv("GENOMICS_DB", str(genomics_db))
     from src.mcp_servers import genomics_server

@@ -3,9 +3,9 @@ from collections import Counter
 from enum import Enum
 
 from src.protocols.axiom_resolver import ResolutionResult
-from src.protocols.debate_engine import ConsensusResult, DebateEngine
+from src.protocols.debate_engine import ConsensusResult, DebateEngine, agent_snapshot
 from src.schemas.axiom_rules import AXIOM_HIERARCHY, CONFIDENCE_DECAY_PER_FLIP, EVIDENCE_TO_AXIOM_TIER
-from src.schemas.evidence_pack import EvidencePack
+from src.schemas.evidence_pack import EvidencePack, Verdict
 
 
 class AblationVariant(str, Enum):
@@ -18,14 +18,29 @@ class NoDebateEngine:
     """Majority-vote aggregator — no debate rounds."""
 
     async def run(self, packs: list[EvidencePack], agents=None, **kwargs) -> ConsensusResult:
-        counts: Counter = Counter(p.verdict for p in packs)
+        decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
+        if not decisive:
+            return ConsensusResult(
+                final_verdict=Verdict.UNCERTAIN,
+                final_confidence=sum(p.confidence for p in packs) / len(packs),
+                cell_line=packs[0].cell_line,
+                drug=packs[0].drug,
+                winning_agent=max(packs, key=lambda p: p.confidence).agent_id,
+                rounds_taken=0,
+                forced=False,
+                dissenting_agents=[],
+                resolution_method="MAJORITY_VOTE",
+                r1_agents=agent_snapshot(packs),
+            )
+
+        counts: Counter = Counter(p.verdict for p in decisive)
         # group confidence totals per verdict for tie-breaking
         conf_sum: dict = {}
-        for p in packs:
+        for p in decisive:
             conf_sum[p.verdict] = conf_sum.get(p.verdict, 0.0) + p.confidence
 
         majority = max(counts, key=lambda v: (counts[v], conf_sum[v]))
-        winners = [p for p in packs if p.verdict == majority]
+        winners = [p for p in decisive if p.verdict == majority]
         best = max(winners, key=lambda p: p.confidence)
         avg_conf = sum(p.confidence for p in winners) / len(winners)
 
@@ -39,6 +54,7 @@ class NoDebateEngine:
             forced=False,
             dissenting_agents=[],
             resolution_method="MAJORITY_VOTE",
+            r1_agents=agent_snapshot(packs),
         )
 
 

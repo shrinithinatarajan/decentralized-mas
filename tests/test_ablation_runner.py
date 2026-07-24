@@ -94,6 +94,58 @@ def test_no_debate_engine_takes_zero_rounds():
     assert result.forced is False
 
 
+def test_no_debate_engine_populates_r1_agents_with_reasoning_and_attestation():
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
+    ]
+    packs[0].reasoning = "BRAF V600E driver mutation present"
+    packs[0].data_status = "data_found"
+    packs[0].self_attestation = {"score": 4}
+    result = asyncio.run(engine.run(packs))
+    genomics_entry = next(a for a in result.r1_agents if a["agent_id"] == "genomics_agent")
+    assert genomics_entry["reasoning"] == "BRAF V600E driver mutation present"
+    assert genomics_entry["data_status"] == "data_found"
+    assert genomics_entry["self_attestation"] == {"score": 4}
+
+
+def test_no_debate_engine_ignores_uncertain_votes():
+    # 2 UNCERTAIN abstentions must not outvote the single decisive verdict
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent", "SENSITIVE", "T4_PHARMACOLOGICAL"),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.final_verdict == Verdict.SENSITIVE
+    assert result.winning_agent == "pharmacology_agent"
+
+
+def test_no_debate_engine_majority_among_decisive_only():
+    # 1 UNCERTAIN + 2 decisive RESISTANT: majority must be computed over the
+    # 2 decisive votes, not diluted by the abstention
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent", "RESISTANT", "T4_PHARMACOLOGICAL"),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.final_verdict == Verdict.RESISTANT
+
+
+def test_no_debate_engine_all_uncertain_returns_uncertain():
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.final_verdict == Verdict.UNCERTAIN
+
+
 def test_no_debate_engine_tie_broken_by_confidence():
     engine = NoDebateEngine()
     packs = [

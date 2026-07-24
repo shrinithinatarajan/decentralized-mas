@@ -43,6 +43,9 @@ async def main():
                 "verdict": pack.verdict.value,
                 "confidence": pack.confidence,
                 "evidence_tier": pack.evidence_tier.value if pack.evidence_tier else None,
+                "reasoning": pack.reasoning,
+                "data_status": pack.data_status,
+                "self_attestation": pack.self_attestation,
             }
             per_agent_records[agent.agent_id].append(record)
             with out_path.open("a") as f:

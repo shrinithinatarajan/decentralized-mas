@@ -51,6 +51,8 @@ async def main():
             "rounds_taken": result.rounds_taken,
             "forced": result.forced,
             "dissenting_agents": result.dissenting_agents,
+            "r1_agents": result.r1_agents,
+            "trace": result.trace,
         }
         records.append(record)
         with out_path.open("a") as f:
