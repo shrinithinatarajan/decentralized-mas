@@ -66,8 +66,8 @@ class AxiomResolver:
             winner = max(
                 candidates,
                 key=lambda p: (
-                    (peer_endorsements or {}).get(p.agent_id, 0.0),
                     _effective_priority(p),
+                    (peer_endorsements or {}).get(p.agent_id, 0.0),
                     p.confidence,
                 ),
             )

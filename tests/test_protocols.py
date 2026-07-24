@@ -14,7 +14,11 @@ def _pack(
     return EvidencePack(
         agent_id=agent_id,
         cell_line="A375",
-        drug="Vemurafenib",
+        # Dabrafenib is in is_targeted()'s allowlist (unlike Vemurafenib — a
+        # separate, tracked bug, see Phase 4 in to-do.md) so these tests
+        # exercise axiom-tier priority cleanly, without T1 being incorrectly
+        # demoted by the drug-targeting check.
+        drug="Dabrafenib",
         verdict=Verdict(verdict),
         confidence=confidence,
         evidence_tier=EvidenceTier(tier),
@@ -150,6 +154,19 @@ def test_resolver_tie_broken_by_higher_confidence():
     result = resolver.resolve(packs)
     assert result.verdict == Verdict.RESISTANT
     assert result.winning_agent == "other_agent"
+
+
+def test_resolver_axiom_tier_outranks_peer_endorsement():
+    # T4 has a much higher peer endorsement than T1, but axiom tier must still
+    # decide the winner — peer consensus cannot outrank the hierarchy of truth.
+    packs = [
+        _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL", confidence=0.9),
+        _pack("pharmacology_agent", "RESISTANT", "T4_PHARMACOLOGICAL", confidence=0.85),
+    ]
+    resolver = AxiomResolver()
+    result = resolver.resolve(packs, peer_endorsements={"genomics_agent": 0.1, "pharmacology_agent": 0.9})
+    assert result.verdict == Verdict.SENSITIVE
+    assert result.winning_agent == "genomics_agent"
 
 
 def test_resolver_result_includes_axiom_used():

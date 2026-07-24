@@ -73,7 +73,7 @@ sequencing — see rationale in each phase.
 
 ## Phase 2 — resolver correctness (blocks Phase 3)
 
-- [ ] **Fix `AxiomResolver.resolve()`'s sort key**
+- [x] **Fix `AxiomResolver.resolve()`'s sort key**
   (`axiom_resolver.py`). Currently:
   `winner = max(candidates, key=lambda p: (peer_endorsements.get(p.agent_id,
   0.0), _effective_priority(p), p.confidence))` — peer endorsement is the
@@ -84,6 +84,29 @@ sequencing — see rationale in each phase.
   this resolver — applying the quorum floor first makes results worse, not
   better, by increasing exposure to a resolver that still inverts the
   hierarchy.
+  Done: swapped the key to `(_effective_priority(p), peer_endorsements.get(...),
+  p.confidence)` — axiom tier now primary, peer endorsement only breaks ties
+  within the same tier. New test `test_resolver_axiom_tier_outranks_peer_endorsement`
+  reproduces the exact documented failure mode (T4 with high peer endorsement vs
+  T1 with low) and only passes after the reorder.
+  **Important correction to the original diagnosis**: the 9 tests that were
+  failing at the start of this work (`test_protocols.py` x5,
+  `test_debate_engine.py` x4) were NOT actually failing because of this
+  sort-key bug — `peer_endorsements` is `None`/empty in all of them, so the
+  old primary key tied at 0.0 for every agent and fell through to tier
+  priority anyway. Root causes were two unrelated, pre-existing test/fixture
+  bugs: (1) the shared test fixtures hardcoded `drug="Vemurafenib"`, and
+  `is_targeted("Vemurafenib")` returns `False` — Vemurafenib is missing from
+  the Phase 4 allowlist — which silently demoted T1's effective priority
+  below T4; (2) three `test_debate_engine.py` cases didn't set
+  `self_attestation` on their `pathway_agent` packs, so the (unrelated) T3
+  self-attestation gate in `_check_consensus` silently dropped pathway from
+  the decisive set, turning an intended 2-2 split into a 2-1 majority that
+  resolved before the resolver ever ran. Fixed by swapping the fixtures'
+  drug to `Dabrafenib` (already allow-listed) and adding
+  `self_attestation={"score": 4}` to the affected packs — this keeps
+  `is_targeted()`'s allowlist untouched (still Phase 4 scope) while letting
+  these tests actually exercise what they claim to test.
 
 ## Phase 3 — consensus mechanics (depends on Phase 2)
 

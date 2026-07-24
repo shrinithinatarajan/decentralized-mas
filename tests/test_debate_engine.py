@@ -16,7 +16,11 @@ def _pack(
     return EvidencePack(
         agent_id=agent_id,
         cell_line="A375",
-        drug="Vemurafenib",
+        # Dabrafenib is in is_targeted()'s allowlist (unlike Vemurafenib — a
+        # separate, tracked bug, see Phase 4 in to-do.md) so these tests
+        # exercise axiom-tier priority cleanly, without T1 being incorrectly
+        # demoted by the drug-targeting check.
+        drug="Dabrafenib",
         verdict=Verdict(verdict),
         confidence=confidence,
         evidence_tier=EvidenceTier(tier),
@@ -86,6 +90,9 @@ def test_two_two_split_falls_to_resolver_without_agents():
         _pack("pharmacology_agent",    "RESISTANT", "T4_PHARMACOLOGICAL", confidence=0.8),
         _pack("pathway_agent",         "RESISTANT", "T3_PATHWAY",         confidence=0.6),
     ]
+    # T3 self-attestation gate treats a missing score as 0 (fails the >=3 gate) —
+    # set it so pathway_agent counts as decisive and this is a genuine 2-2 split.
+    packs[3].self_attestation = {"score": 4}
     engine = DebateEngine()
     result = _run(engine.run(packs))  # no agents passed -> round 2 skipped
     assert result.resolution_method == "RESOLVER_TIEBREAK"
@@ -100,6 +107,7 @@ def test_t1_high_confidence_wins_tiebreak():
         _pack("pharmacology_agent",    "RESISTANT", "T4_PHARMACOLOGICAL", confidence=0.8),
         _pack("pathway_agent",         "RESISTANT", "T3_PATHWAY",         confidence=0.75),
     ]
+    packs[3].self_attestation = {"score": 4}
     engine = DebateEngine()
     result = _run(engine.run(packs))
     assert result.resolution_method == "RESOLVER_TIEBREAK"
@@ -127,6 +135,7 @@ def test_trace_populated_for_contested_case():
         _pack("pharmacology_agent",    "RESISTANT", "T4_PHARMACOLOGICAL", confidence=0.8),
         _pack("pathway_agent",         "RESISTANT", "T3_PATHWAY",         confidence=0.6),
     ]
+    packs[3].self_attestation = {"score": 4}
     engine = DebateEngine()
     result = _run(engine.run(packs))
     assert len(result.trace) >= 1
@@ -186,4 +195,4 @@ def test_result_records_cell_line_and_drug():
     engine = DebateEngine()
     result = _run(engine.run(packs))
     assert result.cell_line == "A375"
-    assert result.drug == "Vemurafenib"
+    assert result.drug == "Dabrafenib"
