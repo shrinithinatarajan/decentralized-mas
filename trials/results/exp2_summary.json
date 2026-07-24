@@ -1,0 +1,18 @@
+{
+  "summary": {
+    "n": 20,
+    "correct": 10,
+    "wrong": 2,
+    "uncertain": 8,
+    "accuracy_all": 0.5,
+    "accuracy_definitive": 0.8333333333333334,
+    "uncertain_rate": 0.4,
+    "auroc": 0.8571428571428571,
+    "spearman_rho": 0.612066478926411
+  },
+  "winning_agents": {
+    "genomics_agent": 8,
+    "transcriptomics_agent": 8,
+    "pathway_agent": 4
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "summary": {
+    "n": 20,
+    "correct": 15,
+    "wrong": 5,
+    "uncertain": 0,
+    "accuracy_all": 0.75,
+    "accuracy_definitive": 0.75,
+    "uncertain_rate": 0.0,
+    "auroc": 0.77,
+    "spearman_rho": 0.46841551271364834
+  },
+  "resolution_methods": {
+    "CONSENSUS_R1": 18,
+    "CONSENSUS_R2": 2
+  },
+  "winning_agents": {
+    "genomics_agent": 5,
+    "transcriptomics_agent": 6,
+    "pharmacology_agent": 7,
+    "pathway_agent": 2
+  }
+}

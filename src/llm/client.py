@@ -225,11 +225,11 @@ class LLMClient:
         project = os.getenv("VERTEX_PROJECT")
         model_id = self.model.split(":", 1)[1]  # strip "vertex:" prefix
 
-        # Get bearer token via gcloud
+        # Get bearer token via gcloud (shell=True needed on Windows: gcloud is a .cmd, not a PE binary)
         token = await asyncio.to_thread(
             lambda: subprocess.check_output(
-                ["gcloud", "auth", "application-default", "print-access-token"],
-                text=True
+                "gcloud auth application-default print-access-token",
+                text=True, shell=True,
             ).strip()
         )
 
