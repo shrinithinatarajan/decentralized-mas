@@ -1,6 +1,6 @@
 import asyncio
 from src.schemas.evidence_pack import EvidencePack, Verdict, EvidenceTier, Finding
-from src.protocols.debate_engine import DebateEngine, ConsensusResult
+from src.protocols.debate_engine import DebateEngine, ConsensusResult, _check_consensus
 
 
 def _run(coro):
@@ -33,6 +33,60 @@ def _pack(
             )
         ],
     )
+
+
+def test_quorum_floor_blocks_single_decisive_agent_auto_win():
+    """Bug C: 1 decisive agent among 4 must not trivially 'win' consensus —
+    decisive count must exceed half of ALL agents, not just half of the
+    decisive subset (which is 0.5 when there's only one decisive agent)."""
+    packs = [
+        _pack("genomics_agent",        "SENSITIVE", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent",    "UNCERTAIN", "T4_PHARMACOLOGICAL"),
+        _pack("pathway_agent",         "UNCERTAIN", "T3_PATHWAY"),
+    ]
+    assert _check_consensus(packs) is None
+
+
+def test_quorum_floor_blocks_correlated_two_of_four_agreement():
+    """Case a7: 2 decisive agents unanimous, 2 silently abstained. 2 is not
+    a majority of 4 agents — this must route to the resolver, not resolve
+    as if unanimous agreement among a shrunken decisive set were consensus."""
+    packs = [
+        _pack("genomics_agent",        "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent",    "RESISTANT", "T4_PHARMACOLOGICAL"),
+        _pack("pathway_agent",         "RESISTANT", "T3_PATHWAY"),
+    ]
+    packs[3].self_attestation = {"score": 4}
+    assert _check_consensus(packs) is None
+
+
+def test_quorum_floor_allows_three_of_four_majority():
+    """3 of 4 decisive and agreeing still clears the relative floor (3 > 2)."""
+    packs = [
+        _pack("genomics_agent",        "SENSITIVE", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "SENSITIVE", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent",    "SENSITIVE", "T4_PHARMACOLOGICAL"),
+        _pack("pathway_agent",         "UNCERTAIN", "T3_PATHWAY"),
+    ]
+    assert _check_consensus(packs) == Verdict.SENSITIVE
+
+
+def test_quorum_floor_forces_resolver_end_to_end():
+    """Integration: a7-shaped case must resolve via RESOLVER_TIEBREAK, not
+    CONSENSUS_R1, once the quorum floor is enforced."""
+    packs = [
+        _pack("genomics_agent",        "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent",    "RESISTANT", "T4_PHARMACOLOGICAL"),
+        _pack("pathway_agent",         "RESISTANT", "T3_PATHWAY"),
+    ]
+    packs[3].self_attestation = {"score": 4}
+    engine = DebateEngine()
+    result = _run(engine.run(packs))
+    assert result.resolution_method == "RESOLVER_TIEBREAK"
+    assert result.forced is True
 
 
 def test_contributing_agents_ranked_by_confidence_not_tier():

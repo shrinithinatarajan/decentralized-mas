@@ -124,7 +124,7 @@ sequencing — see rationale in each phase.
 
 ## Phase 3 — consensus mechanics (depends on Phase 2)
 
-- [ ] **Add a decisive-quorum floor to `_check_consensus`**
+- [x] **Add a decisive-quorum floor to `_check_consensus`**
   (`debate_engine.py:98-130`). Require ≥2 decisive agents before R1/R2 can
   resolve by majority; below that, always route to the resolver with an
   explicit low-confidence flag. Fixes Bug C (single decisive agent
@@ -133,6 +133,23 @@ sequencing — see rationale in each phase.
   unanimous among just the two decisive agents, genomics/transcriptomics
   silently abstained, no mechanism caught the correlated error).
   **Do not apply before Phase 2 is complete.**
+  **Design correction before implementing**: a literal fixed floor of
+  "≥2 decisive agents" only fixes Bug C — it does not block case a7, since
+  a7 already has exactly 2 decisive agents. Implemented instead as a
+  *relative* floor: `len(decisive) > len(all_packs) / 2` (decisive agents
+  must be a strict majority of the full 4-agent panel, not just of the
+  decisive subset). This is what the to-do's own two examples actually
+  require, and it's now safe post-Phase-2 — the resolver correctly applies
+  the axiom hierarchy instead of a raw majority vote, so routing more
+  low-quorum cases to it is a feature, not a risk.
+  Done: added the relative-floor check in `_check_consensus` right after
+  the T3 self-attestation gate (so gated-out pathway packs correctly count
+  against quorum too). 4 new tests: direct unit tests on `_check_consensus`
+  for the single-decisive-agent case (Bug C) and the 2-of-4 correlated-
+  agreement case (case a7), a control test confirming 3-of-4 still resolves
+  normally, and an end-to-end `DebateEngine.run()` test confirming the a7
+  shape now returns `RESOLVER_TIEBREAK`/`forced=True` instead of
+  `CONSENSUS_R1`.
 
 ## Phase 4 — evidence layer (T1), do the cheap pilot before the full rebuild
 

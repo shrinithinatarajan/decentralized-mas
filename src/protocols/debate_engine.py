@@ -102,9 +102,15 @@ def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     """Return the verdict if a strict majority of decisive agents agree, else None.
 
     T3 self-attestation gate: pathway agent only decisive if self_attestation score >= 3.
+    Quorum floor: decisive agents must be a strict majority of ALL agents (not just of
+    the decisive subset) — otherwise a single decisive agent trivially "wins" (Bug C),
+    or two agents agreeing while the rest silently abstain reads as consensus when it's
+    really an unchecked correlated error (case a7). Below the floor, always route to
+    the resolver instead.
     T1 veto: if all decisive T1 agents disagree with the majority, route to resolver.
     """
     from src.schemas.evidence_pack import EvidenceTier
+    total = len(packs)
     decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
     if not decisive:
         return None
@@ -121,6 +127,9 @@ def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     decisive = filtered
 
     if not decisive:
+        return None
+
+    if len(decisive) <= total / 2:
         return None
 
     counts = Counter(p.verdict for p in decisive)
