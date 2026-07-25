@@ -146,6 +146,17 @@ def test_no_debate_engine_all_uncertain_returns_uncertain():
     assert result.final_verdict == Verdict.UNCERTAIN
 
 
+def test_no_debate_engine_populates_contributing_agents():
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL", confidence=0.55),
+        _pack("pharmacology_agent", "SENSITIVE", "T4_PHARMACOLOGICAL", confidence=0.92),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.contributing_agents[0] == "pharmacology_agent"
+    assert result.contributing_agents[1] == "genomics_agent"
+
+
 def test_no_debate_engine_tie_broken_by_confidence():
     engine = NoDebateEngine()
     packs = [

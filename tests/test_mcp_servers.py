@@ -168,7 +168,9 @@ async def test_pharmacology_get_ic50_returns_response(pharmacology_db, monkeypat
         data = json.loads(result.data)
     assert data["ln_ic50"] == pytest.approx(-1.2)
     assert data["z_score"] == pytest.approx(-1.5)
-    assert data["label"] == "SENSITIVE"
+    # `label` is derived by the same z<-0.5/z>0.5 rule as ground truth — leaking
+    # it to the pharmacology agent lets it "predict" by reading the answer.
+    assert "label" not in data
 
 
 @pytest.mark.asyncio

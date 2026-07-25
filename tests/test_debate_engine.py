@@ -35,6 +35,23 @@ def _pack(
     )
 
 
+def test_contributing_agents_ranked_by_confidence_not_tier():
+    """winning_agent stays tier-first (axiom hierarchy), but contributing_agents
+    must reflect who actually had the highest-confidence evidence — a T1 agent
+    that merely agrees at low confidence isn't who "did the work"."""
+    packs = [
+        _pack("genomics_agent",     "SENSITIVE", "T1_STRUCTURAL",      confidence=0.55),
+        _pack("pharmacology_agent", "SENSITIVE", "T4_PHARMACOLOGICAL", confidence=0.92),
+        _pack("pathway_agent",      "SENSITIVE", "T3_PATHWAY",         confidence=0.88),
+    ]
+    engine = DebateEngine()
+    result = _run(engine.run(packs))
+    assert result.winning_agent == "genomics_agent"  # tier-first, unchanged
+    assert result.contributing_agents[0] == "pharmacology_agent"  # highest confidence
+    assert result.contributing_agents[1] == "pathway_agent"
+    assert result.contributing_agents[2] == "genomics_agent"
+
+
 def test_r1_agents_snapshot_includes_self_attestation():
     """r1_agents must carry self_attestation so downstream trials can log it —
     reasoning/data_status were already captured, self_attestation was silently dropped."""

@@ -53,14 +53,21 @@ sequencing — see rationale in each phase.
 
 ## Phase 1 — must land before any large re-run (invalidates current results)
 
-- [ ] **Strip `label` from every MCP tool response server-side**
+- [x] **Strip `label` from every MCP tool response server-side**
   (`pharmacology_server.py::get_ic50`/`get_drug_response` — currently
   `SELECT *`). 16/20 cases in `trials/dataset.json` have T4's own
   precomputed `drug_response.label` equal to ground truth. Pharmacology's
   78.9%/75.0% (exp1) is not yet trustworthy evidence of real reasoning.
   **Do this before validating any fix that depends on a trustworthy T4
   baseline (Phase 3, Phase 5).**
-- [ ] **Separate verdict attribution from tier-priority display**
+  Done: `get_ic50` now pops `label` from the response dict before returning.
+  The pharmacology agent's system prompt was directly instructing the LLM to
+  read `label` (a leaked-answer field) — rewrote the reasoning protocol so
+  the agent classifies SENSITIVE/RESISTANT from `z_score` itself instead of
+  reading a precomputed field, since leaving the prompt unchanged would have
+  had the agent looking for a field that no longer exists. New test asserts
+  `"label" not in agent.system_prompt.lower()` to prevent this regressing.
+- [x] **Separate verdict attribution from tier-priority display**
   (`debate_engine.py::_build_result`, line ~307). `winning_agent` is
   currently picked by `(AXIOM_HIERARCHY[tier], confidence)` — tier-first,
   so any agreeing T1 agent gets credited as "winner" regardless of whether
@@ -70,6 +77,13 @@ sequencing — see rationale in each phase.
   **Hard dependency for Phase 4's reasoning-scorer** — building it against
   the current biased attribution field bakes the bias into every hallucination/
   faithfulness number it produces.
+  Done: added `ConsensusResult.contributing_agents` — agreeing agents ranked
+  by confidence descending. `winning_agent` is untouched (still tier-first,
+  which is the correct semantic for "whose axiom won"); `contributing_agents`
+  is the new field for "who actually had the strongest evidence." Populated
+  in both `DebateEngine._build_result` and `NoDebateEngine` (the latter was
+  about to silently default to `[]`, same class of bug as Phase 0's
+  `r1_agents` fix). Logged in `exp2`/`exp3` trial outputs.
 
 ## Phase 2 — resolver correctness (blocks Phase 3)
 
@@ -201,7 +215,74 @@ sequencing — see rationale in each phase.
   weighting was chosen, never measured. Don't keep reporting it as
   calibrated confidence until it's checked.
 
-## Phase 8 — final reportable numbers only
+## Phase 8 — close the gap between the test suite and the actual Specific Aims
+
+Audited `tests/` against `docs/specific_aims.tex` (the authoritative Aims
+document). Everything in Phases 0–7 is tested correctly at the mechanism
+level, but several pieces the Aims document commits to defending have no
+test coverage — in two cases, no code at all. None of this was visible from
+reading the engine code; it only shows up by reading the Aims doc and the
+test suite side by side. **This phase should land before Phase 9's final
+numbers** — you cannot report a defensible Aim 1/Aim 2 table with 4 of the
+required comparisons untested or unimplemented.
+
+- [ ] **Test `MonolithicAgent` — Aim 1's required second baseline.**
+  `src/agents/monolithic_agent.py` exists (single-LLM baseline, no MCP
+  grounding, no debate) but zero files under `tests/` reference it. Aim 1's
+  milestone is "framework exceeds *both* baselines" — right now only the
+  Random Forest baseline has any test coverage, and even that is only
+  exercised on synthetic 2-point arrays (`test_baselines.py`), never real
+  GDSC2 features. Add unit tests mirroring the pattern in `test_agents.py`
+  (mocked LLM response → verdict/confidence/tier), and confirm the mocked
+  monolithic prompt path actually differs from the multi-agent prompts
+  (no MCP tool calls, no axiom hierarchy).
+- [ ] **Test the CTRPv2 held-out validation path.** Aim 1's stated milestone
+  ("CTRPv2 AUROC within 0.05 of development-set AUROC") has no test
+  anywhere — `test_etl.py`'s 20 tests all cover the GDSC2 dev-set ETL path
+  only; nothing references `CTRP` or `held_out`. At minimum, test that
+  `etl_ctrp.py`'s loader produces the expected schema and that whatever
+  script computes "AUROC delta between dev and held-out set" is covered by
+  a unit test on synthetic metrics (not requiring a live LLM run).
+- [ ] **Implement and test the 2 missing ablations from Aim 2's six
+  pre-specified list.** `AblationVariant` currently has exactly 3 members
+  (`NO_DEBATE`, `NO_AXIOMS`, `RANDOM_AXIOM_ORDER`). Missing:
+  - **Single agent** — collapse to one agent (no cross-tier resolution at
+    all); this is the sharpest test of whether the axiom hierarchy adds
+    anything over a single specialist.
+  - **Free-text tools** — replace MCP-validated structured tool returns
+    with free-text summaries of the same underlying data. This is the
+    direct test of the thesis's "first to deploy MCP as a structural
+    anti-hallucination layer" claim — without this ablation existing, that
+    claim is asserted, not measured.
+  Add both as new `AblationVariant` members with a minimal engine/agent
+  variant each, plus tests following the existing `NoDebateEngine` pattern.
+- [ ] **Promote `compute_h()` to a standalone, reported "hallucination
+  rate"** — overlaps with Phase 7's `reasoning_scorer.py` item; this note
+  is here to make explicit that Aim 2's <5% target is a *primary* metric in
+  the Aims doc, not a nice-to-have. `test_gcs.py` tests `compute_h()`
+  correctly in isolation but there is currently no test proving a
+  per-dataset "hallucination rate" number can be produced at all, because
+  the aggregation code doesn't exist yet.
+- [ ] **Build a "biological faithfulness score" — this does not exist
+  anywhere in the codebase, not even as a stub.** Aim 2's other primary
+  metric (≥90% axiom-invocation consistency with established molecular
+  biology) needs: (1) a rubric or expert-curated ground-truth table mapping
+  valid `axiom_invoked` strings to the tiers/contexts where they're
+  biologically valid, (2) a scorer comparing each case's invoked axioms
+  against it, (3) tests for the scorer itself. Currently `Finding.axiom_invoked`
+  is only round-tripped as a free-text schema field (`test_schemas.py`,
+  `test_agents.py`) — nothing validates its content. This is the larger of
+  the two missing-metric items; timebox the rubric-building step separately
+  from the scorer-coding step.
+- [ ] **Fix `test_create_pathways_db_bypass_routes_written`'s blind spot.**
+  It only asserts one specific row has `bypass_exists=1`; it never asserts
+  any row has `bypass_exists=0`. This test passes identically whether
+  `bypass_routes` is a real signal or the vacuous always-true table
+  documented in Phase 5 (239,327/239,327 rows =1). Add a negative-case
+  assertion once Phase 5's rebuild lands, so this regression can never go
+  undetected again. **Depends on Phase 5.**
+
+## Phase 9 — final reportable numbers only
 
 - [ ] **Re-run key comparisons N≥3 times, report variance.** LLM sampling
   non-determinism visibly changed an outcome this session (case a8: 2
@@ -227,3 +308,8 @@ sequencing — see rationale in each phase.
 - Phase 6 (AxiomChallenge) **after** Phase 2/3 — touches the same
   `_apply_verdict_revision` code path; redesigning it before consensus
   mechanics are stable means redoing the design twice.
+- Phase 8's bypass_routes test fix **depends on** Phase 5's rebuild — the
+  negative-case assertion has nothing to assert against until then.
+- Phase 8 (Aims coverage: baselines, ablations, faithfulness/hallucination
+  metrics) **before** Phase 9 (final numbers) — Phase 9's comparisons are
+  only defensible once the code and tests they report on actually exist.

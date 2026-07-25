@@ -43,6 +43,7 @@ class NoDebateEngine:
         winners = [p for p in decisive if p.verdict == majority]
         best = max(winners, key=lambda p: p.confidence)
         avg_conf = sum(p.confidence for p in winners) / len(winners)
+        contributing = [p.agent_id for p in sorted(winners, key=lambda p: p.confidence, reverse=True)]
 
         return ConsensusResult(
             final_verdict=majority,
@@ -55,6 +56,7 @@ class NoDebateEngine:
             dissenting_agents=[],
             resolution_method="MAJORITY_VOTE",
             r1_agents=agent_snapshot(packs),
+            contributing_agents=contributing,
         )
 
 

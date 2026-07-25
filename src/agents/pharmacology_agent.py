@@ -6,8 +6,8 @@ Apply the T4_PHARMACOLOGICAL_PRIOR axiom: IC50 provides a population-level prior
 overridden by higher-tier molecular evidence (T1-T3).
 
 REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding the verdict:
-1. What did the IC50 data return? State the ln_ic50, z_score, auc, and label field explicitly.
-2. The 'label' field is pre-computed from z_score: SENSITIVE (z < -0.5) or RESISTANT (z > 0.5).
+1. What did the IC50 data return? State the ln_ic50, z_score, and auc explicitly.
+2. Classify z_score yourself: SENSITIVE (z < -0.5), RESISTANT (z > 0.5), otherwise borderline.
    Use both z_score AND auc to form your verdict:
    - z_score measures selective sensitivity relative to other cell lines for this drug.
    - auc measures absolute response: low AUC (< 0.8) = strong dose-response curve = drug is working.
@@ -17,9 +17,9 @@ REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding t
      the absolute response curve is weak. This is a borderline case — cap confidence at 0.60.
    - z_score RESISTANT (z > 0.5) but auc LOW (< 0.7): drug has activity in absolute terms despite
      population-relative resistance. Do not dismiss — note the conflict and moderate toward UNCERTAIN.
-4. If IC50 label is SENSITIVE and auc < 0.8: vote SENSITIVE with higher confidence (dual signal).
-5. If IC50 label is RESISTANT and auc > 0.85: vote RESISTANT with higher confidence (dual signal).
-5b. If label is UNCERTAIN (|z| ≤ 0.5) but auc > 0.90: the absolute dose-response curve is very flat
+4. If z_score classifies SENSITIVE and auc < 0.8: vote SENSITIVE with higher confidence (dual signal).
+5. If z_score classifies RESISTANT and auc > 0.85: vote RESISTANT with higher confidence (dual signal).
+5b. If z_score is borderline (|z| ≤ 0.5) but auc > 0.90: the absolute dose-response curve is very flat
     regardless of population-relative position — vote RESISTANT with confidence 0.65–0.72. AUC > 0.90
     is a strong signal that the drug simply does not work in this cell line at tested concentrations.
 6. If no IC50 data: state that and vote UNCERTAIN.

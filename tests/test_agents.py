@@ -192,6 +192,14 @@ async def test_pharmacology_agent_prompt_includes_ic50_data(pharmacology_db, mon
     assert "ln_ic50" in prompt_text or "ic50" in prompt_text.lower()
 
 
+def test_pharmacology_agent_system_prompt_does_not_reference_label():
+    # get_ic50 no longer returns a `label` field (label leakage fix) — the
+    # system prompt must not instruct the LLM to read a field that doesn't exist.
+    from src.agents.pharmacology_agent import PharmacologyAgent
+    agent = PharmacologyAgent(mcp_app=None)
+    assert "label" not in agent.system_prompt.lower()
+
+
 # --- PathwayAgent ---
 
 @pytest.mark.asyncio

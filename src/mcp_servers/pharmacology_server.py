@@ -27,7 +27,11 @@ def get_ic50(cell_line: str, drug: str) -> str:
         ).fetchone()
     if row is None:
         return json.dumps({"error": "no data", "cell_line": cell_line, "drug": drug})
-    return json.dumps(dict(row))
+    # `label` is derived by the same z<-0.5/z>0.5 rule as ground truth — never
+    # expose it to agents, or "prediction" degenerates into reading the answer.
+    data = dict(row)
+    data.pop("label", None)
+    return json.dumps(data)
 
 
 @mcp.tool()

@@ -19,6 +19,9 @@ class ConsensusResult:
     resolution_method: str = ""  # "CONSENSUS_R1", "CONSENSUS_R2", "RESOLVER_TIEBREAK"
     trace: list[dict] = field(default_factory=list)
     r1_agents: list[dict] = field(default_factory=list)  # per-agent R1 snapshot (always populated)
+    # Agreeing agents ranked by confidence (highest first) — who actually contributed
+    # the strongest evidence, as distinct from winning_agent's tier-first attribution.
+    contributing_agents: list[str] = field(default_factory=list)
 
 
 # Threshold: if mean peer endorsement falls below this, the agent is eligible to revise its verdict
@@ -308,6 +311,9 @@ class DebateEngine:
             agreeing,
             key=lambda p: (AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]], p.confidence),
         ).agent_id  # axiom tier first, confidence as tiebreak (Bug H fix)
+        contributing = [
+            p.agent_id for p in sorted(agreeing, key=lambda p: p.confidence, reverse=True)
+        ]
         return ConsensusResult(
             final_verdict=verdict,
             final_confidence=avg_conf,
@@ -320,6 +326,7 @@ class DebateEngine:
             resolution_method=resolution_method,
             trace=trace,
             r1_agents=r1_agents or [],
+            contributing_agents=contributing,
         )
 
     @staticmethod
