@@ -89,11 +89,14 @@ async def run_set(set_num: int, yaml_path: Path, orch: Orchestrator, run_logger:
             "final_confidence": result.final_confidence,
             "resolution_method": result.resolution_method,
             "winning_agent": result.winning_agent,
+            "contributing_agents": result.contributing_agents,
             "rounds_taken": result.rounds_taken,
+            "forced": result.forced,
             "correct": result.final_verdict.value == case.label,
             "winning_agent_is_t3": "pathway" in result.winning_agent.lower(),
             "r1_agents": result.r1_agents,
             "dissenting_agents": result.dissenting_agents,
+            "trace": result.trace,
         }
         records.append(record)
         with out_path.open("a") as f:

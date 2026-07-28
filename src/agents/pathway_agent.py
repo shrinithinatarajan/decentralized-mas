@@ -13,15 +13,19 @@ CRITICAL RULES:
 
 REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding the verdict:
 1. Which pathways contain the drug's target gene(s)? List them from pathway_membership.
-2. Does bypass_check show bypass_exists=true for any pathway? Name the bypass gene if so.
-3. If bypass found in database → check the pathway name before voting RESISTANT:
+2. Does bypass_check show bypass_exists=true for any pathway? Name the bypass gene and its relationship if so.
+   - bypass_genes entries now include a 'relationship' field: 'activation' or 'inhibition'.
+   - ONLY treat a bypass gene as resistance-conferring if relationship is 'activation' (or null/unknown).
+   - If relationship is 'inhibition': the bypass gene is suppressed by the blocked pathway — it cannot
+     rescue the cell and does NOT confer resistance. Ignore it.
+3. If activating bypass found in database → check the pathway name before voting RESISTANT:
    - If the pathway name refers to a DIFFERENT cancer type than the cell line context (e.g. pathway
      name is "Glioma" but treating a leukemia/lymphoma, or "Breast cancer" but treating lung cancer),
      the bypass gene may not be relevant. In this case, vote UNCERTAIN (not RESISTANT) because
      a bypass route described only in a different tumor-type pathway may not be active here.
    - If the pathway is generic (e.g. "Cell cycle", "PI3K-Akt signaling") or matches the cell line's
      tumor type, vote RESISTANT as normal.
-4. If target gene IS present in pathway_membership AND bypass_exists=false → vote SENSITIVE.
+4. If target gene IS present in pathway_membership AND no activating bypass_exists → vote SENSITIVE.
    Rationale: the target is embedded in a known oncogenic pathway and no escape route exists in the
    database, so blocking it should suppress signalling.
 5. If target gene is NOT found in any pathway (pathway_membership is empty) → vote UNCERTAIN.
@@ -135,16 +139,25 @@ class PathwayAgent(BaseAgent):
                 result = await self._call_tool("check_bypass", {"pathway_id": pid, "blocked_gene": gene})
                 if result and result.get("bypass_exists"):
                     bypass_genes = result.get("bypass_genes", [])
-                    real_bypasses = [b for b in bypass_genes if b not in (target_genes or [])]
-                    if not real_bypasses:
+                    # Each entry is now {"gene": str, "relationship": str|None}.
+                    # Exclude inhibition-relationship genes: an inhibited gene cannot
+                    # rescue the blocked pathway and does not confer resistance.
+                    activating = [
+                        b for b in bypass_genes
+                        if isinstance(b, dict)
+                        and b.get("relationship") != "inhibition"
+                        and b.get("gene") not in (target_genes or [])
+                    ]
+                    if not activating:
                         continue
                     if expressed_10:
-                        expressed = [b for b in real_bypasses if b in expressed_10]
+                        expressed = [b for b in activating if b["gene"] in expressed_10]
                     else:
-                        expressed = real_bypasses
+                        expressed = []  # no expression data — cannot confirm bypass is active
                     if expressed:
-                        bypass_results[f"{pid}:{gene}"] = {**result, "bypass_genes": expressed}
-                        confirmed_bypass_genes.extend(expressed)
+                        gene_names = [b["gene"] for b in expressed]
+                        bypass_results[f"{pid}:{gene}"] = {**result, "bypass_genes": gene_names}
+                        confirmed_bypass_genes.extend(gene_names)
 
         return {
             "pathway_membership": pathway_membership,

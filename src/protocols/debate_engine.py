@@ -201,7 +201,7 @@ class DebateEngine:
                 packs, agents, run_logger=run_logger, case_id=case_id
             )
             critique_revised = {p.agent_id for p in critiqued if p.verdict != pre_critique_verdicts[p.agent_id]}
-            trace.append(self._snapshot(critiqued, round_num=2, note="post_critique"))
+            trace.append(self._snapshot(critiqued, round_num=2, note="post_critique", prev_verdicts=pre_critique_verdicts))
             if run_logger:
                 run_logger.log_debate_round(case_id=case_id, round_num=2, note="post_critique", snapshot=trace[-1])
             packs = critiqued
@@ -249,6 +249,7 @@ class DebateEngine:
             "axiom_applied": resolution.axiom_applied,
             "winning_agent": resolution.winning_agent,
             "verdict": resolution.verdict.value,
+            "peer_endorsements": {k: round(v, 3) for k, v in peer_endorsements.items()} if peer_endorsements else {},
         })
         if run_logger:
             run_logger.log_resolution(
@@ -339,7 +340,7 @@ class DebateEngine:
         )
 
     @staticmethod
-    def _snapshot(packs: list[EvidencePack], round_num: int, note: str) -> dict:
+    def _snapshot(packs: list[EvidencePack], round_num: int, note: str, prev_verdicts: dict | None = None) -> dict:
         return {
             "round": round_num,
             "note": note,
@@ -352,6 +353,12 @@ class DebateEngine:
                     "key_findings": [f.model_dump() for f in p.key_findings],
                     "reasoning": p.reasoning,
                     "self_attestation": p.self_attestation,
+                    "peer_scores_given": p.peer_scores or {},
+                    "verdict_changed_from": (
+                        prev_verdicts[p.agent_id].value
+                        if prev_verdicts and p.agent_id in prev_verdicts and prev_verdicts[p.agent_id] != p.verdict
+                        else None
+                    ),
                 }
                 for p in packs
             },

@@ -29,12 +29,21 @@ def check_bypass(pathway_id: str, blocked_gene: str) -> str:
     conn = sqlite3.connect(_db())
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
-        "SELECT bypass_gene, bypass_exists FROM bypass_routes "
-        "WHERE pathway_id = ? AND blocked_gene = ?",
+        """
+        SELECT b.bypass_gene, b.bypass_exists,
+               u.relationship
+        FROM bypass_routes b
+        LEFT JOIN upstream_regulators u
+          ON b.bypass_gene = u.gene AND b.pathway_id = u.pathway
+        WHERE b.pathway_id = ? AND b.blocked_gene = ?
+        """,
         (pathway_id, blocked_gene),
     ).fetchall()
     conn.close()
-    bypass_genes = [r["bypass_gene"] for r in rows if r["bypass_exists"]]
+    bypass_genes = [
+        {"gene": r["bypass_gene"], "relationship": r["relationship"]}
+        for r in rows if r["bypass_exists"]
+    ]
     return json.dumps({
         "bypass_exists": len(bypass_genes) > 0,
         "bypass_genes": bypass_genes,
