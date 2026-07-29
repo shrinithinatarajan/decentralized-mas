@@ -83,41 +83,27 @@ class BaseAgent(ABC):
         original_pack: EvidencePack,
         peer_packs: list[EvidencePack],
         *,
+        challenge=None,          # AxiomChallenge | None — imported lazily to avoid circular dep
+        is_challenger: bool = False,      # True if this agent issued a challenge this round
+        challenged_ids: set | None = None,  # IDs of peers this agent challenged (unused here; exclusion handled in engine)
         run_logger=None,
         case_id: str | None = None,
-    ) -> EvidencePack:
-        """Round-2 peer review: verify peers' factual claims via binary checklist; verdict LOCKED."""
-        labels = [chr(ord('A') + i) for i in range(len(peer_packs))]
+    ) -> tuple["EvidencePack", "bool | None"]:
+        """Round-2 peer review with evidence-gated mechanistic scoring.
 
-        CHECKLISTS = {
-            "T1_STRUCTURAL": [
-                "Did this peer name a specific mutation or CNV in the drug target gene (not just 'no mutation found')?",
-                "Did this peer cite a CIViC/OncoKB entry or known functional consequence linking the variant to drug response?",
-                "Did this peer confirm the variant is somatic (not germline or unclassified)?",
-                "Does the variant's functional direction (gain-of-function / loss-of-function) logically support the verdict given?",
-            ],
-            "T2_TRANSCRIPTIONAL": [
-                "Did this peer report a specific numeric z-score for the target gene expression?",
-                "Is the expression level (overexpressed / silenced / normal) consistent with the verdict direction?",
-                "Did this peer explicitly account for whether this drug is expression-driven vs mutation-driven?",
-                "Did this peer name at least one specific gene with its z-score value (not just 'expression is high')?",
-            ],
-            "T3_PATHWAY": [
-                "Did this peer name at least one specific bypass gene (not just 'bypass_exists=true')?",
-                "Did this peer report the pathway activity score or fraction of expressed pathway genes?",
-                "Does the bypass gene mechanistically connect to resistance for this specific drug class?",
-                "Is the bypass gene distinct from the primary drug target gene?",
-            ],
-            "T4_PHARMACOLOGICAL": [
-                "Did this peer report a specific IC50 z-score value (not just 'no data' or 'uncertain')?",
-                "Did this peer explicitly state the pre-computed IC50 label (SENSITIVE/RESISTANT/UNCERTAIN)?",
-                "Does the historical IC50 label match or logically support the verdict given?",
-                "Did this peer acknowledge that T4 pharmacological evidence can be overridden by T1-T3 molecular evidence?",
-            ],
-        }
+        Peer score = mechanistic relevance (0–1), not checklist completeness.
+        Verdict revision requires citing a specific cross-modal finding.
+        UNCERTAIN agents cannot flip to decisive without non-empty mechanistic reason.
 
-        # Build cross-modal findings block: each agent sees what OTHER tiers found
+        Returns (critiqued_pack, challenge_maintained):
+          challenge_maintained — True  = successfully rebutted an AxiomChallenge
+                                 False = conceded the challenge
+                                 None  = no challenge received
+        """
+        labels = [chr(ord("A") + i) for i in range(len(peer_packs))]
         own_tier = original_pack.evidence_tier.value if hasattr(original_pack.evidence_tier, "value") else str(original_pack.evidence_tier)
+
+        # Build cross-modal summary block
         cross_modal_lines = []
         for peer in peer_packs:
             tier_key = peer.evidence_tier.value if hasattr(peer.evidence_tier, "value") else str(peer.evidence_tier)
@@ -130,52 +116,88 @@ class BaseAgent(ABC):
             cross_modal_lines.append(f"  [{tier_key}] {peer.verdict.value} (conf={peer.confidence:.2f}): {findings_str}")
         cross_modal_block = "\n".join(cross_modal_lines)
 
+        # Per-peer text for mechanistic relevance scoring
         peer_text = ""
         for label, peer in zip(labels, peer_packs):
             tier_key = peer.evidence_tier.value if hasattr(peer.evidence_tier, "value") else str(peer.evidence_tier)
-            checklist = CHECKLISTS.get(tier_key, CHECKLISTS["T4_PHARMACOLOGICAL"])
-            checklist_str = "\n".join(f"  {i+1}. {q}" for i, q in enumerate(checklist))
             peer_text += (
                 f"\n--- Peer {label} (tier: {tier_key}) ---\n"
                 f"Verdict: {peer.verdict.value}  Confidence: {peer.confidence:.2f}\n"
                 f"Reasoning: {peer.reasoning}\n"
                 f"Key findings: {json.dumps([f.model_dump() for f in peer.key_findings])}\n"
-                f"Checklist to verify (answer yes/no for each based on the reasoning above):\n{checklist_str}\n"
             )
 
         peer_schema_parts = []
         for label in labels:
-            peer_schema_parts.append(
-                f'"peer_{label}_checks": [<bool q1>, <bool q2>, <bool q3>, <bool q4>], '
-                f'"peer_{label}_score": <float 0.0-1.0 = sum(checks)/4>'
-            )
+            peer_schema_parts.append(f'"peer_{label}_score": <float 0.0–1.0>')
         peer_schema = ", ".join(peer_schema_parts)
+
+        # AxiomChallenge section (only when a challenge is received)
+        challenge_section = ""
+        challenge_schema = ""
+        if challenge is not None:
+            challenge_section = (
+                f"\nAXIOM CHALLENGE from {challenge.challenger_tier} agent:\n"
+                f"Their verdict: {challenge.challenger_verdict}\n"
+                f"Their argument: {challenge.argument}\n\n"
+                f"CHALLENGE RESPONSE REQUIRED (task 3 below).\n"
+            )
+            challenge_schema = (
+                ', "challenge_rebuttal": "<specific mechanistic counter-argument citing your own evidence, or null if conceding>",'
+                ' "challenge_maintained": <true = you rebutted with evidence, false = you concede>'
+            )
 
         prompt = (
             f"Cell line: {original_pack.cell_line}\nDrug: {original_pack.drug}\n\n"
             f"YOUR ROUND-1 VERDICT: {original_pack.verdict.value}  (confidence: {original_pack.confidence:.2f})\n"
             f"Your tier: {own_tier}\n"
-            f"Your reasoning: {original_pack.reasoning}\n\n"
+            f"Your reasoning: {original_pack.reasoning}\n"
+            f"{challenge_section}\n"
             f"CROSS-MODAL FINDINGS FROM ALL SPECIALISTS:\n{cross_modal_block}\n\n"
             f"PEER ANALYSES TO REVIEW:\n{peer_text}\n"
-            "ROUND 2 TASKS:\n"
-            "1. CROSS-MODAL SYNTHESIS: Review the cross-modal findings above from tiers OTHER than "
-            "your own. If a finding from a different tier (e.g., a CIViC entry from Genomics, a "
-            "Chronos score from DepMap, an IC50 label from Pharmacology) directly contradicts your "
-            "Round-1 conclusion with specific biological evidence, you SHOULD revise your verdict. "
-            "Set verdict_revised=true and name the specific finding in revision_reason.\n"
-            "2. PEER SCORING: For each peer, answer the checklist questions (true/false) based "
-            "strictly on what their reasoning text actually states.\n"
-            "Score = number of true answers / 4.\n\n"
-            "You may adjust your own confidence by at most ±0.15 based on what peers found.\n\n"
+            "TASKS:\n"
+            "1. MECHANISTIC PEER SCORING: Score each peer 0.0–1.0 on ONE criterion only:\n"
+            "   Does this peer\'s key finding have a DIRECT MECHANISTIC CONNECTION to why this drug\n"
+            "   would or would not work in this specific cell line?\n"
+            "   - 1.0 = names specific gene/value AND explains mechanistic link to drug action\n"
+            "   - 0.5 = relevant evidence but indirect or population-level only\n"
+            "   - 0.0 = generic, no mechanistic connection, or evidence is for a different drug/target\n\n"
+            "2. VERDICT REVISION (strict gate — read carefully):\n"
+            "   You MAY set verdict_revised=true ONLY IF all three conditions hold:\n"
+            "   (a) A peer from a DIFFERENT tier cited a finding mechanistically INCONSISTENT with your conclusion.\n"
+            "   (b) You can name the specific finding: [gene/value] from [tier] contradicts [your conclusion] because [mechanism].\n"
+            "   (c) The contradiction is mechanistic, not just a different number or a different verdict.\n"
+            "   You may NOT revise because: peers agree with each other, a peer scored well, you feel uncertain,\n"
+            "   or no peers provided mechanistic evidence against your conclusion.\n"
+            "   IMPORTANT - UNCERTAIN TO DECISIVE RULE: If your Round-1 verdict was UNCERTAIN, you may ONLY\n"
+            "   become decisive if a peer cited a specific finding from their modality that recontextualises\n"
+            "   your own data. You may NOT flip by reinterpreting data you already had in Round 1 --\n"
+            "   if that data existed and you were UNCERTAIN, it was not sufficient then and nothing has\n"
+            "   changed about your own evidence. A hemizygous deletion, borderline z-score, or partial\n"
+            "   CNV that produced UNCERTAIN in Round 1 cannot be cited as the reason for a decisive\n"
+            "   verdict in Round 2. Your revision_reason must name the PEER\'s finding (not your own)\n"
+            "   and explain why it mechanistically recontextualises your modality\'s evidence.\n\n"
+        )
+        if challenge is not None:
+            prompt += (
+                "3. CHALLENGE RESPONSE: Address the AxiomChallenge above.\n"
+                "   - If you have specific evidence from YOUR modality that mechanistically contradicts the challenger\'s argument,\n"
+                "     set challenge_maintained=true and state the rebuttal.\n"
+                "   - If you cannot provide a mechanistic counter-argument from your own evidence, set challenge_maintained=false.\n"
+                "   - Peer scores do not count as a rebuttal. Only your own modality\'s evidence does.\n\n"
+            )
+
+        prompt += (
             "Respond with ONLY this JSON (no prose, no markdown):\n"
-            f'{{"verdict": "<SENSITIVE|RESISTANT|UNCERTAIN — may differ from Round 1 if cross-modal evidence warrants>", '
+            f'{{"verdict": "<SENSITIVE|RESISTANT|UNCERTAIN>", '
             f'"confidence": <float>, '
             f'"verdict_revised": <true or false>, '
-            f'"revision_reason": "<specific cross-modal finding that caused revision, or null>", '
-            f'{peer_schema}, '
-            f'"peer_review_reasoning": "<one sentence per peer explaining scores>"}}'
+            f'"revision_reason": "<specific gene/value/mechanism that caused revision, or null>", '
+            f'{peer_schema}'
+            f'{challenge_schema}'
+            f', "peer_review_reasoning": "<one sentence per peer on mechanistic relevance>"}}' 
         )
+
         raw = await self.llm.complete(
             messages=[{"role": "user", "content": prompt}],
             system=self.system_prompt,
@@ -192,7 +214,7 @@ class BaseAgent(ABC):
                 break
             except Exception:
                 continue
-        # Parse verdict — revision allowed if cross-modal evidence warrants
+
         new_verdict_str = data.get("verdict", original_pack.verdict.value)
         try:
             new_verdict = Verdict(new_verdict_str)
@@ -200,36 +222,63 @@ class BaseAgent(ABC):
             new_verdict = original_pack.verdict
         verdict_revised = bool(data.get("verdict_revised", False)) and (new_verdict != original_pack.verdict)
 
+        # Gate: UNCERTAIN → decisive requires a non-empty mechanistic revision_reason
+        if original_pack.verdict == Verdict.UNCERTAIN and new_verdict != Verdict.UNCERTAIN:
+            reason = (data.get("revision_reason") or "").strip()
+            if not verdict_revised or not reason:
+                new_verdict = original_pack.verdict
+                verdict_revised = False
+
         new_conf = float(data.get("confidence", original_pack.confidence))
         new_conf = max(0.0, min(1.0, new_conf))
         if verdict_revised:
-            new_conf = round(new_conf * 0.78, 4)  # penalty for switching under peer pressure
+            new_conf = round(new_conf * 0.78, 4)
         if new_verdict == Verdict.UNCERTAIN:
             new_conf = min(new_conf, 0.5)
+
         peer_score_map = {}
         for label in labels:
             score = data.get(f"peer_{label}_score")
-            if score is not None:
-                peer_score_map[label] = float(score)
-            else:
-                checks = data.get(f"peer_{label}_checks", [])
-                if checks:
-                    peer_score_map[label] = sum(1 for c in checks if c) / 4.0
-                else:
-                    peer_score_map[label] = 0.5
+            peer_score_map[label] = float(score) if score is not None else 0.5
+
         critiqued = original_pack.model_copy(update={
             "verdict": new_verdict,
             "confidence": new_conf,
             "peer_scores": peer_score_map,
         })
+
+        # Challenge outcome
+        challenge_maintained: bool | None = None
+        if challenge is not None:
+            raw_maintained = data.get("challenge_maintained")
+            rebuttal = (data.get("challenge_rebuttal") or "").strip()
+            if raw_maintained is True and rebuttal:
+                challenge_maintained = True
+            else:
+                # Concede: adopt challenger's verdict at reduced confidence
+                challenge_maintained = False
+                try:
+                    conceded_verdict = Verdict(challenge.challenger_verdict)
+                except Exception:
+                    conceded_verdict = Verdict.UNCERTAIN
+                conceded_conf = round(original_pack.confidence * 0.65, 4)
+                if conceded_verdict == Verdict.UNCERTAIN:
+                    conceded_conf = min(conceded_conf, 0.5)
+                critiqued = critiqued.model_copy(update={
+                    "verdict": conceded_verdict,
+                    "confidence": conceded_conf,
+                })
+
         if run_logger:
             rev_note = f" [REVISED from {original_pack.verdict.value}: {data.get('revision_reason', '')}]" if verdict_revised else ""
+            ch_note = f" [CHALLENGE: {'maintained' if challenge_maintained else 'conceded'}]" if challenge is not None else ""
             run_logger.log_agent_decision(
                 case_id=case_id, agent_id=self.agent_id, round_num=2,
                 verdict=critiqued.verdict.value, confidence=critiqued.confidence,
-                reasoning=data.get("peer_review_reasoning", "") + rev_note,
+                reasoning=str(data.get("peer_review_reasoning") or "") + rev_note + ch_note,
             )
-        return critiqued
+        return critiqued, challenge_maintained
+
 
     @abstractmethod
     async def _fetch_evidence(self, cell_line: str, drug: str, target_genes: list[str] | None = None) -> dict:

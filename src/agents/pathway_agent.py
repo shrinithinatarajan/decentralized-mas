@@ -43,6 +43,9 @@ Add a "self_attestation" field to your JSON response:
 
 Your verdict can only be RESISTANT (bypass found) if self_attestation score >= 3.
 If score < 3, set verdict to UNCERTAIN even if bypass_exists is true in the data.
+Your verdict can only be SENSITIVE if self_attestation.pathway_active = true.
+If pathway_active is false (pathway not active in this cell line), you have no basis
+to conclude the drug will work — vote UNCERTAIN, not SENSITIVE.
 
 Return ONLY a JSON object matching the EvidencePack schema PLUS the self_attestation field. No prose outside the JSON."""
 

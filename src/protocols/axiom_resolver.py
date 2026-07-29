@@ -19,11 +19,31 @@ class ResolutionResult:
 
 
 class AxiomResolver:
-    def resolve(self, packs: list[EvidencePack], peer_endorsements: dict | None = None) -> ResolutionResult:
+    def resolve(
+        self,
+        packs: list[EvidencePack],
+        peer_endorsements: dict | None = None,
+        challenge_maintained_ids: set | None = None,
+    ) -> ResolutionResult:
         from src.schemas.evidence_pack import EvidenceTier, Verdict
 
         decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN and p.confidence > 0]
         candidates = decisive if decisive else packs
+
+        # T3 quality gates in resolver (mirrors _check_consensus):
+        #   RESISTANT: score >= 3; SENSITIVE: pathway_active = True
+        def _t3_passes(p: EvidencePack) -> bool:
+            if p.evidence_tier != EvidenceTier.T3_PATHWAY:
+                return True
+            sa = p.self_attestation or {}
+            if p.verdict == Verdict.RESISTANT:
+                return (sa.get("score") or 0) >= 3
+            if p.verdict == Verdict.SENSITIVE:
+                return bool(sa.get("pathway_active", False))
+            return True  # UNCERTAIN always passes
+        qualified = [p for p in candidates if _t3_passes(p)]
+        if qualified:
+            candidates = qualified
 
         # Check if T1 agent is decisive but below the confidence threshold for hard override
         t1_packs = [p for p in candidates if p.evidence_tier == EvidenceTier.T1_STRUCTURAL]
@@ -43,11 +63,16 @@ class AxiomResolver:
         # mutation evidence is not mechanistically relevant. Demote T1 to T3 priority so
         # T4 IC50 data can win tiebreaks on these drugs.
         drug = packs[0].drug if packs else ""
+        maintained = challenge_maintained_ids or set()
         def _effective_priority(p: EvidencePack) -> int:
             from src.schemas.evidence_pack import EvidenceTier
             base = AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]]
             if not is_targeted(drug) and p.evidence_tier == EvidenceTier.T1_STRUCTURAL:
                 return 1  # demote below T4 (priority 2); IC50 evidence wins on non-targeted drugs
+            # Rebuttal boost: agent that successfully defended against a challenge gets +1 priority
+            # so the challenger who failed to unseat them doesn't win on tier alone
+            if p.agent_id in maintained:
+                return base + 1
             return base
 
         if use_confidence_weighted:

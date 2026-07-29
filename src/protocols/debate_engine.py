@@ -7,6 +7,22 @@ from src.schemas.axiom_rules import AXIOM_HIERARCHY, EVIDENCE_TO_AXIOM_TIER
 from src.schemas.evidence_pack import EvidencePack, Verdict
 
 @dataclass
+class AxiomChallenge:
+    """A directed challenge from a higher-tier decisive agent to a lower-tier decisive agent.
+
+    Emitted when both agents are decisive but disagree. The challenged agent must provide
+    a specific mechanistic rebuttal from its own modality, or concede.
+    """
+    challenger_id: str
+    challenger_tier: str
+    challenged_id: str
+    challenged_tier: str
+    challenger_verdict: str
+    challenged_verdict: str
+    argument: str            # mechanistic argument citing challenger's own key findings
+
+
+@dataclass
 class ConsensusResult:
     final_verdict: Verdict
     final_confidence: float
@@ -49,6 +65,7 @@ def _apply_verdict_revision(
     endorsements: dict[str, float],
     trace: list[dict],
     skip_ids: set[str] | None = None,
+    maintain_ids: set[str] | None = None,
 ) -> list[EvidencePack]:
     """Revise an agent's verdict when peers collectively reject its reasoning.
 
@@ -56,6 +73,7 @@ def _apply_verdict_revision(
       1. Agent is decisive (not UNCERTAIN) — abstainers don't flip.
       2. Mean peer endorsement < threshold — peers found the reasoning unconvincing.
       3. A strict majority of OTHER decisive agents endorse a different verdict.
+      4. Agent is not in maintain_ids (successfully rebutted an AxiomChallenge).
     On flip: verdict adopts peer majority; confidence penalised to signal revised-under-pressure.
     """
     n_peers = len(packs) - 1
@@ -68,6 +86,10 @@ def _apply_verdict_revision(
 
     for p in packs:
         if skip_ids and p.agent_id in skip_ids:
+            revised.append(p)
+            continue
+        if maintain_ids and p.agent_id in maintain_ids:
+            # Agent successfully rebutted an AxiomChallenge — honour its verdict
             revised.append(p)
             continue
         mean_end = endorsements.get(p.agent_id, 0.0) / n_peers
@@ -115,13 +137,18 @@ def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     if not decisive:
         return None
 
-    # T3 self-attestation gate: demote pathway agent if checklist score < 3
+    # T3 quality gates: pathway agent is only decisive if evidence clears both bars
+    #   RESISTANT: self_attestation score >= 3 (bypass confirmed, expressed, distinct)
+    #   SENSITIVE: pathway_active = True (pathway active in cell line; absence of bypass
+    #              in an inactive pathway is not evidence of sensitivity)
     filtered: list[EvidencePack] = []
     for p in decisive:
         if p.evidence_tier == EvidenceTier.T3_PATHWAY:
             sa = p.self_attestation or {}
-            score = sa.get("score") or 0  # treat absent/None as 0 → fail gate
-            if score < 3:
+            score = sa.get("score") or 0
+            if p.verdict == Verdict.RESISTANT and score < 3:
+                continue
+            if p.verdict == Verdict.SENSITIVE and not sa.get("pathway_active", False):
                 continue
         filtered.append(p)
     decisive = filtered
@@ -189,16 +216,38 @@ class DebateEngine:
         if run_logger:
             run_logger.log_debate_round(case_id=case_id, round_num=1, note="no_consensus", snapshot=trace[-1])
 
-        # --- Round 2: peer critique — only when there is genuine conflict (≥1 SENSITIVE and ≥1 RESISTANT) ---
+        # --- Round 2: AxiomChallenge emission + evidence-gated critique ---
+        # Only when there is genuine conflict (≥1 SENSITIVE and ≥1 RESISTANT among decisive agents)
         r1_decisive_verdicts = [p.verdict for p in packs if p.verdict != Verdict.UNCERTAIN]
         has_conflict = Verdict.SENSITIVE in r1_decisive_verdicts and Verdict.RESISTANT in r1_decisive_verdicts
 
         peer_endorsements: dict[str, float] = {}
         critique_revised: set[str] = set()
+        challenge_maintained_ids: set[str] = set()
+        challenges: list[AxiomChallenge] = []
         if agents and has_conflict:
+            # Emit AxiomChallenges: higher-tier decisive agent → lower-tier decisive agent with opposing verdict
+            challenges = self._emit_challenges(packs)
+            if challenges:
+                trace.append({
+                    "round": "AXIOM_CHALLENGES",
+                    "challenges": [
+                        {
+                            "from": ch.challenger_id, "from_tier": ch.challenger_tier,
+                            "to": ch.challenged_id, "to_tier": ch.challenged_tier,
+                            "challenger_verdict": ch.challenger_verdict,
+                            "challenged_verdict": ch.challenged_verdict,
+                            "argument": ch.argument,
+                        }
+                        for ch in challenges
+                    ],
+                })
+
             pre_critique_verdicts = {p.agent_id: p.verdict for p in packs}
-            critiqued, peer_endorsements = await self._run_critique_round(
-                packs, agents, run_logger=run_logger, case_id=case_id
+            challenger_ids = {ch.challenger_id for ch in challenges}
+            critiqued, peer_endorsements, challenge_maintained_ids = await self._run_critique_round(
+                packs, agents, challenges=challenges, challenger_ids=challenger_ids,
+                run_logger=run_logger, case_id=case_id
             )
             critique_revised = {p.agent_id for p in critiqued if p.verdict != pre_critique_verdicts[p.agent_id]}
             trace.append(self._snapshot(critiqued, round_num=2, note="post_critique", prev_verdicts=pre_critique_verdicts))
@@ -206,9 +255,13 @@ class DebateEngine:
                 run_logger.log_debate_round(case_id=case_id, round_num=2, note="post_critique", snapshot=trace[-1])
             packs = critiqued
 
-        # --- R2 verdict revision: skip agents already revised by critique() to prevent cascade ---
+        # --- R2 verdict revision: skip agents revised by critique() or who rebutted a challenge ---
         if agents and has_conflict and peer_endorsements:
-            packs = _apply_verdict_revision(packs, peer_endorsements, trace, skip_ids=critique_revised)
+            packs = _apply_verdict_revision(
+                packs, peer_endorsements, trace,
+                skip_ids=critique_revised,
+                maintain_ids=challenge_maintained_ids,
+            )
             if run_logger:
                 revision_entry = next((e for e in reversed(trace) if e.get("round") == "R2_VERDICT_REVISION"), None)
                 if revision_entry:
@@ -232,7 +285,10 @@ class DebateEngine:
             return result
 
         # --- Resolver tiebreak (last resort) ---
-        resolution = self._resolver.resolve(packs, peer_endorsements=peer_endorsements)
+        resolution = self._resolver.resolve(
+            packs, peer_endorsements=peer_endorsements,
+            challenge_maintained_ids=challenge_maintained_ids,
+        )
         # Use only agents agreeing with winner for confidence (Bug D fix)
         agreeing = [p for p in resolution.adjusted_packs if p.verdict == resolution.verdict]
         if not agreeing:
@@ -270,36 +326,128 @@ class DebateEngine:
             r1_agents=r1_agents,
         )
 
+    def _emit_challenges(self, packs: list[EvidencePack]) -> list[AxiomChallenge]:
+        """Identify decisive inter-tier conflicts and emit AxiomChallenges from higher to lower tier.
+
+        T3 quality gate: pathway agent may not issue a challenge unless self_attestation score >= 3.
+        Same gate as _check_consensus — if T3 cannot contribute to consensus, it cannot challenge.
+        """
+        from src.schemas.evidence_pack import EvidenceTier
+        challenges: list[AxiomChallenge] = []
+        decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
+        for p1 in decisive:
+            for p2 in decisive:
+                if p1.agent_id == p2.agent_id or p1.verdict == p2.verdict:
+                    continue
+                p1_pri = AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p1.evidence_tier]]
+                p2_pri = AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p2.evidence_tier]]
+                if p1_pri <= p2_pri:
+                    continue
+                # T3 quality gate: pathway agent needs self_attestation score >= 3 to challenge
+                if p1.evidence_tier == EvidenceTier.T3_PATHWAY:
+                    sa_score = (p1.self_attestation or {}).get("score") or 0
+                    if sa_score < 3:
+                        continue
+                # p1 outranks p2 and disagrees — emit challenge
+                findings_str = "; ".join(
+                    f"{f.biomarker}={f.value}: {f.interpretation}"
+                    for f in p1.key_findings
+                ) or "no specific findings cited"
+                challenges.append(AxiomChallenge(
+                    challenger_id=p1.agent_id,
+                    challenger_tier=p1.evidence_tier.value,
+                    challenged_id=p2.agent_id,
+                    challenged_tier=p2.evidence_tier.value,
+                    challenger_verdict=p1.verdict.value,
+                    challenged_verdict=p2.verdict.value,
+                    argument=(
+                        f"My {p1.evidence_tier.value} evidence (confidence {p1.confidence:.2f}) "
+                        f"supports {p1.verdict.value}. Specific findings: {findings_str}. "
+                        f"Your {p2.evidence_tier.value} verdict of {p2.verdict.value} must be "
+                        f"mechanistically reconciled with this higher-tier evidence or conceded."
+                    ),
+                ))
+        return challenges
+
     async def _run_critique_round(
-        self, packs: list[EvidencePack], agents: list, *, run_logger=None, case_id: str | None = None
-    ) -> tuple[list[EvidencePack], dict[str, float]]:
-        """Each agent scores peers' reasoning quality; verdicts stay locked."""
+        self, packs: list[EvidencePack], agents: list,
+        challenges: list[AxiomChallenge] | None = None,
+        challenger_ids: set[str] | None = None,
+        *, run_logger=None, case_id: str | None = None
+    ) -> tuple[list[EvidencePack], dict[str, float], set[str]]:
+        """Evidence-gated peer review with optional AxiomChallenge responses.
+
+        Returns (critiqued_packs, endorsements, challenge_maintained_ids):
+          challenge_maintained_ids — agents that successfully rebutted a challenge;
+                                     excluded from _apply_verdict_revision (they already defended).
+        """
         agent_map = {a.agent_id: a for a in agents}
-        # Build ordered peer list per agent (determines anonymization labels A, B, C...)
-        peer_order = {p.agent_id: [q for q in packs if q.agent_id != p.agent_id] for p in packs}
+        # Build challenger-to-challenged mapping so challengers don't review challenged peer's evidence
+        challenger_to_challenged: dict[str, set[str]] = {}
+        for ch in (challenges or []):
+            challenger_to_challenged.setdefault(ch.challenger_id, set()).add(ch.challenged_id)
+        # Challengers cannot review the evidence of peers they challenged — prevents paradoxical self-flip
+        peer_order = {
+            p.agent_id: [
+                q for q in packs
+                if q.agent_id != p.agent_id
+                and q.agent_id not in challenger_to_challenged.get(p.agent_id, set())
+            ]
+            for p in packs
+        }
+        # Index challenges by challenged agent
+        challenge_map: dict[str, AxiomChallenge] = {}
+        for ch in (challenges or []):
+            # One challenge per challenged agent (highest-priority challenger wins if multiple)
+            existing = challenge_map.get(ch.challenged_id)
+            if existing is None:
+                challenge_map[ch.challenged_id] = ch
+            else:
+                if (AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER.get(
+                    next((p.evidence_tier for p in packs if p.agent_id == ch.challenger_id), None),
+                    list(EVIDENCE_TO_AXIOM_TIER.values())[0]
+                )] >
+                    AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER.get(
+                    next((p.evidence_tier for p in packs if p.agent_id == existing.challenger_id), None),
+                    list(EVIDENCE_TO_AXIOM_TIER.values())[0]
+                )]):
+                    challenge_map[ch.challenged_id] = ch
 
         tasks = []
         for pack in packs:
             agent = agent_map.get(pack.agent_id)
+            ch = challenge_map.get(pack.agent_id)
             if agent is None:
-                async def _passthrough(p=pack): return p
+                async def _passthrough(p=pack): return (p, None)
                 tasks.append(_passthrough())
             else:
                 tasks.append(agent.critique(
-                    pack, peer_order[pack.agent_id], run_logger=run_logger, case_id=case_id
+                    pack, peer_order[pack.agent_id],
+                    challenge=ch,
+                    is_challenger=(pack.agent_id in (challenger_ids or set())),
+                    challenged_ids={ch2.challenged_id for ch2 in (challenges or []) if ch2.challenger_id == pack.agent_id},
+                    run_logger=run_logger, case_id=case_id,
                 ))
 
-        critiqued = list(await asyncio.gather(*tasks))
+        results = list(await asyncio.gather(*tasks))
+        critiqued = [r[0] for r in results]
+        challenge_outcomes = {pack.agent_id: r[1] for pack, r in zip(packs, results)}
 
-        # Aggregate endorsement scores: for each agent, sum of scores given TO it by peers
+        # challenge_maintained_ids: agents that successfully rebutted — skip verdict revision for them
+        challenge_maintained_ids: set[str] = {
+            aid for aid, maintained in challenge_outcomes.items()
+            if maintained is True
+        }
+
+        # Aggregate endorsement scores: sum of mechanistic relevance scores given TO each agent
         endorsements: dict[str, float] = {p.agent_id: 0.0 for p in packs}
         for reviewer in critiqued:
             peers = peer_order[reviewer.agent_id]
             for i, peer_pack in enumerate(peers):
-                label = chr(ord('A') + i)
-                endorsements[peer_pack.agent_id] += reviewer.peer_scores.get(label, 0.0)  # 0.0 not 3.0: absent reviewer contributes nothing (Bug B/F fix)
+                label = chr(ord("A") + i)
+                endorsements[peer_pack.agent_id] += reviewer.peer_scores.get(label, 0.0)
 
-        return critiqued, endorsements
+        return critiqued, endorsements, challenge_maintained_ids
 
     def _build_result(
         self,
