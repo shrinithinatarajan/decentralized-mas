@@ -1,0 +1,329 @@
+# Gold Standard Validation Set — 26 mechanistically characterised cases
+#
+# Labels are assigned from published primary literature, NOT from pharmacological
+# assay z-scores. Each case has at least one peer-reviewed citation in its comment.
+#
+# Case categories:
+#   T1-leads  : clear driver mutation/structural variant; T1 (Genomics) should decide
+#   T1-wrong  : T1 misreads the biology; T2/T3/T4 must correct it
+#   T2-leads  : sensitivity/resistance is expression-driven, not mutation-driven
+#   Multi     : correct answer requires integrating multiple agent signals
+#
+# Purpose: validate biological reasoning independent of GDSC/CTRP assay noise.
+# Target genes are auto-resolved from drug_info (same logic as CTRP sets).
+
+# =============================================================================
+# GROUP 1 — EGFR: osimertinib (3rd-gen, targets T790M)
+# =============================================================================
+
+# Thress et al. 2015 Nat Med; Cross et al. 2014 Cancer Discov.
+# EGFR T790M+L858R — osimertinib designed for T790M. GDSC z=-3.86.
+# T1-leads: CIViC encodes T790M sensitivity to osimertinib (Level A/B).
+- cell_line: NCI-H1975
+  drug: Osimertinib
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 2 — ERBB2: lapatinib sensitivity vs. bypass resistance
+# =============================================================================
+
+# Geyer et al. 2006 NEJM; Konecny et al. 2006 Cancer Res.
+# ERBB2-amplified — lapatinib is a dual EGFR/ERBB2 inhibitor. GDSC z=-1.97.
+# T1-leads: CIViC encodes ERBB2-amp sensitivity to lapatinib.
+- cell_line: BT-474
+  drug: Lapatinib
+  label: SENSITIVE
+
+# Conrads et al. 2010 Cancer Lett (PMID 20193978).
+# ERBB2-amplified but INTRINSICALLY RESISTANT. JIMT-1 co-harbours PIK3CA mutation,
+# low PTEN, high NRG1 — each independently bypasses ERBB2 blockade.
+# T1-WRONG: T1 sees ERBB2-amp and predicts SENSITIVE (as in BT-474).
+# T2/T3 must detect NRG1 bypass signalling and PI3K pathway escape.
+- cell_line: JIMT-1
+  drug: Lapatinib
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 3 — EGFR 1st-gen TKI resistance
+# =============================================================================
+
+# Kobayashi et al. 2005 NEJM; Pao et al. 2005 PLOS Med.
+# EGFR T790M gate-keeper blocks erlotinib binding. GDSC z=-0.72 contradicts biology.
+# T1-leads: CIViC T790M resistance to 1st-gen TKIs (Level A).
+- cell_line: NCI-H1975
+  drug: Erlotinib
+  label: RESISTANT
+
+# Pao et al. 2005 PLOS Med; Kobayashi et al. 2005 NEJM.
+# EGFR T790M blocks gefitinib binding. GDSC z=-0.44 contradicts biology.
+# T1-leads.
+- cell_line: NCI-H1975
+  drug: Gefitinib
+  label: RESISTANT
+
+# Flaherty et al. 2010 NEJM. BRAF V600E driver; EGFR wild-type — no TKI target.
+# T1-leads: no sensitising EGFR mutation found. GDSC z=0.59 agrees.
+- cell_line: A375
+  drug: Erlotinib
+  label: RESISTANT
+
+# Same mechanism. GDSC z=0.94 strongly agrees.
+- cell_line: A375
+  drug: Gefitinib
+  label: RESISTANT
+
+# Johnston et al. 2008 Breast Cancer Res. ER+ breast; no EGFR driver. GDSC z=0.92.
+# T1-leads: T1 finds no sensitising EGFR alteration; correctly predicts RESISTANT.
+- cell_line: MCF7
+  drug: Erlotinib
+  label: RESISTANT
+
+# Pao et al. 2005 PLOS Med. KRAS G12S activates RAS pathway downstream of EGFR.
+# T1-leads: KRAS mut confers resistance to EGFR inhibitors. GDSC z=-0.44 borderline.
+- cell_line: A549
+  drug: Gefitinib
+  label: RESISTANT
+
+# Jonker et al. 2007 NEJM; De Roock et al. 2010 Lancet Oncol.
+# KRAS G13D driver — resistance to EGFR-targeted therapy. GDSC z=0.65 agrees.
+- cell_line: HCT-116
+  drug: Erlotinib
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 4 — EGFR exon-19 deletion: sensitivity vs. PTEN-null bypass resistance
+# =============================================================================
+
+# Lynch et al. 2004 NEJM; Paez et al. 2004 Science.
+# EGFR E746-A750 exon-19 deletion — canonical sensitising mutation for EGFR TKIs.
+# HCC-827 is PTEN-intact; 1st-gen TKI achieves near-complete ERK/AKT suppression.
+# T1-leads: CIViC EGFR del19 sensitivity at highest evidence level.
+- cell_line: HCC-827
+  drug: Erlotinib
+  label: SENSITIVE
+
+# Sos et al. 2009 Cancer Res (PMID 19351834); Ercan et al. 2015 Cancer Discov.
+# EGFR del19 identical to HCC-827 but PTEN is DELETED — PI3K/AKT bypass maintained.
+# Erlotinib suppresses EGFR but AKT remains active via PTEN-null PI3K signalling.
+# T1-WRONG: T1 sees EGFR del19 and predicts SENSITIVE (as in HCC-827).
+# T3 (Pathway) must detect intact PI3K activity bypassing EGFR blockade.
+- cell_line: NCI-H1650
+  drug: Erlotinib
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 5 — BRAF V600E: selective BRAF and MEK inhibitors
+# =============================================================================
+
+# Tsai et al. 2008 PNAS (PMID 18287029). PLX4720 selectively kills BRAF V600E cells;
+# A375 IC50 < 100 nM in vitro. Selective 40-fold window vs. BRAF-WT cells.
+# T1-leads: CIViC BRAF V600E sensitivity to RAF inhibitors.
+- cell_line: A375
+  drug: PLX-4720
+  label: SENSITIVE
+
+# Flaherty et al. 2012 NEJM (PMID 22658128). Trametinib Phase III BREAK-MB/METRIC.
+# MEK1/2 inhibitor downstream of BRAF V600E; A375 preclinical TGI 80-87%.
+# T1-leads: BRAF V600E drives MEK/ERK; MEK inhibitor blocks the same pathway.
+- cell_line: A375
+  drug: Trametinib
+  label: SENSITIVE
+
+# Tsai et al. 2008 PNAS; confirmed in differential BRAF-inhibitor sensitivity studies
+# (PMC7216681). SK-MEL-28 is BRAF V600E / NRAS wild-type melanoma.
+# T1-leads: same BRAF V600E mechanism as A375.
+- cell_line: SK-MEL-28
+  drug: PLX-4720
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 6 — BCR-ABL+ CML: 2nd-gen TKIs
+# =============================================================================
+
+# Weisberg et al. 2006 Cancer Cell 9:47-56. Nilotinib (AMN107) inhibits BCR-ABL
+# with 20-50x higher potency than imatinib; K-562 (BCR-ABL+) confirmed sensitive.
+# T1-leads: CIViC BCR-ABL1 fusion sensitivity to BCR-ABL TKIs.
+- cell_line: K-562
+  drug: Nilotinib
+  label: SENSITIVE
+
+# Shah et al. 2004 Science 305:399-401. Dasatinib inhibits BCR-ABL and SRC.
+# K-562 (BCR-ABL+, imatinib-sensitive) retains dasatinib sensitivity.
+# T1-leads.
+- cell_line: K-562
+  drug: Dasatinib
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 7 — BRCA1/2 synthetic lethality: PARP inhibitors
+# =============================================================================
+
+# Bryant et al. 2005 Nature 434:913-917. Original synthetic-lethality paper.
+# CAPAN-1 carries BRCA2 c.6174delT truncating mutation; exquisitely PARP-inhibitor
+# sensitive. Farmer et al. 2005 Nature 434:917-921 simultaneous confirmation.
+# T1-leads: BRCA2 LOF is the sensitising event (homologous recombination deficiency).
+- cell_line: CAPAN-1
+  drug: Olaparib
+  label: SENSITIVE
+
+# Hay et al. 2009 Oncogene; Mendes-Pereira et al. 2009 EMBO Mol Med.
+# HCC1937 carries BRCA1 5382insC frameshift — hemizygous, expresses truncated BRCA1.
+# Olaparib induces ~95% growth inhibition in this line.
+# T1-leads: BRCA1 5382insC is a well-documented pathogenic LOF variant.
+- cell_line: HCC1937
+  drug: Olaparib
+  label: SENSITIVE
+
+# Hay et al. 2009 Oncogene; Rottenberg et al. 2008 PNAS.
+# MDA-MB-436 carries BRCA1 5396+1G>A splice-site mutation (BRCT-domain truncation).
+# Confirmed olaparib IC50 ~4.7 uM; ~95% growth inhibition in vitro.
+# T1-leads: BRCA1 LOF via splice site — same HR-deficiency mechanism.
+- cell_line: MDA-MB-436
+  drug: Olaparib
+  label: SENSITIVE
+
+# Hay et al. 2009 Oncogene (BRCA1-WT negative control in same study).
+# MDA-MB-231 is BRCA1/2 wild-type TNBC — homologous recombination intact.
+# PARP inhibitor requires HR deficiency for synthetic lethality; HR-proficient
+# cells can repair PARP-induced single-strand breaks via alternative pathways.
+# T1-leads: T1 finds no BRCA1/2 LOF — correctly predicts no synthetic lethality.
+- cell_line: MDA-MB-231
+  drug: Olaparib
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 8 — ALK rearrangement: crizotinib
+# =============================================================================
+
+# Kwak et al. 2010 NEJM 363:1693-1703. Landmark crizotinib Phase I/II in ALK+.
+# NCI-H3122 carries EML4-ALK variant 1 rearrangement; crizotinib IC50 ~300 nM.
+# Rikova et al. 2007 Cell. Shaw et al. 2009 characterised EML4-ALK NSCLC subset.
+# T1-leads: ALK rearrangement drives oncogenic signalling; crizotinib targets ALK.
+- cell_line: NCI-H3122
+  drug: Crizotinib
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 9 — PIK3CA mutation: PI3K inhibitor
+# =============================================================================
+
+# Juric et al. 2015 Cancer Discov 5(12):1319-27 (SOLAR-1 preclinical basis).
+# T47D carries PIK3CA H1047R (hotspot activating mutation); alpelisib IC50 0.26 uM.
+# Alpelisib approved 2019 specifically for PIK3CA-mutated HR+/HER2- breast cancer.
+# T1-leads: CIViC PIK3CA H1047R sensitivity to PI3K inhibitors.
+- cell_line: T47D
+  drug: Alpelisib
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 10 — CDK4/6 inhibitor: RB1-pathway dependency
+# =============================================================================
+
+# Finn et al. 2009 Breast Cancer Res 11(5):R77.
+# MCF7 is ER+, CDK4/6 amplified relative to TNBC, RB1 intact.
+# Palbociclib blocks G1/S by inhibiting CDK4/6-Cyclin D1 phosphorylation of RB1.
+# Intact RB1 is required for CDK4/6 inhibitor response.
+# T2-leads: T1 sees PIK3CA E545K (unrelated to CDK4/6). T2 detects intact RB1
+# expression and active CDK4/6-cyclin D axis -> correctly predicts SENSITIVE.
+- cell_line: MCF7
+  drug: Palbociclib
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 11 — MDM2 inhibitor: TP53 wild-type dependency
+# =============================================================================
+
+# Vassilev et al. 2004 Science 303(5659):844-848.
+# HCT-116 is TP53 wild-type (same line used in the Vassilev 2004 study).
+# Nutlin-3a (-) is the active enantiomer; stabilises p53 by blocking MDM2 binding.
+# MDM2 inhibitors work ONLY in TP53-WT cells; TP53-mutant cells are unresponsive.
+# Multi: T1 confirms TP53 WT (no loss-of-function mutation). T2 sees MDM2 expression.
+# T3 confirms p53 pathway intact upstream. All agents should converge on SENSITIVE.
+# Note: same cell line is RESISTANT to erlotinib (case 10, KRAS G13D) — different
+# mechanism, same line. Tests that the system pivots on drug-mechanism, not line identity.
+- cell_line: HCT-116
+  drug: Nutlin-3a (-)
+  label: SENSITIVE
+
+# =============================================================================
+# GROUP 12 — BRAF V600E + AXL bypass: challenge-mechanism test cases
+# =============================================================================
+
+# Landa et al. 2016 JCI (BRAF V600E in 8505C ATC); Nazarian et al. 2010 Nature 468:973
+# (AXL upregulation as BRAF-inhibitor bypass receptor); Kim et al. 2012 Oncol Rep
+# (8505C PLX-4720 resistance). 8505C is anaplastic thyroid carcinoma (BRAF V600E).
+# GDSC PLX-4720 z=+0.27 confirms resistance despite BRAF V600E driver.
+# AXL CCLE expression z=1.85 — highly elevated bypass receptor.
+# Challenge-trigger: T1 (BRAF V600E → SENSITIVE) vs T3 (AXL bypass → RESISTANT) + T4 (z>0).
+# Confidence-weighted vote should override T1 when T3+T4 both RESISTANT.
+- cell_line: 8505C
+  drug: PLX-4720
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 13 — BRAF V600E + MEK1 bypass: Dabrafenib resistance
+# =============================================================================
+
+# Emery et al. 2009 Clin Cancer Res 15(17):5398-405 (MAP2K1 P124S in resistant tumors).
+# Wagle et al. 2011 JCO 29:3085 (MEK1/2 mutations as acquired resistance to BRAF inhibitors).
+# A2058: BRAF V600E + MAP2K1 P124S (MEK1 gain-of-function) + PTEN frameshift.
+# MEK1 P124S activates MAPK downstream of the BRAF block — classic acquired resistance.
+# PTEN frameshift adds PI3K bypass. GDSC Dabrafenib z=+0.046 confirms resistance.
+# Challenge-trigger: T1 (BRAF V600E → SENSITIVE) vs T3 (MEK1 bypass + PTEN null → RESISTANT).
+- cell_line: A2058
+  drug: Dabrafenib
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 14 — PIK3CA H1047R + KRAS G13D: PI3K inhibitor bypass resistance
+# =============================================================================
+
+# Engelman et al. 2008 Cell 137:1351 (KRAS mutations prevent PI3K inhibitor efficacy).
+# Ebi et al. 2011 JCI 121(12):4861 (KRAS co-mutation confers PI3Ki resistance in CRC).
+# HCT-116 carries PIK3CA H1047R + KRAS G13D simultaneously.
+# PIK3CA H1047R predicts PI3K inhibitor sensitivity; KRAS G13D drives RAS/MAPK
+# independently of PI3K, maintaining proliferation despite PIK3CA blockade.
+# Same cell line as HCT-116 + Erlotinib (RESISTANT) and + Nutlin-3a (SENSITIVE).
+# Tests drug-mechanism pivoting: PIK3CA mutation alone is insufficient when KRAS bypasses.
+# Challenge-trigger: T1 (PIK3CA H1047R → SENSITIVE) vs T3 (KRAS G13D bypass → RESISTANT).
+- cell_line: HCT-116
+  drug: Pictilisib
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 15 — MDM2 amplification: Nutlin-3a sensitivity and resistance contrast
+# =============================================================================
+
+# Vassilev et al. 2004 Science 303:844 (founding Nutlin paper; SJSA-1 used as
+# MDM2-amplified positive control alongside TP53-WT lines).
+# SJSA-1: MDM2 CNV=amplification, MDM2 expression z=4.2 (extreme overexpression),
+# TP53 wild-type. MDM2 amplification drives p53 degradation; Nutlin-3a restores p53
+# activity by blocking MDM2 binding. GDSC z=-2.05 confirms strong sensitivity.
+# Distinguishes from HCT-116 (sensitive via TP53-WT) — here MDM2 amp is the lesion.
+- cell_line: SJSA-1
+  drug: Nutlin-3a (-)
+  label: SENSITIVE
+
+# Vassilev et al. 2004 Science 303:844 (Saos-2 used as TP53-null negative control
+# in the original Nutlin study; Brown et al. 2009 Cancer Res confirmed).
+# Saos-2: TP53 CNV=homozygous_deletion, expression z=-0.12 (absent).
+# MDM2 inhibition cannot stabilise non-existent p53 — mechanism requires intact TP53.
+# GDSC z=+0.233 confirms resistance. Paired negative control to SJSA-1 and HCT-116.
+- cell_line: Saos-2
+  drug: Nutlin-3a (-)
+  label: RESISTANT
+
+# =============================================================================
+# GROUP 16 — BRAF V600E + NRAS Q61R: MEK inhibitor sensitivity despite BRAF-i resistance
+# =============================================================================
+
+# Nazarian et al. 2010 Nature 468:973 (NRAS Q61L/R as BRAF-inhibitor resistance mechanism).
+# KMOE-2 carries both BRAF V600E and NRAS Q61R — dual MAPK pathway activation.
+# BRAF V600E drives MEK/ERK; NRAS Q61R also directly activates RAS/MAPK and bypasses
+# BRAF inhibitors (hence KMOE-2 PLX-4720 z=-0.16, borderline resistant to BRAF inhibitors).
+# Trametinib (MEK inhibitor) blocks the shared downstream output of both oncogenic inputs.
+# GDSC Trametinib z=-2.745 confirms strong sensitivity.
+# Tests whether system correctly identifies MEK as convergence point for dual-pathway tumour.
+- cell_line: KMOE-2
+  drug: Trametinib
+  label: SENSITIVE

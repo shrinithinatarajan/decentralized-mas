@@ -33,6 +33,8 @@ Return ONLY a JSON object matching the EvidencePack schema. No prose outside the
 
 class PharmacologyAgent(BaseAgent):
     agent_id = "pharmacology_agent"
+    from src.schemas.evidence_pack import EvidenceTier as _ET
+    _tier = _ET.T4_PHARMACOLOGICAL
 
     @property
     def system_prompt(self) -> str:

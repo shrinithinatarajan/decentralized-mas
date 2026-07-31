@@ -52,7 +52,7 @@ class Orchestrator:
                 a.analyze(cell_line, drug, target_genes, run_logger=run_logger, case_id=case_id)
                 for a in self.agents
             ]))
-        result = await self.engine.run(packs, agents=self.agents, run_logger=run_logger, case_id=case_id)
+        result = await self.engine.run(packs, agents=self.agents, target_genes=target_genes, run_logger=run_logger, case_id=case_id)
         if run_logger:
             run_logger.log_case_end(case_id=case_id, result=_result_to_dict(result))
         return result

@@ -1,0 +1,10 @@
+run_id=43acc0fb-61df-45b3-b561-d7b2e7b8bcb8  log=/Users/shrinithinatarajan/Desktop/Thesis/decentralized-mas/artifacts/run_43acc0fb-61df-45b3-b561-d7b2e7b8bcb8.log
+
+=== Set 1: cases_held_out_ctrp_1.yaml — 20 cases ===
+  [1/20] SUP-T1 + NVP-ADW742  targets=['IGF1R']
+         SENSITIVE    RESOLVER_TIEBREAK    gt=SENSITIVE  ✓
+  [2/20] NCI-H2087 + BIBR-1532  targets=['TERT']
+         RESISTANT    RESOLVER_TIEBREAK    gt=SENSITIVE  ✗
+  [3/20] EFO-21 + Crizotinib  targets=['MET', 'ALK', 'ROS1']
+         RESISTANT    CONSENSUS_R1         gt=RESISTANT  ✓
+  [4/20] JHH-6 + Sorafenib  targets=['PDGFRB', 'KIT', 'KDR', 'RAF']

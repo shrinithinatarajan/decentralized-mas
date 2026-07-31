@@ -121,26 +121,21 @@ def _apply_verdict_revision(
 
 
 def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
-    """Return the verdict if a strict majority of decisive agents agree, else None.
+    """Return the verdict only when ALL decisive agents agree on the same verdict.
 
-    T3 self-attestation gate: pathway agent only decisive if self_attestation score >= 3.
-    Quorum floor: decisive agents must be a strict majority of ALL agents (not just of
-    the decisive subset) — otherwise a single decisive agent trivially "wins" (Bug C),
-    or two agents agreeing while the rest silently abstain reads as consensus when it's
-    really an unchecked correlated error (case a7). Below the floor, always route to
-    the resolver instead.
-    T1 veto: if all decisive T1 agents disagree with the majority, route to resolver.
+    Consensus requires unanimity among decisive agents — any single dissenting
+    decisive agent routes to debate. UNCERTAIN agents do not count as dissent.
+
+    T3 quality gates still apply before an agent is counted as decisive:
+      RESISTANT: self_attestation score >= 3
+      SENSITIVE: pathway_active = True
     """
     from src.schemas.evidence_pack import EvidenceTier
-    total = len(packs)
     decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
     if not decisive:
         return None
 
-    # T3 quality gates: pathway agent is only decisive if evidence clears both bars
-    #   RESISTANT: self_attestation score >= 3 (bypass confirmed, expressed, distinct)
-    #   SENSITIVE: pathway_active = True (pathway active in cell line; absence of bypass
-    #              in an inactive pathway is not evidence of sensitivity)
+    # T3 quality gates
     filtered: list[EvidencePack] = []
     for p in decisive:
         if p.evidence_tier == EvidenceTier.T3_PATHWAY:
@@ -156,17 +151,10 @@ def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
     if not decisive:
         return None
 
-    if len(decisive) <= total / 2:
-        return None
-
-    counts = Counter(p.verdict for p in decisive)
-    majority_verdict, n = counts.most_common(1)[0]
-    if n <= len(decisive) / 2:
-        return None
-    t1_decisive = [p for p in decisive if p.evidence_tier == EvidenceTier.T1_STRUCTURAL]
-    if t1_decisive and all(p.verdict != majority_verdict for p in t1_decisive):
-        return None
-    return majority_verdict
+    verdicts = {p.verdict for p in decisive}
+    if len(verdicts) != 1:
+        return None  # any dissent → debate
+    return decisive[0].verdict
 
 
 
@@ -178,6 +166,7 @@ class DebateEngine:
         self,
         packs: list[EvidencePack],
         agents: list | None = None,
+        target_genes: list[str] | None = None,
         *,
         run_logger=None,
         case_id: str | None = None,
@@ -288,6 +277,7 @@ class DebateEngine:
         resolution = self._resolver.resolve(
             packs, peer_endorsements=peer_endorsements,
             challenge_maintained_ids=challenge_maintained_ids,
+            target_genes=target_genes,
         )
         # Use only agents agreeing with winner for confidence (Bug D fix)
         agreeing = [p for p in resolution.adjusted_packs if p.verdict == resolution.verdict]
@@ -307,10 +297,19 @@ class DebateEngine:
             "verdict": resolution.verdict.value,
             "peer_endorsements": {k: round(v, 3) for k, v in peer_endorsements.items()} if peer_endorsements else {},
         })
+        # B2: Distinguish genuine S-vs-R conflict from unanimous-under-quorum.
+        from src.schemas.evidence_pack import Verdict as _Verdict
+        decisive_verdicts = {p.verdict for p in packs if p.verdict != _Verdict.UNCERTAIN and p.confidence > 0}
+        is_genuine_conflict = (
+            _Verdict.SENSITIVE in decisive_verdicts and _Verdict.RESISTANT in decisive_verdicts
+        )
+        resolution_method = "RESOLVER_TIEBREAK" if is_genuine_conflict else "RESOLVER_PRIORITY"
+        is_forced = is_genuine_conflict
+
         if run_logger:
             run_logger.log_resolution(
-                case_id=case_id, resolution_method="RESOLVER_TIEBREAK",
-                winning_agent=resolution.winning_agent, verdict=resolution.verdict.value, forced=True,
+                case_id=case_id, resolution_method=resolution_method,
+                winning_agent=resolution.winning_agent, verdict=resolution.verdict.value, forced=is_forced,
             )
         return ConsensusResult(
             final_verdict=resolution.verdict,
@@ -319,9 +318,9 @@ class DebateEngine:
             drug=drug,
             winning_agent=resolution.winning_agent,
             rounds_taken=len(trace),
-            forced=True,
+            forced=is_forced,
             dissenting_agents=sorted(dissenting),
-            resolution_method="RESOLVER_TIEBREAK",
+            resolution_method=resolution_method,
             trace=trace,
             r1_agents=r1_agents,
         )

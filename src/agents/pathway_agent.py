@@ -25,33 +25,36 @@ REASONING PROTOCOL — fill the 'reasoning' field step by step before deciding t
      a bypass route described only in a different tumor-type pathway may not be active here.
    - If the pathway is generic (e.g. "Cell cycle", "PI3K-Akt signaling") or matches the cell line's
      tumor type, vote RESISTANT as normal.
-4. If target gene IS present in pathway_membership AND no activating bypass_exists → vote SENSITIVE.
-   Rationale: the target is embedded in a known oncogenic pathway and no escape route exists in the
-   database, so blocking it should suppress signalling.
-5. If target gene is NOT found in any pathway (pathway_membership is empty) → vote UNCERTAIN.
+4. If target gene IS present in pathway_membership AND pathway_active=true AND no activating bypass_exists → vote SENSITIVE.
+   Rationale: the target is in a known oncogenic pathway that is active in this cell line, and no escape route exists.
+5. If target gene IS present in pathway_membership AND pathway_active=false AND no activating bypass_exists → vote UNCERTAIN.
+   Rationale: the target is in KEGG but the pathway is not measurably active in this cell line — we cannot assess whether blocking it matters.
+6. If target gene is NOT found in any pathway (pathway_membership is empty) → vote UNCERTAIN.
    Rationale: we cannot assess escape routes for targets outside our pathway database.
-6. Conclude with your verdict and why, referencing only the data provided.
+7. Conclude with your verdict and why, referencing only the data provided.
 
 SELF-ATTESTATION (required — answer these 4 questions about your evidence before stating your verdict):
 1. bypass_gene_expressed: Did you find at least one bypass gene present at z>=1.0 in this cell line?
-2. pathway_active: Is the relevant pathway's activity score >= 0.4 (>=40% of member genes expressed at z>=0.5)?
+2. pathway_active: Is the relevant pathway's activity score >= 0.25 (>=25% of member genes expressed at z>=0.5)?
 3. mechanism_relevant: Does the bypass gene's pathway mechanistically connect to resistance against this drug class?
 4. bypass_distinct: Is the bypass gene different from the primary drug target gene?
 
 Add a "self_attestation" field to your JSON response:
 {"bypass_gene_expressed": true/false, "pathway_active": true/false, "mechanism_relevant": true/false, "bypass_distinct": true/false, "score": <int 0-4, sum of true answers>}
 
-Your verdict can only be RESISTANT (bypass found) if self_attestation score >= 3.
-If score < 3, set verdict to UNCERTAIN even if bypass_exists is true in the data.
-Your verdict can only be SENSITIVE if self_attestation.pathway_active = true.
-If pathway_active is false (pathway not active in this cell line), you have no basis
-to conclude the drug will work — vote UNCERTAIN, not SENSITIVE.
+VERDICT RULES (apply in order, these override everything above):
+- RESISTANT: bypass_exists=true AND score >= 3. Otherwise UNCERTAIN.
+- SENSITIVE: target gene in pathway_membership AND pathway_active=true AND no activating bypass found.
+- UNCERTAIN: everything else — target not in KEGG, OR pathway_active=false, OR bypass found but score < 3.
+If your self_attestation shows pathway_active=false, you MUST vote UNCERTAIN regardless of what the reasoning steps suggest.
 
 Return ONLY a JSON object matching the EvidencePack schema PLUS the self_attestation field. No prose outside the JSON."""
 
 
 class PathwayAgent(BaseAgent):
     agent_id = "pathway_agent"
+    from src.schemas.evidence_pack import EvidenceTier as _ET
+    _tier = _ET.T3_PATHWAY
 
     def __init__(self, mcp_app, llm_client=None, *, transcriptomics_mcp=None):
         super().__init__(mcp_app, llm_client)
@@ -125,7 +128,7 @@ class PathwayAgent(BaseAgent):
                 if pid in self._CANCER_TYPE_PATHWAY_IDS:
                     continue
 
-                # Pathway activity gate: skip if < 40% of pathway genes are expressed (z >= 0.5)
+                # Pathway activity gate: skip if < 25% of pathway genes are expressed (z >= 0.5)
                 if expressed_05:
                     if pid not in pathway_genes_cache:
                         pw_genes_data = await self._call_tool("get_pathway_genes", {"pathway_id": pid})
@@ -136,7 +139,7 @@ class PathwayAgent(BaseAgent):
                     if pw_genes:
                         activity_score = sum(1 for g in pw_genes if g in expressed_05) / len(pw_genes)
                         pathway_activity_scores[pid] = activity_score
-                        if activity_score < 0.4:
+                        if activity_score < 0.25:
                             continue
 
                 result = await self._call_tool("check_bypass", {"pathway_id": pid, "blocked_gene": gene})
@@ -175,7 +178,7 @@ class PathwayAgent(BaseAgent):
             return 1.0  # bypass genes confirmed expressed in this cell line
         activity_scores = evidence.get("pathway_activity_scores", {})
         max_activity = max(activity_scores.values()) if activity_scores else 0.0
-        if max_activity >= 0.4:
+        if max_activity >= 0.25:
             return 0.5  # pathway active but no bypass → moderate confirmation
         return 0.0  # no bypass, no confirmed activity → no positive evidence
 
@@ -186,5 +189,5 @@ class PathwayAgent(BaseAgent):
         if evidence.get("pathway_membership"):
             activity_scores = evidence.get("pathway_activity_scores", {})
             max_activity = max(activity_scores.values()) if activity_scores else 0.0
-            return min(max_activity, 0.4)  # at most 0.4 from pathway activity alone
+            return min(max_activity, 0.25)  # at most 0.25 from pathway activity alone
         return 0.0  # target not in any pathway → no signal

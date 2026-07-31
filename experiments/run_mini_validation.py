@@ -28,14 +28,10 @@ from src.run_logger import RunLogger
 DATA   = Path("src/data/processed")
 RESULTS = Path("experiments/results")
 MODEL  = "vertex:gemini-3.1-flash-lite"
-N_PER_SET = 20
+N_PER_SET = 31
 
 SETS = [
-    (1, Path("data/cases/cases_held_out_ctrp_1.yaml")),
-    (2, Path("data/cases/cases_held_out_ctrp_2.yaml")),
-    (3, Path("data/cases/cases_held_out_ctrp_3.yaml")),
-    (4, Path("data/cases/cases_held_out_ctrp_4.yaml")),
-    (5, Path("data/cases/cases_held_out_ctrp_5.yaml")),
+    (1, Path("data/cases/cases_gold_standard.yaml")),
 ]
 
 
@@ -63,7 +59,7 @@ async def run_set(set_num: int, yaml_path: Path, orch: Orchestrator, run_logger:
     cases = all_cases[:N_PER_SET]
     records = []
 
-    out_path = RESULTS / f"traces_full_set_{set_num}.jsonl"
+    out_path = RESULTS / f"traces_gold_standard.jsonl" if yaml_path.name == "cases_gold_standard.yaml" else RESULTS / f"traces_full_set_{set_num}.jsonl"
     out_path.unlink(missing_ok=True)
 
     print(f"\n=== Set {set_num}: {yaml_path.name} — {len(cases)} cases ===")

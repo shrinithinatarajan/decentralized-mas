@@ -24,6 +24,7 @@ class AxiomResolver:
         packs: list[EvidencePack],
         peer_endorsements: dict | None = None,
         challenge_maintained_ids: set | None = None,
+        target_genes: list[str] | None = None,
     ) -> ResolutionResult:
         from src.schemas.evidence_pack import EvidenceTier, Verdict
 
@@ -44,6 +45,25 @@ class AxiomResolver:
         qualified = [p for p in candidates if _t3_passes(p)]
         if qualified:
             candidates = qualified
+
+        # A4: Sole-target deletion guard.
+        # Homozygous deletion is only valid RESISTANT evidence if ALL target genes are deleted.
+        # If a drug targets MAP2K1 and MAP2K2, deleting only MAP2K2 is not resistance —
+        # the remaining target may even become the dependency.
+        if target_genes and len(target_genes) > 1:
+            from src.schemas.evidence_pack import EvidenceTier, Verdict as _Verdict
+            def _is_partial_deletion_resistant(p: EvidencePack) -> bool:
+                if p.evidence_tier != EvidenceTier.T1_STRUCTURAL or p.verdict != _Verdict.RESISTANT:
+                    return False
+                deleted = {
+                    f.biomarker for f in p.key_findings
+                    if f.value and "homozygous" in str(f.value).lower()
+                }
+                return bool(deleted) and not all(g in deleted for g in target_genes)
+            # Exclude T1 packs whose RESISTANT verdict rests on a partial deletion
+            candidates = [
+                p for p in candidates if not _is_partial_deletion_resistant(p)
+            ] or candidates  # fall back to unfiltered if all T1 packs are excluded
 
         # Check if T1 agent is decisive but below the confidence threshold for hard override
         t1_packs = [p for p in candidates if p.evidence_tier == EvidenceTier.T1_STRUCTURAL]

@@ -1,5 +1,18 @@
 """Sample a held-out test set from GDSC2 using cell lines NOT in the dev set.
 
+IMPORTANT — LABEL LEAKAGE WARNING (D1):
+  This script assigns labels from GDSC2 z_score (|z| > Z_THRESH).
+  The pharmacology MCP server's `get_ic50` tool returns the same z_score
+  from the drug_response table (built from the same gdsc2/ic50.csv source).
+  This means the pharmacology agent receives the label-generating variable
+  directly as evidence. The AUROC of ~0.82 reported in held_out_metrics.json
+  on GDSC-labelled cases is therefore INVALID — it measures z_score recall,
+  not drug-sensitivity prediction.
+
+  DO NOT cite that AUROC in results tables or paper sections without first
+  auditing the pipeline to remove z_score from the features seen by agents.
+  Use only CTRP-labelled sets (cases_held_out_ctrp_*.yaml) for valid evaluation.
+
 Steps:
   1. Load GDSC2 ic50.csv, filter to clear labels (|z| > 1.5)
   2. Exclude cell lines already in cases.yaml

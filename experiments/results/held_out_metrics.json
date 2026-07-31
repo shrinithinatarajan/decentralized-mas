@@ -1,9 +1,11 @@
 {
+  "_WARNING": "INVALID — LABEL LEAKAGE (D1): Labels derived from GDSC2 z_score; pharmacology agent receives the same z_score via get_ic50. AUROC measures z_score recall, not drug-sensitivity prediction. Do not cite in results. Use CTRP-labelled sets for valid evaluation.",
   "gemini-3.1-flash-lite (held-out)": {
     "auroc": 0.8200000000000001,
     "auprc": 0.8728513071895424,
     "spearman_rho": 0.5551591261791388,
     "cohens_kappa": 0.7,
-    "n_evaluated": 20
+    "n_evaluated": 20,
+    "_invalid": true
   }
 }

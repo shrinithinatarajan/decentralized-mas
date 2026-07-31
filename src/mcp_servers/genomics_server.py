@@ -254,3 +254,131 @@ def check_mutation_impact(gene: str, mutation: str) -> str:
         "cell_lines": list({r["cell_line"] for r in rows}),
         "civic_descriptions": civic_descriptions,
     })
+
+
+def _rppa_db() -> Path:
+    return Path(os.getenv("DEPMAP_DB", "src/data/processed/depmap.db"))
+
+
+@mcp.tool()
+def get_rppa_expression(cell_line: str, genes: list[str]) -> str:
+    """Return CCLE RPPA protein expression scores for target genes in a cell line.
+
+    Scores are log2 protein expression (z-scored per antibody across ~900 cell lines).
+    Positive = above-average expression, negative = below-average.
+    Returns antibody-level entries; a gene may map to multiple antibodies (total + phospho).
+    Missing = cell line not in RPPA panel (~900 cell lines covered).
+    """
+    db_path = _rppa_db()
+    if not db_path.exists():
+        return json.dumps({"error": "depmap.db not found", "results": []})
+
+    import re as _re
+    cl_norm = _re.sub(r"[\s\-_/]", "", cell_line).upper()
+    gene_norms = [_re.sub(r"[\s\-_/]", "", g).upper() for g in genes]
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    results = []
+    for gene_norm in gene_norms:
+        antibodies = [
+            r["antibody"]
+            for r in conn.execute(
+                "SELECT antibody FROM rppa_antibody_genes WHERE gene_norm=?", (gene_norm,)
+            ).fetchall()
+        ]
+        if not antibodies:
+            results.append({"gene": gene_norm, "antibodies": [], "note": "Gene not in RPPA panel"})
+            continue
+        entries = []
+        for ab in antibodies:
+            row = conn.execute(
+                "SELECT rppa_score FROM rppa_expression WHERE cell_line_norm=? AND antibody=?",
+                (cl_norm, ab),
+            ).fetchone()
+            if row:
+                entries.append({"antibody": ab, "rppa_score": round(row["rppa_score"], 4)})
+        if entries:
+            total_score = next((e["rppa_score"] for e in entries if "_p" not in e["antibody"] and "_Caution" not in e["antibody"]), None)
+            results.append({
+                "gene": gene_norm,
+                "entries": entries,
+                "total_protein_score": total_score,
+                "note": (
+                    "rppa_score > 0.5: high protein expression; "
+                    "rppa_score < -0.5: low expression; near 0: average"
+                ),
+            })
+        else:
+            results.append({"gene": gene_norm, "antibodies": antibodies, "note": f"Cell line not in RPPA panel (checked norm: {cl_norm})"})
+    conn.close()
+    return json.dumps({"cell_line": cell_line, "rppa": results})
+
+
+@mcp.tool()
+def get_oncokb_annotation(gene: str, alteration: str, drug: str, tumor_type: str = "") -> str:
+    """Query OncoKB for variant oncogenicity and drug sensitivity levels.
+
+    Requires ONCOKB_TOKEN environment variable (free academic registration at oncokb.org).
+    Returns:
+      - oncogenicity: Oncogenic / Likely Oncogenic / VUS / Likely Neutral / Neutral / Unknown
+      - mutationEffect: Gain-of-function / Loss-of-function / likely GOF/LOF / Switch-of-function / Neutral / Unknown
+      - highestSensitiveLevel: e.g. LEVEL_1, LEVEL_2, LEVEL_3A (FDA/expert-supported drug sensitivity)
+      - highestResistanceLevel: e.g. LEVEL_R1, LEVEL_R2 (confirmed resistance)
+    Gracefully returns empty result when token is absent or API is unavailable.
+    """
+    import re as _re
+    token = os.getenv("ONCOKB_TOKEN", "")
+    if not token:
+        return json.dumps({
+            "gene": gene, "alteration": alteration,
+            "error": "ONCOKB_TOKEN not set — register free at oncokb.org/api-access",
+            "oncogenicity": "Unknown", "mutationEffect": "Unknown",
+        })
+
+    import urllib.request, urllib.error
+
+    # alteration should be without "p." prefix (e.g., V600E not p.V600E)
+    alt_clean = _re.sub(r"^p\.", "", alteration.strip())
+    params = f"hugoSymbol={urllib.parse.quote(gene)}&alteration={urllib.parse.quote(alt_clean)}"
+    if tumor_type:
+        params += f"&tumorType={urllib.parse.quote(tumor_type)}"
+
+    import urllib.parse
+    url = f"https://www.oncokb.org/api/v1/annotate/mutations/byProteinChange?{params}"
+    try:
+        req_obj = urllib.request.Request(url, headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        })
+        with urllib.request.urlopen(req_obj, timeout=10) as resp:
+            data = json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        return json.dumps({"gene": gene, "alteration": alt_clean, "error": f"OncoKB HTTP {e.code}: {e.reason}"})
+    except Exception as e:
+        return json.dumps({"gene": gene, "alteration": alt_clean, "error": str(e)})
+
+    # Find drug-specific treatments
+    treatments = data.get("treatments", [])
+    drug_norm = _re.sub(r"[^a-z0-9]", "", drug.lower())
+    matched_treatments = []
+    for t in treatments:
+        for d in t.get("drugs", []):
+            d_norm = _re.sub(r"[^a-z0-9]", "", (d.get("drugName") or "").lower())
+            if drug_norm in d_norm or d_norm in drug_norm:
+                matched_treatments.append({
+                    "drug": d.get("drugName"),
+                    "level": t.get("level"),
+                    "levelAssociatedCancerType": t.get("levelAssociatedCancerType", {}).get("name", ""),
+                })
+
+    return json.dumps({
+        "gene": gene,
+        "alteration": alt_clean,
+        "oncogenicity": data.get("oncogenic", "Unknown"),
+        "mutationEffect": (data.get("mutationEffect") or {}).get("knownEffect", "Unknown"),
+        "highestSensitiveLevel": data.get("highestSensitiveLevel"),
+        "highestResistanceLevel": data.get("highestResistanceLevel"),
+        "drug_matched_treatments": matched_treatments,
+        "allele_exist": data.get("alleleExist", False),
+    })

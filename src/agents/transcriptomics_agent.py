@@ -49,6 +49,8 @@ Return ONLY a JSON object matching the EvidencePack schema. No prose outside the
 
 class TranscriptomicsAgent(BaseAgent):
     agent_id = "transcriptomics_agent"
+    from src.schemas.evidence_pack import EvidenceTier as _ET
+    _tier = _ET.T2_TRANSCRIPTIONAL
 
     @property
     def system_prompt(self) -> str:

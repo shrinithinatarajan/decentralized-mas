@@ -38,6 +38,7 @@ _SCHEMA_EXAMPLE = json.dumps({
 
 class BaseAgent(ABC):
     agent_id: str
+    _tier: object  # EvidenceTier — set on each subclass
 
     def __init__(self, mcp_app, llm_client: LLMClient | None = None) -> None:
         self.mcp_app = mcp_app
@@ -314,6 +315,11 @@ class BaseAgent(ABC):
             try:
                 data = json.loads(candidate)
                 pack = EvidencePack.model_validate(data)
+                # C1/C2: override LLM self-reported agent_id and evidence_tier
+                pack = pack.model_copy(update={
+                    "agent_id": self.agent_id,
+                    "evidence_tier": self._tier,
+                })
                 pack.reasoning = data.get("reasoning", "")
                 if "self_attestation" in data:
                     pack.self_attestation = data["self_attestation"]
