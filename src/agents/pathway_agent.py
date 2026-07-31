@@ -42,11 +42,11 @@ SELF-ATTESTATION (required — answer these 4 questions about your evidence befo
 Add a "self_attestation" field to your JSON response:
 {"bypass_gene_expressed": true/false, "pathway_active": true/false, "mechanism_relevant": true/false, "bypass_distinct": true/false, "score": <int 0-4, sum of true answers>}
 
-VERDICT RULES (apply in order, these override everything above):
-- RESISTANT: bypass_exists=true AND score >= 3. Otherwise UNCERTAIN.
-- SENSITIVE: target gene in pathway_membership AND pathway_active=true AND no activating bypass found.
-- UNCERTAIN: everything else — target not in KEGG, OR pathway_active=false, OR bypass found but score < 3.
-If your self_attestation shows pathway_active=false, you MUST vote UNCERTAIN regardless of what the reasoning steps suggest.
+VERDICT RULES — these are hard constraints, not guidelines. Your verdict field MUST match:
+- If score >= 3: verdict MUST be "RESISTANT". Any other verdict is a protocol violation.
+- If score < 3 AND pathway_active=true AND no bypass found: verdict MUST be "SENSITIVE".
+- All other cases: verdict MUST be "UNCERTAIN".
+Check your score before writing the verdict. If score=3 or score=4, write "RESISTANT" — no exceptions.
 
 Return ONLY a JSON object matching the EvidencePack schema PLUS the self_attestation field. No prose outside the JSON."""
 
