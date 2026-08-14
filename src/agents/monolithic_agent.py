@@ -4,6 +4,7 @@ from fastmcp import Client
 
 from src.agents.base_agent import BaseAgent
 from src.schemas.axiom_rules import SILENCING_THRESHOLD
+from src.schemas.evidence_pack import EvidenceTier
 
 _SYSTEM = f"""You are a unified cancer drug sensitivity analyst with access to all evidence modalities.
 Synthesize genomic, transcriptomic, pathway, and pharmacological data into a single verdict.
@@ -34,6 +35,7 @@ class MonolithicAgent(BaseAgent):
     """Single agent that queries all four MCP evidence sources and synthesizes a verdict."""
 
     agent_id = "monolithic_agent"
+    _tier = EvidenceTier.T5_STATISTICAL
 
     def __init__(self, genomics_app, transcriptomics_app, pharmacology_app, pathway_app, llm_client=None):
         super().__init__(genomics_app, llm_client)
@@ -99,8 +101,9 @@ class MonolithicAgent(BaseAgent):
                     pathway_membership[pid]["target_genes_present"].append(gene)
                 result = await self._call_app(self._t3_app, "check_bypass", {"pathway_id": pid, "blocked_gene": gene})
                 if result and result.get("bypass_exists"):
-                    bypasses = [b for b in result.get("bypass_genes", []) if b not in (target_genes or [])]
-                    expressed_bypasses = [b for b in bypasses if b in expressed_10] if expressed_10 else bypasses
+                    raw_bypasses = result.get("bypass_genes", [])
+                    bypasses = [b for b in raw_bypasses if (b["gene"] if isinstance(b, dict) else b) not in (target_genes or [])]
+                    expressed_bypasses = [b for b in bypasses if (b["gene"] if isinstance(b, dict) else b) in expressed_10] if expressed_10 else bypasses
                     if expressed_bypasses:
                         bypass_results[f"{pid}:{gene}"] = {**result, "bypass_genes": expressed_bypasses}
         evidence["pathway_membership"] = pathway_membership

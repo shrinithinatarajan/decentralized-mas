@@ -1,13 +1,20 @@
 """Mini ablation study: 10 cases from each of sets 1-3 (30 total), multiple variants.
 
 Variants:
-  full_system       -- all 4 agents + full debate (baseline)
-  no_debate         -- all 4 agents, majority vote only
-  no_axioms         -- all 4 agents, confidence-only resolver
-  no_genomics       -- drop T1 (genomics agent)
-  no_transcriptomics-- drop T2 (transcriptomics agent)
-  no_pathway        -- drop T3 (pathway agent)
-  no_pharmacology   -- drop T4 (pharmacology agent)
+  full_system           -- all 4 agents + unanimity debate (baseline)
+  no_debate             -- all 4 agents, majority vote only
+  no_axioms             -- all 4 agents, confidence-only resolver
+  random_axiom_order    -- all 4 agents, shuffled axiom hierarchy
+  monolithic_llm        -- single LLM with all modalities, no debate
+  no_mcp                -- all 4 agents receive prose summaries instead of structured MCP JSON
+  only_genomics         -- T1 alone, no debate
+  only_transcriptomics  -- T2 alone, no debate
+  only_pathway          -- T3 alone, no debate
+  only_pharmacology     -- T4 alone, no debate
+  no_genomics           -- drop T1, debate with remaining 3
+  no_transcriptomics    -- drop T2, debate with remaining 3
+  no_pathway            -- drop T3, debate with remaining 3
+  no_pharmacology       -- drop T4, debate with remaining 3
 
 Usage:
     PYTHONPATH=. python experiments/run_mini_ablation.py
@@ -17,10 +24,8 @@ Outputs:
 """
 import asyncio
 import json
-import math
 import os
 import sqlite3
-import statistics
 from pathlib import Path
 
 os.environ.setdefault("VERTEX_PROJECT", "project-d3bf2d5b-3451-46fd-8f3")
@@ -31,7 +36,10 @@ from src.agents.pharmacology_agent import PharmacologyAgent
 from src.agents.pathway_agent import PathwayAgent
 from src.agents.monolithic_agent import MonolithicAgent
 from src.data.loader import load_ctrp_cases
-from src.evaluation.ablation_runner import AblationVariant, make_engine
+from src.evaluation.ablation_runner import (
+    AblationVariant, make_engine,
+    NaturalLanguageAgent,
+)
 from src.evaluation.metrics import evaluate, EvaluationMetrics
 from src.llm.client import LLMClient, make_rate_limiter
 from src.orchestrator import Orchestrator, _normalize_targets
@@ -40,11 +48,8 @@ from src.protocols.debate_engine import DebateEngine
 MODEL     = "vertex:gemini-3.1-flash-lite"
 DATA      = Path("src/data/processed")
 RESULTS   = Path("experiments/results")
-N_PER_SET = 10
 SETS      = [
-    (1, Path("data/cases/cases_held_out_ctrp_1.yaml")),
-    (2, Path("data/cases/cases_held_out_ctrp_2.yaml")),
-    (3, Path("data/cases/cases_held_out_ctrp_3.yaml")),
+    (1, Path("data/cases/cases_gold_standard.yaml")),
 ]
 
 
@@ -68,31 +73,36 @@ def _get_target_genes(drug: str) -> list[str] | None:
 def _make_agents(apps, client, exclude: str | None = None):
     g_app, t_app, p_app, pw_app = apps
     all_agents = [
-        ("genomics",       GenomicsAgent(g_app, client)),
-        ("transcriptomics",TranscriptomicsAgent(t_app, client)),
-        ("pharmacology",   PharmacologyAgent(p_app, client)),
-        ("pathway",        PathwayAgent(pw_app, client, transcriptomics_mcp=t_app)),
+        ("genomics",        GenomicsAgent(g_app, client)),
+        ("transcriptomics", TranscriptomicsAgent(t_app, client)),
+        ("pharmacology",    PharmacologyAgent(p_app, client)),
+        ("pathway",         PathwayAgent(pw_app, client, transcriptomics_mcp=t_app)),
     ]
     return [a for name, a in all_agents if name != exclude]
 
 
-async def run_variant(
-    label: str, agents, engine, apps, client,
-) -> tuple[EvaluationMetrics, list[dict]]:
-    _, t_app, _, _ = apps
-    all_results, all_cases = [], []
+def _make_nl_agents(apps, client):
+    """All 4 agents wrapped to receive prose evidence instead of structured JSON."""
+    g_app, t_app, p_app, pw_app = apps
+    return [
+        NaturalLanguageAgent(GenomicsAgent(g_app, client)),
+        NaturalLanguageAgent(TranscriptomicsAgent(t_app, client)),
+        NaturalLanguageAgent(PharmacologyAgent(p_app, client)),
+        NaturalLanguageAgent(PathwayAgent(pw_app, client, transcriptomics_mcp=t_app)),
+    ]
 
+
+async def run_variant(label: str, agents, engine, out_path: Path, saved: dict) -> EvaluationMetrics:
+    all_results, all_cases = [], []
     for set_num, yaml_path in SETS:
-        cases = load_ctrp_cases(yaml_path)[N_PER_SET:N_PER_SET * 2]
+        cases = load_ctrp_cases(yaml_path)
         orch  = Orchestrator(agents=agents, engine=engine)
         for case in cases:
             tg = _get_target_genes(case.drug)
             r  = await orch.run_case(case.cell_line, case.drug, target_genes=tg)
             all_results.append(r)
             all_cases.append(case)
-
-    m = evaluate(all_results, all_cases)
-    return m
+    return evaluate(all_results, all_cases)
 
 
 async def main():
@@ -103,43 +113,55 @@ async def main():
     limiter = make_rate_limiter()
     client  = LLMClient(model=MODEL, cache_db=DATA / "llm_cache.db", rate_limiter=limiter)
     apps    = _mcp_apps()
-
     g_app, t_app, p_app, pw_app = apps
+
     variants = [
-        ("full_system",           _make_agents(apps, client),                    DebateEngine()),
-        ("no_debate",             _make_agents(apps, client),                    make_engine(AblationVariant.NO_DEBATE)),
-        ("no_axioms",             _make_agents(apps, client),                    make_engine(AblationVariant.NO_AXIOMS)),
-        ("no_genomics",           _make_agents(apps, client, exclude="genomics"),        DebateEngine()),
-        ("no_transcriptomics",    _make_agents(apps, client, exclude="transcriptomics"), DebateEngine()),
-        ("no_pathway",            _make_agents(apps, client, exclude="pathway"),         DebateEngine()),
-        ("no_pharmacology",       _make_agents(apps, client, exclude="pharmacology"),    DebateEngine()),
-        ("single_agent_multiomics", [MonolithicAgent(g_app, t_app, p_app, pw_app, client)], make_engine(AblationVariant.NO_DEBATE)),
+        # Baseline
+        ("full_system",          _make_agents(apps, client),                                       DebateEngine()),
+        # Debate/resolver ablations
+        ("no_debate",            _make_agents(apps, client),                                       make_engine(AblationVariant.NO_DEBATE)),
+        ("no_axioms",            _make_agents(apps, client),                                       make_engine(AblationVariant.NO_AXIOMS)),
+        ("random_axiom_order",   _make_agents(apps, client),                                       make_engine(AblationVariant.RANDOM_AXIOM_ORDER)),
+        # Architecture ablations
+        ("monolithic_llm",       [MonolithicAgent(g_app, t_app, p_app, pw_app, client)],           make_engine(AblationVariant.NO_DEBATE)),
+        ("no_mcp",               _make_nl_agents(apps, client),                                    DebateEngine()),
+        # Single-agent baselines (no debate)
+        ("only_genomics",        [GenomicsAgent(g_app, client)],                                   make_engine(AblationVariant.NO_DEBATE)),
+        ("only_transcriptomics", [TranscriptomicsAgent(t_app, client)],                            make_engine(AblationVariant.NO_DEBATE)),
+        ("only_pathway",         [PathwayAgent(pw_app, client, transcriptomics_mcp=t_app)],        make_engine(AblationVariant.NO_DEBATE)),
+        ("only_pharmacology",    [PharmacologyAgent(p_app, client)],                               make_engine(AblationVariant.NO_DEBATE)),
+        # Drop-one ablations (debate with 3 remaining agents)
+        ("no_genomics",          _make_agents(apps, client, exclude="genomics"),                   DebateEngine()),
+        ("no_transcriptomics",   _make_agents(apps, client, exclude="transcriptomics"),            DebateEngine()),
+        ("no_pathway",           _make_agents(apps, client, exclude="pathway"),                    DebateEngine()),
+        ("no_pharmacology",      _make_agents(apps, client, exclude="pharmacology"),               DebateEngine()),
     ]
 
     rows = []
     for label, agents, engine in variants:
         if label in saved:
             m = EvaluationMetrics(**saved[label])
-            print(f"  {label:<22} AUROC={m.auroc:.3f}  κ={m.cohens_kappa:.3f}  cov={m.coverage:.0%}  [cached]")
+            print(f"  {label:<24} AUROC={m.auroc:.3f}  κ={m.cohens_kappa:.3f}  cov={m.coverage:.0%}  [cached]")
         else:
-            print(f"  {label:<22} running {N_PER_SET * len(SETS)} cases...", flush=True)
-            m = await run_variant(label, agents, engine, apps, client)
+            n_cases = sum(len(load_ctrp_cases(p)) for _, p in SETS)
+            print(f"  {label:<24} running {n_cases} cases...", flush=True)
+            m = await run_variant(label, agents, engine, out_path, saved)
             saved[label] = {
                 "auroc": m.auroc, "auprc": m.auprc,
                 "cohens_kappa": m.cohens_kappa, "spearman_rho": m.spearman_rho,
                 "n_total": m.n_total, "n_decisive": m.n_decisive, "coverage": m.coverage,
             }
             out_path.write_text(json.dumps(saved, indent=2))
-            print(f"  {label:<22} AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  ρ={m.spearman_rho:.3f}  cov={m.coverage:.0%}")
+            print(f"  {label:<24} AUROC={m.auroc:.3f}  AUPRC={m.auprc:.3f}  κ={m.cohens_kappa:.3f}  ρ={m.spearman_rho:.3f}  cov={m.coverage:.0%}")
         rows.append((label, m))
 
-    print(f"\n{'='*70}")
-    print(f"  {'Variant':<22} {'AUROC':>7} {'AUPRC':>7} {'κ':>7} {'ρ':>7} {'Cov':>6}")
-    print(f"  {'-'*22} {'-'*7} {'-'*7} {'-'*7} {'-'*7} {'-'*6}")
+    print(f"\n{'='*76}")
+    print(f"  {'Variant':<24} {'AUROC':>7} {'AUPRC':>7} {'κ':>7} {'ρ':>7} {'Cov':>6}")
+    print(f"  {'-'*24} {'-'*7} {'-'*7} {'-'*7} {'-'*7} {'-'*6}")
     for label, m in rows:
         marker = " ◀ baseline" if label == "full_system" else ""
-        print(f"  {label:<22} {m.auroc:>7.3f} {m.auprc:>7.3f} {m.cohens_kappa:>7.3f} {m.spearman_rho:>7.3f} {m.coverage:>5.0%}{marker}")
-    print(f"{'='*70}")
+        print(f"  {label:<24} {m.auroc:>7.3f} {m.auprc:>7.3f} {m.cohens_kappa:>7.3f} {m.spearman_rho:>7.3f} {m.coverage:>5.0%}{marker}")
+    print(f"{'='*76}")
     print(f"\nSaved to {out_path}")
 
 

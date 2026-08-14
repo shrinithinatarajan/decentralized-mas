@@ -1,0 +1,296 @@
+{
+  "model": "RandomForest",
+  "training_pairs": 108712,
+  "features": [
+    "target_mutated",
+    "target_driver_mutated",
+    "n_target_mutations",
+    "target_expr_mean",
+    "target_expr_max",
+    "n_driver_muts",
+    "driver_EGFR",
+    "driver_KRAS",
+    "driver_BRAF",
+    "driver_NRAS",
+    "driver_PIK3CA",
+    "driver_PTEN",
+    "driver_TP53",
+    "driver_BRCA1",
+    "driver_BRCA2",
+    "driver_ERBB2",
+    "driver_MET",
+    "driver_ALK",
+    "driver_ROS1",
+    "driver_ABL1",
+    "driver_CDK4",
+    "driver_CDK6",
+    "driver_MDM2",
+    "driver_PARP1",
+    "driver_MEK1",
+    "driver_MEK2",
+    "driver_RB1"
+  ],
+  "n_estimators": 300,
+  "cv_auroc_mean": 0.704,
+  "cv_auroc_std": 0.0112,
+  "gold_standard_n": 31,
+  "accuracy": 0.4839,
+  "auroc": 0.4748,
+  "auprc": 0.548,
+  "cohens_kappa": -0.0164,
+  "per_case": [
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Osimertinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.3774,
+      "correct": false
+    },
+    {
+      "cell_line": "BT-474",
+      "drug": "Lapatinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4042,
+      "correct": false
+    },
+    {
+      "cell_line": "JIMT-1",
+      "drug": "Lapatinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4918,
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Erlotinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.3774,
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Gefitinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.3774,
+      "correct": true
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Erlotinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5161,
+      "correct": false
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Gefitinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5161,
+      "correct": false
+    },
+    {
+      "cell_line": "MCF7",
+      "drug": "Erlotinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.3971,
+      "correct": true
+    },
+    {
+      "cell_line": "A549",
+      "drug": "Gefitinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4858,
+      "correct": true
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Erlotinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.7297,
+      "correct": false
+    },
+    {
+      "cell_line": "HCC-827",
+      "drug": "Erlotinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5162,
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1650",
+      "drug": "Erlotinib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4407,
+      "correct": true
+    },
+    {
+      "cell_line": "A375",
+      "drug": "PLX-4720",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5957,
+      "correct": true
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Trametinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5344,
+      "correct": true
+    },
+    {
+      "cell_line": "SK-MEL-28",
+      "drug": "PLX-4720",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4141,
+      "correct": false
+    },
+    {
+      "cell_line": "K-562",
+      "drug": "Nilotinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5049,
+      "correct": true
+    },
+    {
+      "cell_line": "K-562",
+      "drug": "Dasatinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4674,
+      "correct": false
+    },
+    {
+      "cell_line": "CAPAN-1",
+      "drug": "Olaparib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.2832,
+      "correct": false
+    },
+    {
+      "cell_line": "HCC1937",
+      "drug": "Olaparib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.453,
+      "correct": false
+    },
+    {
+      "cell_line": "MDA-MB-436",
+      "drug": "Olaparib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4275,
+      "correct": false
+    },
+    {
+      "cell_line": "MDA-MB-231",
+      "drug": "Olaparib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.3143,
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H3122",
+      "drug": "Crizotinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5912,
+      "correct": true
+    },
+    {
+      "cell_line": "T47D",
+      "drug": "Alpelisib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.3728,
+      "correct": false
+    },
+    {
+      "cell_line": "MCF7",
+      "drug": "Palbociclib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4049,
+      "correct": false
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Nutlin-3a (-)",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.7323,
+      "correct": true
+    },
+    {
+      "cell_line": "8505C",
+      "drug": "PLX-4720",
+      "gold_label": "RESISTANT",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.4607,
+      "correct": true
+    },
+    {
+      "cell_line": "A2058",
+      "drug": "Dabrafenib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.6219,
+      "correct": false
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Pictilisib",
+      "gold_label": "RESISTANT",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.7566,
+      "correct": false
+    },
+    {
+      "cell_line": "SJSA-1",
+      "drug": "Nutlin-3a (-)",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.6314,
+      "correct": true
+    },
+    {
+      "cell_line": "Saos-2",
+      "drug": "Nutlin-3a (-)",
+      "gold_label": "RESISTANT",
+      "rf_pred": "SENSITIVE",
+      "prob_sensitive": 0.5263,
+      "correct": false
+    },
+    {
+      "cell_line": "KMOE-2",
+      "drug": "Trametinib",
+      "gold_label": "SENSITIVE",
+      "rf_pred": "RESISTANT",
+      "prob_sensitive": 0.497,
+      "correct": false
+    }
+  ],
+  "comparison": {
+    "full_system": 0.819,
+    "only_pharmacology_ctrp_lookup": 0.863,
+    "only_genomics_civic": 0.772
+  }
+}

@@ -71,7 +71,7 @@ class BaseAgent(ABC):
         )
         if pack.verdict == Verdict.UNCERTAIN:
             pack.confidence = min(pack.confidence, 0.5)
-        pack = pack.model_copy(update={"data_status": evidence.get("data_status")})
+        pack = pack.model_copy(update={"data_status": evidence.get("data_status"), "raw_evidence": evidence})
         if run_logger:
             run_logger.log_agent_decision(
                 case_id=case_id, agent_id=self.agent_id, round_num=1,

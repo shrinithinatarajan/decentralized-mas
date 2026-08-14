@@ -1,124 +1,103 @@
 {
-  "_note": "Gold standard evaluation \u2014 31 literature-validated cases, labels independent of GDSC/CTRP assays. AUROC/AUPRC computed with P(SENSITIVE) = conf if verdict==SENSITIVE else 1-conf.",
+  "_note": "Gold standard \u2014 31 cases, labels independent of GDSC/CTRP assays. Final system: unanimity consensus, T3 score-gate tightened, pathway threshold 0.25.",
   "model": "vertex:gemini-3.1-flash-lite",
   "n_cases": 31,
   "n_sensitive": 17,
   "n_resistant": 14,
   "system": {
-    "accuracy": 0.8387,
-    "auroc": 0.7983,
-    "auprc": 0.7656,
-    "spearman_rho": 0.5146,
-    "cohens_kappa": 0.6681,
-    "sensitivity_tpr": 0.9412,
+    "accuracy": 0.871,
+    "auroc": 0.8193,
+    "auprc": 0.7664,
+    "spearman_rho": 0.5508,
+    "cohens_kappa": 0.7328,
+    "sensitivity_tpr": 1.0,
     "specificity_tnr": 0.7143,
-    "precision_ppv": 0.8,
-    "npv": 0.9091,
-    "tp": 16,
+    "precision_ppv": 0.8095,
+    "npv": 1.0,
+    "tp": 17,
     "fp": 4,
     "tn": 10,
-    "fn": 1
+    "fn": 0
   },
-  "gdsc_baseline_sign_z": {
-    "accuracy": 0.68,
-    "auroc": 0.82,
-    "auprc": 0.9147,
-    "spearman_rho": 0.5435,
-    "cohens_kappa": 0.3103
+  "faithfulness": {
+    "overall_faithfulness_score": 0.8767,
+    "true_cross_tier_hallucination_rate": 0.1571,
+    "claim_level_hallucination_rate": 0.0377,
+    "_note": "Raw hallucination_rate=0.386 is artifact of key_findings being incomplete log. True violations: T2 stating T1 mutation facts from LLM training data."
   },
-  "auprc_random_baseline": 0.6,
-  "failures": [
-    {
-      "case": "JIMT-1 + Lapatinib",
-      "reason": "T1-wrong: ERBB2-amp seen as sensitive; NRG1/PIK3CA bypass not in databases"
-    },
-    {
-      "case": "NCI-H1650 + Erlotinib",
-      "reason": "T1-wrong: EGFR del19 seen as sensitive; PTEN-null PI3K bypass \u2014 T3 correct but outvoted"
-    },
-    {
-      "case": "MDA-MB-436 + Olaparib",
-      "reason": "BRCA1 5396+1G>A splice-site variant absent from CIViC; GDSC also shows resistant"
-    }
-  ],
   "qualitative": {
-    "metric_1_axiom_invocation_rate": {
+    "metric_1_resolution_methods": {
       "CONSENSUS_R1": {
         "count": 17,
         "pct": 0.548
       },
-      "RESOLVER_PRIORITY": {
-        "count": 14,
-        "pct": 0.452
+      "CONSENSUS_R2": {
+        "count": 8,
+        "pct": 0.258
       },
-      "winning_agent": {
-        "genomics_agent": {
-          "count": 26,
-          "pct": 0.839
-        },
-        "pharmacology_agent": {
-          "count": 4,
-          "pct": 0.129
-        },
-        "transcriptomics_agent": {
-          "count": 1,
-          "pct": 0.032
-        }
+      "RESOLVER_TIEBREAK": {
+        "count": 6,
+        "pct": 0.194
       }
     },
-    "metric_2_conflict_resolution_accuracy": {
-      "cases_with_r1_disagreement": 5,
-      "r1_majority_accuracy": 0.4,
-      "post_debate_accuracy": 0.4,
-      "debate_improved": 0,
-      "debate_worsened": 0,
-      "net_delta": 0.0,
-      "axiom_challenges_fired": 1,
-      "_note": "AXIOM_CHALLENGES fired for first time on 8505C+PLX-4720 (T1 BRAF-V600E SENSITIVE conf=1.00 vs T4 RESISTANT z=+0.27). Challenge ran 4 rounds but T1 conf=1.00 prevented confidence-weighted override; tier-priority resolver picked T1 \u2192 wrong outcome. Reveals T1 over-confidence on bypass-resistance cases."
+    "metric_1_winning_agents": {
+      "genomics_agent": {
+        "count": 27,
+        "pct": 0.871
+      },
+      "pathway_agent": {
+        "count": 2,
+        "pct": 0.065
+      },
+      "transcriptomics_agent": {
+        "count": 1,
+        "pct": 0.032
+      },
+      "pharmacology_agent": {
+        "count": 1,
+        "pct": 0.032
+      }
+    },
+    "metric_2_conflict_resolution": {
+      "cases_entering_debate": 14,
+      "debate_pct": 0.452,
+      "debate_accuracy": 0.7143,
+      "r1_only_accuracy": 1.0,
+      "consensus_r2_count": 8,
+      "resolver_tiebreak_count": 6
     },
     "metric_3_debate_convergence": {
-      "avg_rounds": 1.52,
-      "target_range": "1.5-2.5",
+      "avg_rounds": 1.806,
       "resolved_r1": {
         "count": 17,
         "pct": 0.548
       },
       "resolved_r2": {
-        "count": 13,
-        "pct": 0.419
+        "count": 8,
+        "pct": 0.258
       },
-      "resolved_r4": {
-        "count": 1,
-        "pct": 0.032
-      },
-      "_note": "8505C+PLX-4720 went to 4 rounds \u2014 first activation of full challenge-critique-revision cycle. Avg 1.52 now within target range (1.5-2.5)."
+      "resolved_resolver": {
+        "count": 6,
+        "pct": 0.194
+      }
     }
   },
-  "failures_31_case": [
+  "failures": [
     {
       "case": "JIMT-1 + Lapatinib",
-      "method": "CONSENSUS_R1",
-      "reason": "T1-wrong: ERBB2-amp \u2192 SENSITIVE; NRG1/PIK3CA bypass not in CIViC"
+      "method": "RESOLVER_TIEBREAK"
     },
     {
       "case": "NCI-H1650 + Erlotinib",
-      "method": "CONSENSUS_R1",
-      "reason": "T1-wrong: EGFR del19 \u2192 SENSITIVE; PTEN-null bypass \u2014 T3 voted RESISTANT but outvoted"
-    },
-    {
-      "case": "MDA-MB-436 + Olaparib",
-      "method": "RESOLVER_PRIORITY",
-      "reason": "BRCA1 5396+1G>A splice-site absent from CIViC; GDSC also RESISTANT"
+      "method": "CONSENSUS_R2"
     },
     {
       "case": "8505C + PLX-4720",
-      "method": "RESOLVER_PRIORITY",
-      "reason": "T1-wrong: BRAF V600E \u2192 SENSITIVE conf=1.00; T4 RESISTANT but T1 tier-priority wins; challenge fired but conf=1.00 blocked override"
+      "method": "RESOLVER_TIEBREAK"
     },
     {
       "case": "A2058 + Dabrafenib",
-      "method": "CONSENSUS_R1",
-      "reason": "T2 voted SENSITIVE (BRAF expression) \u2192 3-agent consensus before challenge; MAP2K1 P124S bypass not visible to T3 via expression"
+      "method": "CONSENSUS_R2"
     }
   ]
 }

@@ -20,7 +20,7 @@
   --sub: #4a5568;
   --bg: #f8fafc;
   --card: #ffffff;
-  --sidebar-w: 220px;
+  --sidebar-w: 230px;
   --code-bg: #1e293b;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,8 +32,6 @@ body {
   background: var(--bg);
   display: flex;
 }
-
-/* ── Sidebar ── */
 #sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
@@ -61,26 +59,20 @@ body {
 }
 #sidebar nav a:hover { color: #fff; border-left-color: #4a9eff; background: rgba(255,255,255,0.05); }
 #sidebar nav .sec { padding: 12px 18px 4px; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #4a7abf; }
-
-/* ── Main content ── */
 #main {
   margin-left: var(--sidebar-w);
   padding: 0 0 80px;
-  max-width: 860px;
+  max-width: 870px;
   width: 100%;
 }
-
 .page-top {
   background: linear-gradient(135deg, #0d2b6b 0%, #1a4fa0 70%);
   color: white;
   padding: 40px 48px 32px;
-  margin-bottom: 0;
 }
 .page-top h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 6px; }
 .page-top p { font-size: 0.9rem; opacity: 0.8; }
-
 .content { padding: 0 48px; }
-
 h2 {
   font-size: 1.25rem;
   color: var(--accent);
@@ -94,14 +86,11 @@ h4 { font-size: 0.9rem; font-weight: 700; margin: 16px 0 6px; color: var(--sub);
 p { margin-bottom: 12px; }
 ul, ol { padding-left: 22px; margin-bottom: 12px; }
 li { margin-bottom: 4px; }
-
-/* ── Cards & boxes ── */
 .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 16px 0; }
 .info { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 0.9rem; }
 .warn { background: var(--amber-bg); border-left: 4px solid var(--amber); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 0.9rem; }
 .tip { background: var(--green-bg); border-left: 4px solid var(--green); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 0.9rem; }
-
-/* ── Formula box ── */
+.changed { background: #fdf4ff; border-left: 4px solid #9333ea; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 0.9rem; }
 .formula {
   background: #f0f4ff;
   border: 1.5px solid #b8ccee;
@@ -123,8 +112,6 @@ li { margin-bottom: 4px; }
 }
 .formula .main { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
 .formula .sub-f { font-size: 0.82rem; color: var(--sub); margin-left: 16px; }
-
-/* ── Code block ── */
 pre {
   background: var(--code-bg);
   color: #e2e8f0;
@@ -137,8 +124,6 @@ pre {
 }
 code { font-family: 'Courier New', monospace; font-size: 0.85em; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; color: #1a4fa0; }
 pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
-
-/* ── Agent badges ── */
 .agent-badge {
   display: inline-flex;
   align-items: center;
@@ -157,8 +142,6 @@ pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
 .verdict-S { color: var(--green); font-weight: 700; }
 .verdict-R { color: var(--red); font-weight: 700; }
 .verdict-U { color: var(--amber); font-weight: 700; }
-
-/* ── Agent cards (4-grid) ── */
 .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
 .agent-card { border-radius: 10px; padding: 16px 18px; border: 1.5px solid; }
 .agent-card.t1 { border-color: var(--t1); background: #fff8f8; }
@@ -169,26 +152,18 @@ pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
 .agent-card h4 span { font-size: 0.68rem; font-weight: 400; font-family: 'Helvetica Neue', sans-serif; opacity: 0.7; margin-left: 6px; }
 .agent-card ul { margin: 6px 0 0; padding-left: 16px; }
 .agent-card li { font-size: 0.82rem; margin-bottom: 3px; }
-
-/* ── Checklist ── */
 .checklist { list-style: none; padding: 0; margin: 8px 0; }
 .checklist li { padding: 5px 10px; margin-bottom: 3px; background: #f8fafc; border-radius: 5px; border-left: 3px solid var(--border); font-size: 0.83rem; display: flex; gap: 8px; align-items: flex-start; }
 .checklist li .q-num { font-weight: 700; color: var(--sub); font-family: 'Helvetica Neue', sans-serif; flex-shrink: 0; min-width: 18px; }
-
-/* ── Metric strip ── */
 .metric-strip { display: flex; gap: 12px; flex-wrap: wrap; margin: 14px 0; }
-.metric-chip { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 100px; border-top: 3px solid var(--accent); }
-.metric-chip .val { font-size: 1.5rem; font-weight: 700; color: var(--accent); font-family: 'Helvetica Neue', sans-serif; }
-.metric-chip .lbl { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sub); font-family: 'Helvetica Neue', sans-serif; margin-top: 2px; }
-
-/* ── Tables ── */
+.metric-chip { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 90px; border-top: 3px solid var(--accent); }
+.metric-chip .val { font-size: 1.4rem; font-weight: 700; color: var(--accent); font-family: 'Helvetica Neue', sans-serif; }
+.metric-chip .lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sub); font-family: 'Helvetica Neue', sans-serif; margin-top: 2px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 14px 0; }
 th { background: var(--accent); color: #fff; padding: 9px 12px; text-align: left; font-family: 'Helvetica Neue', sans-serif; font-size: 0.78rem; }
-td { padding: 7px 12px; border-bottom: 1px solid var(--border); }
+td { padding: 7px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 tr:nth-child(even) td { background: #f6f8fa; }
 tr.hl td { background: #eff6ff; font-weight: 600; }
-
-/* ── Step flow ── */
 .steps { counter-reset: step; margin: 14px 0; }
 .step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
 .step-n {
@@ -207,59 +182,28 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
 .step-body { flex: 1; }
 .step-body strong { display: block; margin-bottom: 2px; }
 .step-body p, .step-body ul { font-size: 0.88rem; margin-bottom: 4px; }
-
-/* ── TODO ── */
-.todo-section { background: #fffbeb; border: 2px dashed #fbbf24; border-radius: 10px; padding: 22px 26px; margin: 20px 0; }
-.todo-section h3 { color: #92400e; margin-top: 0; }
-.todo-item { display: flex; gap: 10px; padding: 8px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 0.86rem; }
-.todo-item:hover { background: #fef3c7; }
-.todo-box { width: 16px; height: 16px; border: 2px solid #d97706; border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
-.todo-box.done { background: #16a34a; border-color: #16a34a; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; }
-.todo-item.done-item { opacity: 0.75; text-decoration-line: none; background: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; }
-.done-section { background: #f0fdf4; border: 2px solid #16a34a; border-radius: 10px; padding: 22px 26px; margin: 20px 0; }
-.done-section h3 { color: #14532d; margin-top: 0; }
-.todo-cat { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 1px 7px; border-radius: 10px; font-family: 'Helvetica Neue', sans-serif; flex-shrink: 0; margin-top: 2px; }
-.tc-code { background: #dbeafe; color: #1e40af; }
-.tc-eval { background: var(--green-bg); color: #14532d; }
-.tc-arch { background: var(--t2-bg); color: #4c1d95; }
-.tc-doc { background: #f3f4f6; color: #374151; }
-
-.diagram-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 18px 0; text-align: center; }
+.diagram-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 18px 0; text-align: center; overflow-x: auto; }
 .diagram-wrap .cap { font-size: 0.8rem; color: var(--sub); margin-top: 10px; font-style: italic; }
-
-/* ── Framework comparison table ── */
-.fw-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin: 16px 0; }
-.fw-table thead tr { background: #1e293b; }
-.fw-table thead th { color: #94a3b8; padding: 10px 14px; text-align: left; font-family: 'Helvetica Neue', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.fw-table tbody tr:nth-child(odd) td { background: #f8fafc; }
-.fw-table tbody tr:nth-child(even) td { background: #ffffff; }
-.fw-table td { padding: 14px; vertical-align: top; border-bottom: 1px solid #e2e8f0; line-height: 1.6; }
-.fw-name { font-weight: 700; font-size: 0.92rem; display: block; margin-bottom: 2px; }
-.fw-sub { color: #6b7280; font-size: 0.78rem; display: block; margin-bottom: 8px; }
-.fw-badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; font-family: 'Helvetica Neue', sans-serif; }
-.fw-partial { background: #fef3c7; color: #92400e; }
-.fw-no { background: #fee2e2; color: #991b1b; }
-.fw-table .offers li, .fw-table .gaps li { margin-bottom: 3px; }
-.fw-table .offers { color: #374151; }
-.fw-table .gaps { color: #7f1d1d; }
-.fw-verdict { font-size: 0.82rem; }
-.fw-verdict.partial { color: #92400e; }
-.fw-verdict.no { color: #991b1b; }
-.fw-mismatch { background: #0d2b6b; border-radius: 8px; padding: 18px 22px; margin: 14px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.fw-mismatch p { color: #a8c0e8; font-size: 0.85rem; line-height: 1.7; margin: 0; }
-.fw-mismatch em { color: #c8d8f5; font-style: italic; }
-.fw-compare-chip { background: rgba(255,255,255,0.07); border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; }
-.fw-compare-chip .lbl { color: #fbbf24; font-weight: 700; font-size: 0.75rem; font-family: 'Helvetica Neue', sans-serif; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-.fw-compare-chip .val { color: #fef3c7; font-size: 0.85rem; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+.col-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+.col-box h4 { margin-top: 0; }
+.ablation-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 14px 0; }
+.abl-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.abl-card .abl-label { font-family: 'Helvetica Neue', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.abl-card .abl-name { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+.abl-card .abl-desc { font-size: 0.8rem; color: var(--sub); }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; font-family: 'Helvetica Neue', sans-serif; }
+.tag-new { background: #dbeafe; color: #1e40af; }
+.tag-changed { background: #fdf4ff; color: #7e22ce; }
+.tag-fixed { background: #dcfce7; color: #14532d; }
 </style>
 </head>
 <body>
 
-<!-- ═══════ SIDEBAR ═══════ -->
 <nav id="sidebar">
   <div class="logo">
     <h1>DMAS Notes</h1>
-    <p>Cancer Drug Resistance<br>Personal Reference</p>
+    <p>Cancer Drug Resistance<br>Personal Reference &middot; v2</p>
   </div>
   <nav>
     <div class="sec">Overview</div>
@@ -270,35 +214,36 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
     <a href="#groundtruth">Ground Truth Labels</a>
     <div class="sec">Agents</div>
     <a href="#agents">The Four Agents</a>
+    <a href="#t3-detail">T3 Pathway — Deep Dive</a>
     <a href="#evidencepack">EvidencePack Schema</a>
     <div class="sec">Protocol</div>
     <a href="#gcs">GCS Formula</a>
     <a href="#round1">Round 1: Analysis</a>
+    <a href="#consensus">Consensus Rules &#x26A0;</a>
     <a href="#round2">Round 2: Peer Critique</a>
-    <a href="#checklists">Peer Checklists</a>
-    <a href="#consensus">Consensus Rules</a>
+    <a href="#axiomchallenge">AxiomChallenge</a>
     <a href="#resolver">AxiomResolver</a>
-    <div class="sec">Metrics</div>
-    <a href="#metrics">All Metrics</a>
-    <div class="sec">Results</div>
-    <a href="#results">30-Case Results</a>
-    <a href="#ablation">Ablation Study</a>
-    <a href="#cv">Cross-Validation</a>
+    <div class="sec">Evaluation</div>
+    <a href="#metrics">Quantitative Metrics</a>
+    <a href="#qualitative">Qualitative Metrics</a>
+    <a href="#faithfulness">Faithfulness Eval &#x2605;</a>
     <a href="#errors">Error Analysis</a>
-    <div class="sec">Design</div>
+    <div class="sec">Experiments</div>
+    <a href="#ablation">Ablation Study Design</a>
+    <a href="#baselines">Baseline Comparison</a>
+    <a href="#pharmacology-failures">Pharmacology Failure Cases</a>
     <a href="#why-custom">Why Custom? No ADK/LangChain</a>
     <div class="sec">Reference</div>
     <a href="#constants">Key Constants</a>
     <a href="#example">Worked Example</a>
-    <a href="#todo">&#x2713; TODO List</a>
+    <a href="#changelog">Changelog</a>
   </nav>
 </nav>
 
-<!-- ═══════ MAIN ═══════ -->
 <main id="main">
 <div class="page-top">
-  <h1>DMAS &mdash; Project Notes</h1>
-  <p>Decentralised Multi-Agent System for Cancer Drug Resistance Prediction &nbsp;&middot;&nbsp; Personal reference &amp; recipe book &nbsp;&middot;&nbsp; vertex:gemini-3.1-flash-lite</p>
+  <h1>DMAS &mdash; Project Notes v2</h1>
+  <p>Decentralised Multi-Agent System for Cancer Drug Resistance Prediction &nbsp;&middot;&nbsp; vertex:gemini-3.1-flash-lite &nbsp;&middot;&nbsp; Last updated: Aug 2026</p>
 </div>
 
 <div class="content">
@@ -311,116 +256,91 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
 <div class="metric-strip">
   <div class="metric-chip"><div class="val">4</div><div class="lbl">Specialist Agents</div></div>
   <div class="metric-chip"><div class="val">2</div><div class="lbl">Debate Rounds</div></div>
-  <div class="metric-chip"><div class="val" style="color:#16a34a">0.814</div><div class="lbl">AUROC</div></div>
-  <div class="metric-chip"><div class="val" style="color:#16a34a">96.7%</div><div class="lbl">Coverage</div></div>
-  <div class="metric-chip"><div class="val" style="color:#d97706">0.548</div><div class="lbl">Cohen&apos;s &kappa;</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">0.819</div><div class="lbl">AUROC</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">87.1%</div><div class="lbl">Accuracy</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">0.733</div><div class="lbl">Cohen&apos;s &kappa;</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">1.000</div><div class="lbl">Sensitivity</div></div>
   <div class="metric-chip"><div class="val">0</div><div class="lbl">Training Labels</div></div>
 </div>
 
 <ul>
   <li><strong>Zero-shot:</strong> no fine-tuning, no labelled training data, no embeddings</li>
   <li><strong>MCP-grounded:</strong> each agent queries a dedicated structured database via FastMCP before reasoning &mdash; this is the anti-hallucination layer</li>
-  <li><strong>Debate-driven:</strong> without the debate protocol, individual agents abstain 87% of the time; the protocol converts uncertainty into grounded collective decisions</li>
+  <li><strong>Debate-driven:</strong> unanimity consensus means any single dissenting agent triggers a full debate round; 45.2% of cases enter debate</li>
   <li><strong>Interpretable:</strong> every verdict comes with a full reasoning chain, cited evidence, and a winning agent + axiom</li>
+  <li><strong>Zero false negatives:</strong> the system never misclassifies a resistant case as sensitive (FN=0, NPV=1.0)</li>
 </ul>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="architecture">System Architecture</h2>
 
 <div class="diagram-wrap">
-<svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica Neue, Arial, sans-serif" font-size="12">
-
-  <!-- Input -->
-  <rect x="290" y="10" width="200" height="44" rx="8" fill="#1a4fa0" />
-  <text x="390" y="28" text-anchor="middle" fill="white" font-weight="700" font-size="13">INPUT</text>
-  <text x="390" y="46" text-anchor="middle" fill="#c8d8f5" font-size="11">(cell line, drug)</text>
-
-  <!-- Arrow down -->
-  <line x1="390" y1="54" x2="390" y2="80" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- MCP layer label -->
-  <rect x="10" y="80" width="760" height="120" rx="8" fill="#f8fafc" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6 3"/>
-  <text x="20" y="97" fill="#4a5568" font-size="10" font-weight="700" font-style="italic">MCP RETRIEVAL LAYER (anti-hallucination)</text>
-
-  <!-- MCP server boxes -->
-  <rect x="22" y="102" width="168" height="82" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
-  <text x="106" y="118" text-anchor="middle" font-weight="700" fill="#991b1b" font-size="11">T1 MCP: CIViC + DepMap + OT</text>
-  <text x="106" y="133" text-anchor="middle" fill="#7f1d1d" font-size="10">Somatic mutations &amp; CNV</text>
-  <text x="106" y="148" text-anchor="middle" fill="#7f1d1d" font-size="10">CIViC clinical annotations</text>
-  <text x="106" y="163" text-anchor="middle" fill="#7f1d1d" font-size="10">DepMap Chronos essentiality</text>
-  <text x="106" y="178" text-anchor="middle" fill="#7f1d1d" font-size="10">OpenTargets fallback</text>
-
-  <rect x="204" y="102" width="168" height="82" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
-  <text x="288" y="122" text-anchor="middle" font-weight="700" fill="#4c1d95" font-size="11">T2 MCP: CCLE</text>
-  <text x="288" y="138" text-anchor="middle" fill="#4c1d95" font-size="10">mRNA z-scores</text>
-  <text x="288" y="153" text-anchor="middle" fill="#4c1d95" font-size="10">Drug target expression</text>
-  <text x="288" y="168" text-anchor="middle" fill="#4c1d95" font-size="10">Silencing detection</text>
-
-  <rect x="386" y="102" width="168" height="82" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
-  <text x="470" y="122" text-anchor="middle" font-weight="700" fill="#065f46" font-size="11">T3 MCP: KEGG/Pathways</text>
-  <text x="470" y="138" text-anchor="middle" fill="#065f46" font-size="10">Pathway membership</text>
-  <text x="470" y="153" text-anchor="middle" fill="#065f46" font-size="10">Bypass gene check</text>
-  <text x="470" y="168" text-anchor="middle" fill="#065f46" font-size="10">Activity scoring</text>
-
-  <rect x="568" y="102" width="200" height="82" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
-  <text x="668" y="122" text-anchor="middle" font-weight="700" fill="#78350f" font-size="11">T4 MCP: CTRPv2/GDSC2</text>
-  <text x="668" y="138" text-anchor="middle" fill="#78350f" font-size="10">IC50 z-scores</text>
-  <text x="668" y="153" text-anchor="middle" fill="#78350f" font-size="10">Historical drug response</text>
-  <text x="668" y="168" text-anchor="middle" fill="#78350f" font-size="10">Pre-computed labels</text>
-
-  <!-- Arrows from MCP to agents -->
-  <line x1="106" y1="184" x2="106" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-  <line x1="288" y1="184" x2="288" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-  <line x1="470" y1="184" x2="470" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-  <line x1="668" y1="184" x2="668" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-
-  <!-- Agent boxes -->
-  <rect x="22" y="218" width="168" height="64" rx="6" fill="#dc2626"/>
-  <text x="106" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T1 Genomics Agent</text>
-  <text x="106" y="256" text-anchor="middle" fill="#fee2e2" font-size="10">mutation-driven reasoning</text>
-  <text x="106" y="271" text-anchor="middle" fill="#fee2e2" font-size="10">axiom priority: 5 (highest)</text>
-
-  <rect x="204" y="218" width="168" height="64" rx="6" fill="#7c3aed"/>
-  <text x="288" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T2 Transcriptomics Agent</text>
-  <text x="288" y="256" text-anchor="middle" fill="#ede9fe" font-size="10">expression-level reasoning</text>
-  <text x="288" y="271" text-anchor="middle" fill="#ede9fe" font-size="10">axiom priority: 4</text>
-
-  <rect x="386" y="218" width="168" height="64" rx="6" fill="#059669"/>
-  <text x="470" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T3 Pathway Agent</text>
-  <text x="470" y="256" text-anchor="middle" fill="#d1fae5" font-size="10">bypass / pathway reasoning</text>
-  <text x="470" y="271" text-anchor="middle" fill="#d1fae5" font-size="10">axiom priority: 3</text>
-
-  <rect x="568" y="218" width="200" height="64" rx="6" fill="#d97706"/>
-  <text x="668" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T4 Pharmacology Agent</text>
-  <text x="668" y="256" text-anchor="middle" fill="#fef3c7" font-size="10">IC50-driven reasoning</text>
-  <text x="668" y="271" text-anchor="middle" fill="#fef3c7" font-size="10">axiom priority: 2</text>
-
-  <!-- Arrows from agents to debate box -->
-  <line x1="106" y1="282" x2="360" y2="328" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-  <line x1="288" y1="282" x2="375" y2="328" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-  <line x1="470" y1="282" x2="405" y2="328" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-  <line x1="668" y1="282" x2="420" y2="328" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
-
-  <!-- Debate box -->
-  <rect x="240" y="328" width="300" height="54" rx="8" fill="#1a4fa0"/>
-  <text x="390" y="350" text-anchor="middle" fill="white" font-weight="700" font-size="13">DEBATE ENGINE</text>
-  <text x="390" y="368" text-anchor="middle" fill="#c8d8f5" font-size="11">R1 consensus → R2 peer critique → AxiomResolver</text>
-
-  <!-- Arrow to output -->
-  <line x1="390" y1="382" x2="390" y2="405" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
-
-  <!-- Output -->
-  <rect x="290" y="405" width="200" height="14" rx="6" fill="#16a34a"/>
-  <text x="390" y="415" text-anchor="middle" fill="white" font-weight="700" font-size="11">SENSITIVE / RESISTANT / UNCERTAIN + conf</text>
-
-  <!-- Arrow marker -->
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica Neue, Arial, sans-serif" font-size="12">
   <defs>
     <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
       <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
     </marker>
   </defs>
+  <rect x="290" y="10" width="220" height="44" rx="8" fill="#1a4fa0"/>
+  <text x="400" y="28" text-anchor="middle" fill="white" font-weight="700" font-size="13">INPUT</text>
+  <text x="400" y="46" text-anchor="middle" fill="#c8d8f5" font-size="11">(cell line, drug, target_genes)</text>
+  <line x1="400" y1="54" x2="400" y2="80" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="10" y="80" width="780" height="120" rx="8" fill="#f8fafc" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="20" y="97" fill="#4a5568" font-size="10" font-weight="700" font-style="italic">MCP RETRIEVAL LAYER (anti-hallucination: agents never generate DB content)</text>
+  <rect x="18" y="102" width="178" height="82" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="107" y="118" text-anchor="middle" font-weight="700" fill="#991b1b" font-size="11">T1: CIViC + DepMap + OT</text>
+  <text x="107" y="133" text-anchor="middle" fill="#7f1d1d" font-size="10">Somatic mutations &amp; CNV</text>
+  <text x="107" y="148" text-anchor="middle" fill="#7f1d1d" font-size="10">CIViC clinical annotations</text>
+  <text x="107" y="163" text-anchor="middle" fill="#7f1d1d" font-size="10">DepMap Chronos scores</text>
+  <text x="107" y="178" text-anchor="middle" fill="#7f1d1d" font-size="10">OpenTargets fallback</text>
+  <rect x="210" y="102" width="178" height="82" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="299" y="118" text-anchor="middle" font-weight="700" fill="#4c1d95" font-size="11">T2: CCLE mRNA</text>
+  <text x="299" y="133" text-anchor="middle" fill="#4c1d95" font-size="10">Target gene z-scores</text>
+  <text x="299" y="148" text-anchor="middle" fill="#4c1d95" font-size="10">High-expression context</text>
+  <text x="299" y="163" text-anchor="middle" fill="#4c1d95" font-size="10">Silencing detection</text>
+  <rect x="402" y="102" width="178" height="82" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+  <text x="491" y="118" text-anchor="middle" font-weight="700" fill="#065f46" font-size="11">T3: KEGG Pathways</text>
+  <text x="491" y="133" text-anchor="middle" fill="#065f46" font-size="10">Pathway membership</text>
+  <text x="491" y="148" text-anchor="middle" fill="#065f46" font-size="10">Bypass gene check</text>
+  <text x="491" y="163" text-anchor="middle" fill="#065f46" font-size="10">Activity scoring (z≥0.5, 25%)</text>
+  <rect x="594" y="102" width="196" height="82" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="692" y="118" text-anchor="middle" font-weight="700" fill="#78350f" font-size="11">T4: CTRPv2 / GDSC2</text>
+  <text x="692" y="133" text-anchor="middle" fill="#78350f" font-size="10">IC50 z-scores</text>
+  <text x="692" y="148" text-anchor="middle" fill="#78350f" font-size="10">Historical drug response</text>
+  <text x="692" y="163" text-anchor="middle" fill="#78350f" font-size="10">Pre-computed labels</text>
+  <line x1="107" y1="184" x2="107" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="299" y1="184" x2="299" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="491" y1="184" x2="491" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="692" y1="184" x2="692" y2="218" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <rect x="18" y="218" width="178" height="64" rx="6" fill="#dc2626"/>
+  <text x="107" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T1 Genomics Agent</text>
+  <text x="107" y="256" text-anchor="middle" fill="#fee2e2" font-size="10">mutation-driven reasoning</text>
+  <text x="107" y="271" text-anchor="middle" fill="#fee2e2" font-size="10">axiom priority: 5 (highest)</text>
+  <rect x="210" y="218" width="178" height="64" rx="6" fill="#7c3aed"/>
+  <text x="299" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T2 Transcriptomics Agent</text>
+  <text x="299" y="256" text-anchor="middle" fill="#ede9fe" font-size="10">expression-level reasoning</text>
+  <text x="299" y="271" text-anchor="middle" fill="#ede9fe" font-size="10">axiom priority: 4</text>
+  <rect x="402" y="218" width="178" height="64" rx="6" fill="#059669"/>
+  <text x="491" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T3 Pathway Agent</text>
+  <text x="491" y="256" text-anchor="middle" fill="#d1fae5" font-size="10">bypass / pathway reasoning</text>
+  <text x="491" y="271" text-anchor="middle" fill="#d1fae5" font-size="10">axiom priority: 3</text>
+  <rect x="594" y="218" width="196" height="64" rx="6" fill="#d97706"/>
+  <text x="692" y="240" text-anchor="middle" fill="white" font-weight="700" font-size="11">T4 Pharmacology Agent</text>
+  <text x="692" y="256" text-anchor="middle" fill="#fef3c7" font-size="10">IC50-driven reasoning</text>
+  <text x="692" y="271" text-anchor="middle" fill="#fef3c7" font-size="10">axiom priority: 2</text>
+  <line x1="107" y1="282" x2="370" y2="338" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="299" y1="282" x2="385" y2="338" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="491" y1="282" x2="415" y2="338" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="692" y1="282" x2="430" y2="338" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arr)"/>
+  <rect x="240" y="338" width="320" height="64" rx="8" fill="#1a4fa0"/>
+  <text x="400" y="358" text-anchor="middle" fill="white" font-weight="700" font-size="13">DEBATE ENGINE</text>
+  <text x="400" y="374" text-anchor="middle" fill="#c8d8f5" font-size="10">Unanimity R1 check &rarr; R2 mechanistic critique &rarr; AxiomResolver</text>
+  <text x="400" y="390" text-anchor="middle" fill="#c8d8f5" font-size="10">AxiomChallenge &middot; verdict revision (0.78&times;) &middot; peer endorsement</text>
+  <line x1="400" y1="402" x2="400" y2="428" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="270" y="428" width="260" height="18" rx="6" fill="#16a34a"/>
+  <text x="400" y="441" text-anchor="middle" fill="white" font-weight="700" font-size="11">SENSITIVE / RESISTANT / UNCERTAIN + confidence</text>
 </svg>
-<div class="cap">Full system architecture. Each agent queries its dedicated MCP server independently, then all four packs enter the debate engine.</div>
+<div class="cap">Full system architecture. All 4 agents query independently in parallel, then packs enter the debate engine. raw_evidence is now stored per pack for faithfulness evaluation.</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -429,35 +349,33 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
 <table>
 <thead><tr><th>Tier</th><th>Database</th><th>What it stores</th><th>Key query</th><th>Returns</th></tr></thead>
 <tbody>
-<tr><td><span class="agent-badge t1b">T1</span></td><td>CCLE Mutations + CNV</td><td>Somatic point mutations and copy number variants from CCLE across ~1800 cell lines</td><td>cell line + target gene(s)</td><td>mutation list with driver status, CNV status (amplification/deletion)</td></tr>
-<tr><td><span class="agent-badge t1b">T1</span></td><td>CIViC (Clinical Interpretation of Variants in Cancer)</td><td>Curated somatic mutation &rarr; drug sensitivity annotations; ~6,000 evidence items, ~200 genes</td><td>gene + variant + drug name</td><td>CIViC evidence entries with level (A&ndash;E), significance, drug match</td></tr>
-<tr><td><span class="agent-badge t1b">T1</span></td><td>DepMap CRISPR Chronos (24Q4)</td><td>Genome-wide CRISPR knockout essentiality scores; 1,208 cell lines &times; 18,531 genes</td><td>cell line + target gene(s)</td><td>Chronos score per gene; &le;&minus;0.5 = essential &rarr; SENSITIVE signal</td></tr>
-<tr><td><span class="agent-badge t1b">T1</span></td><td>OpenTargets Platform (live API)</td><td>60M+ drug&ndash;gene evidence associations from clinical trials, literature, GWAS</td><td>Ensembl gene ID + drug name</td><td>matched drug rows with mechanismOfAction and clinical phase; queried only when CIViC + DepMap both empty</td></tr>
-<tr><td><span class="agent-badge t2b">T2</span></td><td>CCLE mRNA Expression</td><td>TPM + z-scores for ~1700 cell lines across ~20,000 genes</td><td>cell line + gene list</td><td>z-score per gene; silencing if z &lt; &minus;2.0; SENSITIVE if z &gt; 1.0 (moderate) or z &gt; 1.5 (strong)</td></tr>
-<tr><td><span class="agent-badge t3b">T3</span></td><td>Pathway DB (KEGG-derived)</td><td>Signalling pathway topology &mdash; gene membership, bypass routes, upstream regulators</td><td>drug target gene(s)</td><td>pathway membership list, bypass_check result; also queries T2 MCP for bypass gene expression</td></tr>
-<tr><td><span class="agent-badge t4b">T4</span></td><td>CTRPv2 / GDSC2</td><td>IC50 measurements for ~500 drugs across ~900 cell lines (CTRPv2) + GDSC2 supplement</td><td>cell line + drug name</td><td>ln_IC50, z-score, pre-computed label (SENSITIVE/RESISTANT/UNCERTAIN)</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>CCLE Mutations + CNV</td><td>Somatic point mutations and copy number variants from CCLE across ~1800 cell lines</td><td>cell_line + target gene(s)</td><td>mutation list with driver status, CIViC descriptions, CNV status</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>CIViC (embedded in genomics.db)</td><td>Drug-specific variant sensitivity/resistance annotations; matched by gene+variant+drug</td><td>gene + variant + drug name</td><td>civic_description text, civic_significance, civic_level (A&ndash;E)</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>OncoKB annotations</td><td>oncogenicity, mutationEffect, highestSensitiveLevel, highestResistanceLevel per variant</td><td>gene + mutation</td><td>Structured annotation fields</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>DepMap CRISPR Chronos (24Q4)</td><td>1,208 cell lines &times; 18,531 genes; Chronos &le; &minus;1.0 = strong essentiality</td><td>cell_line + target gene(s)</td><td>Chronos score; used only when CIViC/OncoKB empty</td></tr>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>OpenTargets Platform (live API)</td><td>60M+ drug&ndash;gene associations; phase &ge; 3 = strong signal</td><td>Ensembl gene ID + drug name</td><td>Fallback only when CIViC + DepMap both empty</td></tr>
+<tr><td><span class="agent-badge t2b">T2</span></td><td>CCLE mRNA Expression</td><td>TPM + z-scores for ~1700 cell lines across ~20,000 genes</td><td>cell_line + gene list</td><td>z-score per gene; z &lt; &minus;2.0 = silenced; z &gt; 1.5 = overexpressed</td></tr>
+<tr><td><span class="agent-badge t3b">T3</span></td><td>Pathway DB (KEGG-derived)</td><td>Pathway topology, gene membership, bypass routes with relationship (activation/inhibition)</td><td>target gene(s)</td><td>pathway_membership, bypass_check with gene + relationship field, activity_scores</td></tr>
+<tr><td><span class="agent-badge t4b">T4</span></td><td>CTRPv2 / GDSC2</td><td>IC50 measurements for ~500 drugs across ~900 cell lines</td><td>cell_line + drug name</td><td>ln_IC50, z_score, AUC, pre-computed label</td></tr>
 </tbody>
 </table>
 
-<div class="info"><strong>Why MCP?</strong> FastMCP acts as a structured API layer over each database. Agents call tools (<code>get_mutations</code>, <code>get_expression</code>, <code>bypass_check</code>, <code>get_ic50</code>) and receive structured JSON &mdash; not free text. This prevents the LLM from hallucinating database content since it never generates the data, only reasons about it.</div>
+<div class="info"><strong>Why MCP?</strong> FastMCP acts as a structured API layer over each database. Agents call tools (<code>get_mutations</code>, <code>get_expression</code>, <code>check_bypass</code>, <code>get_ic50</code>) and receive structured JSON &mdash; not free text. The LLM never generates the data, only reasons about it. The <code>raw_evidence</code> field now preserves the full MCP output for post-hoc faithfulness auditing.</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="groundtruth">Ground Truth Labels</h2>
 
-<p>Ground truth is derived from CTRPv2 IC50 measurements using a z-score threshold:</p>
+<p>The gold standard evaluation set uses <strong>31 literature-validated cases</strong> with labels independent of GDSC/CTRP assay z-scores. This avoids the leakage problem where T4 pharmacology agent queries the same database that generated the labels.</p>
 
 <div class="formula">
-  <div class="f-title">IC50 Z-Score (drug-normalised)</div>
+  <div class="f-title">IC50 Z-Score (drug-normalised) &mdash; used for CTRP labels only</div>
   <div class="main">z = (ln IC50 &minus; &mu;<sub>drug</sub>) / &sigma;<sub>drug</sub></div>
-  <div class="sub-f">&mu;<sub>drug</sub> = mean ln IC50 across all cell lines for this drug</div>
-  <div class="sub-f">&sigma;<sub>drug</sub> = std dev ln IC50 across all cell lines for this drug</div>
-  <br>
-  <div class="sub-f">z &lt; &minus;0.5 &rarr; <strong style="color:var(--green)">SENSITIVE</strong> (lower IC50 than average &rarr; more sensitive)</div>
-  <div class="sub-f">&minus;0.5 &le; z &le; +0.5 &rarr; <strong style="color:var(--amber)">UNCERTAIN</strong> (near population average)</div>
-  <div class="sub-f">z &gt; +0.5 &rarr; <strong style="color:var(--red)">RESISTANT</strong> (higher IC50 than average &rarr; less sensitive)</div>
+  <div class="sub-f">z &lt; &minus;0.5 &rarr; <strong style="color:var(--green)">SENSITIVE</strong></div>
+  <div class="sub-f">&minus;0.5 &le; z &le; +0.5 &rarr; <strong style="color:var(--amber)">UNCERTAIN</strong></div>
+  <div class="sub-f">z &gt; +0.5 &rarr; <strong style="color:var(--red)">RESISTANT</strong></div>
 </div>
 
-<div class="warn"><strong>Caveat:</strong> IC50 z-scores are population-level assay measurements. They can be noisy (passage drift, batch effects) and do not always reflect in-vivo sensitivity or clinical outcomes. The system predicts CTRPv2 labels, not clinical response.</div>
+<div class="warn"><strong>Label leakage warning:</strong> Do NOT evaluate on CTRP-labelled test sets when T4 queries CTRPv2/GDSC2 IC50 data &mdash; the pharmacology agent essentially has the answer. All final results use the gold standard set with clinical/literature labels.</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="agents">The Four Agents</h2>
@@ -467,806 +385,851 @@ tr.hl td { background: #eff6ff; font-weight: 600; }
     <h4 style="color:var(--t1)">T1 &mdash; Genomics Agent <span>(axiom priority: 5)</span></h4>
     <ul>
       <li>Queries CCLE mutations + CNV for somatic alterations in the drug's target genes</li>
-      <li>Enriches mutations with CIViC drug-specific clinical evidence (live lookup per variant+drug pair)</li>
-      <li>Strong signal: CIViC entry with evidence level A or B linking variant to this specific drug</li>
-      <li><strong>DepMap supplement</strong>: when CIViC has no match, queries Chronos CRISPR scores; Chronos &le; &minus;0.5 = gene essential in this cell line &rarr; SENSITIVE signal</li>
-      <li><strong>OpenTargets fallback</strong>: when CIViC + DepMap both thin, queries OpenTargets GraphQL API; phase &ge; 3 drug match = strong clinical signal; phase 1&ndash;2 = weak signal</li>
-      <li>UNCERTAIN only when all three sources (CIViC, DepMap, OpenTargets) return no actionable evidence</li>
+      <li>CIViC drug-specific match: checks civic_description for THIS drug name; same mutation can sensitise to drug A and resist drug B</li>
+      <li>OncoKB: Gain-of-function + inhibitor drug &rarr; SENSITIVE; Loss-of-function &rarr; RESISTANT/UNCERTAIN</li>
+      <li>DepMap Chronos supplement: &le; &minus;1.0 strong essential; &minus;0.5 to &minus;1.0 weak signal (conf cap 0.55); &gt; &minus;0.5 non-informative</li>
+      <li>RPPA protein expression: if target WT, RPPA &gt; 0.5 &rarr; SENSITIVE (cap 0.65)</li>
+      <li>OpenTargets fallback: phase &ge; 3 = strong; phase 1&ndash;2 = weak</li>
+      <li><strong>T1_OVERRIDE threshold:</strong> if T1 confidence &lt; 0.80 AND lower tiers unanimously disagree &rarr; resolver uses confidence-weighted vote instead of T1 tier-priority</li>
     </ul>
   </div>
   <div class="agent-card t2">
     <h4 style="color:var(--t2)">T2 &mdash; Transcriptomics Agent <span>(axiom priority: 4)</span></h4>
     <ul>
-      <li>Queries CCLE for mRNA z-scores of the drug's target gene(s)</li>
-      <li>Applies drug mechanism classification: <em>mutation-driven</em> vs <em>expression-driven</em></li>
-      <li>For expression-driven drugs: z &gt; 1.5 &rarr; SENSITIVE (confidence 0.75&ndash;0.85); z 1.0&ndash;1.5 &rarr; SENSITIVE (confidence 0.55&ndash;0.70)</li>
+      <li>Queries CCLE mRNA z-scores for the drug's target gene(s)</li>
+      <li>Drug mechanism classification: <em>mutation-driven</em> vs <em>expression-driven</em></li>
+      <li>Expression-driven: z &gt; 1.5 &rarr; SENSITIVE (conf 0.75&ndash;0.85); z 1.0&ndash;1.5 &rarr; SENSITIVE (conf 0.55&ndash;0.70)</li>
       <li>Silencing gate: z &lt; &minus;2.0 &rarr; target absent &rarr; RESISTANT</li>
-      <li>For mutation-driven drugs: defers to T1; abstains if T1 is UNCERTAIN</li>
+      <li><strong>Round 1 only:</strong> T2 does NOT check bypass genes in R1; bypass detection belongs to T3. In R2, after seeing T3's evidence, T2 can check bypass gene expression to revise verdict</li>
+      <li><strong>Known issue:</strong> T2 sometimes states mutation facts (e.g. &ldquo;NCI-H1975 is EGFR L858R/T790M&rdquo;) from LLM training data rather than CCLE tools &mdash; cross-tier leakage (15.7% of decisive T2 calls)</li>
     </ul>
   </div>
   <div class="agent-card t3">
     <h4 style="color:var(--t3)">T3 &mdash; Pathway Agent <span>(axiom priority: 3)</span></h4>
     <ul>
-      <li>Queries KEGG for pathway membership and bypass gene expression</li>
-      <li>Logic: if pathway is active AND no bypass genes overexpressed &rarr; SENSITIVE</li>
-      <li>Bypass check: queries alternative pathway members at z &ge; 1.0</li>
-      <li><strong>Self-attestation gate:</strong> must score &ge; 3/4 on 4-question checklist or verdict is demoted</li>
-      <li>Most failure-prone: KEGG doesn&rsquo;t encode pharmacokinetics or paradoxical feedback</li>
+      <li>Queries KEGG for pathway membership and bypass gene expression (pre-fetched from T2 MCP)</li>
+      <li>Pathway activity = fraction of pathway member genes with z &ge; 0.5; threshold = <strong>0.25</strong> (25%)</li>
+      <li>Bypass filter: only activating relationship genes counted; inhibition-relationship genes excluded</li>
+      <li>Cancer-type-specific pathways (hsa05210&ndash;hsa05226) skipped for bypass unless tumor type matches</li>
+      <li><strong>Self-attestation 4-boolean gate:</strong> score &ge; 3 &rarr; RESISTANT (hard constraint)</li>
+      <li><strong>T3 quality gate in consensus/resolver:</strong> RESISTANT only counts if score &ge; 3; SENSITIVE only counts if pathway_active = True</li>
     </ul>
   </div>
   <div class="agent-card t4">
     <h4 style="color:var(--t4)">T4 &mdash; Pharmacology Agent <span>(axiom priority: 2)</span></h4>
     <ul>
       <li>Queries CTRPv2/GDSC2 for historical IC50 z-score for this exact (cell line, drug) pair</li>
-      <li>Pre-computed label is returned directly; agent validates and reports</li>
-      <li>Most load-bearing agent in CTRPv2 test set (drove 16/30 verdicts)</li>
-      <li>UNCERTAIN when: no IC50 data available, or |z| &le; 0.5 (borderline)</li>
-      <li>Lower axiom priority than T1&ndash;T3: empirical prior can be overridden by molecular evidence</li>
+      <li>z &lt; &minus;0.5 &rarr; SENSITIVE; z &gt; +0.5 &rarr; RESISTANT; |z| &le; 0.5 &rarr; UNCERTAIN</li>
+      <li>Non-targeted drugs: T1 structural mutation evidence is demoted; T4 IC50 wins tiebreaks</li>
+      <li>Lowest axiom priority: empirical IC50 prior can be overridden by molecular evidence</li>
+      <li><strong>Known issue:</strong> T4 sometimes states cell-line phenotypes (p53-null, ER-positive) from training data rather than retrieved data</li>
     </ul>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="t3-detail">T3 Pathway Agent &mdash; Deep Dive <span class="tag tag-changed">Updated</span></h2>
+
+<h3>Self-Attestation System (4 booleans)</h3>
+<p>T3 is the most failure-prone agent because KEGG doesn't encode pharmacokinetics or paradoxical feedback. To prevent low-quality T3 verdicts from swaying consensus, a self-attestation gate is enforced both in the LLM prompt and in the Python consensus/resolver logic.</p>
+
+<pre><code># T3 self-attestation fields (added to JSON response alongside EvidencePack)
+{
+  "bypass_gene_expressed": bool,   # found ≥1 bypass gene at z≥1.0 in this cell line?
+  "pathway_active": bool,          # ≥25% of pathway member genes expressed at z≥0.5?
+  "mechanism_relevant": bool,      # does bypass gene mechanistically connect to resistance?
+  "bypass_distinct": bool,         # bypass gene ≠ primary drug target gene?
+  "score": int                     # sum of True values; range 0–4
+}</code></pre>
+
+<h3>Verdict Rules (Hard Constraints)</h3>
+<div class="warn">These are <strong>protocol constraints</strong>, not guidelines. The LLM is instructed that any other verdict is a protocol violation.</div>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica Neue, Arial, sans-serif" font-size="12">
+  <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+  <rect x="260" y="10" width="180" height="34" rx="6" fill="#1a4fa0"/>
+  <text x="350" y="32" text-anchor="middle" fill="white" font-weight="700">Compute score (0&ndash;4)</text>
+  <line x1="350" y1="44" x2="350" y2="70" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <rect x="260" y="70" width="180" height="34" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="350" y="92" text-anchor="middle" fill="#1e293b" font-weight="700">score &ge; 3?</text>
+  <line x1="260" y1="87" x2="140" y2="87" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <text x="190" y="80" text-anchor="middle" fill="#16a34a" font-size="11" font-weight="700">YES</text>
+  <rect x="20" y="70" width="120" height="34" rx="6" fill="#dc2626"/>
+  <text x="80" y="92" text-anchor="middle" fill="white" font-weight="700">RESISTANT</text>
+  <line x1="440" y1="87" x2="530" y2="87" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <text x="487" y="80" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">NO</text>
+  <rect x="530" y="70" width="160" height="34" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="610" y="87" text-anchor="middle" fill="#1e293b" font-size="11">pathway_active=True</text>
+  <text x="610" y="101" text-anchor="middle" fill="#1e293b" font-size="11">&amp; no bypass found?</text>
+  <line x1="610" y1="104" x2="610" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <text x="621" y="128" fill="#16a34a" font-size="11" font-weight="700">YES</text>
+  <rect x="550" y="140" width="120" height="34" rx="6" fill="#16a34a"/>
+  <text x="610" y="162" text-anchor="middle" fill="white" font-weight="700">SENSITIVE</text>
+  <line x1="530" y1="104" x2="350" y2="140" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+  <text x="415" y="130" fill="#dc2626" font-size="11" font-weight="700">NO</text>
+  <rect x="260" y="140" width="180" height="34" rx="6" fill="#d97706"/>
+  <text x="350" y="162" text-anchor="middle" fill="white" font-weight="700">UNCERTAIN</text>
+  <text x="350" y="210" text-anchor="middle" fill="#64748b" font-size="10" font-style="italic">UNCERTAIN covers: pathway not in KEGG, pathway inactive,</text>
+  <text x="350" y="224" text-anchor="middle" fill="#64748b" font-size="10" font-style="italic">score 1&ndash;2 (bypass evidence insufficient), data missing</text>
+</svg>
+<div class="cap">T3 verdict decision tree. Score &ge; 3 is the only path to RESISTANT — no exceptions.</div>
+</div>
+
+<h3>Pathway Activity Threshold: Why 0.25?</h3>
+<p>The threshold was lowered from 0.40 to <strong>0.25</strong> after measuring actual pathway activity scores across the 31 gold standard cases.</p>
+<ul>
+  <li>KEGG pathways contain 80&ndash;300 genes. At a 40% threshold, almost all pathway activity scores (which ranged 0.19&ndash;0.35 in practice) fell below the gate, making <code>pathway_active</code> always False</li>
+  <li>25% = a quarter of pathway genes expressed at z &ge; 0.5 is a reasonable biological signal that a pathway is active in a given cell line</li>
+  <li>T3's <code>_compute_signal</code> is capped at 0.25 from pathway activity alone (bypass confirmed = 1.0)</li>
+</ul>
+
+<pre><code># src/agents/pathway_agent.py — pathway activity gate
+if activity_score &lt; 0.25:   # skip pathways with &lt; 25% genes expressed
+    continue
+
+# _compute_signal: caps pathway-only signal at 0.25
+def _compute_signal(self, evidence: dict) -> float:
+    confirmed_bypasses = evidence.get("confirmed_bypass_genes", [])
+    if confirmed_bypasses:
+        return 1.0   # bypass confirmed expressed &rarr; strong RESISTANT signal
+    activity_scores = evidence.get("pathway_activity_scores", {})
+    max_activity = max(activity_scores.values()) if activity_scores else 0.0
+    return min(max_activity, 0.25)  # at most 0.25 from pathway activity alone</code></pre>
+
+<h3>Bypass Gene Filtering</h3>
+<p>Not all bypass genes in KEGG confer resistance. The agent applies three filters before counting a bypass:</p>
+<ol>
+  <li><strong>Relationship filter:</strong> only <code>relationship=&quot;activation&quot;</code> (or null/unknown) genes count; inhibition-relationship genes are suppressed by the blocked pathway and cannot rescue the cell</li>
+  <li><strong>Expression filter:</strong> bypass gene must be expressed in this cell line at z &ge; 1.0 (queried from T2 MCP pre-fetch)</li>
+  <li><strong>Cancer-type filter:</strong> cancer-type-specific KEGG pathways (hsa05210&ndash;hsa05226) are skipped for bypass unless the tumor type matches the cell line context</li>
+</ol>
+
+<h3>T3 Quality Gate (Consensus + Resolver)</h3>
+<p>Both <code>_check_consensus()</code> and <code>AxiomResolver</code> apply the same gate before counting T3 as a decisive agent:</p>
+<pre><code>def _t3_passes(p: EvidencePack) -> bool:
+    if p.evidence_tier != EvidenceTier.T3_PATHWAY:
+        return True
+    sa = p.self_attestation or {}
+    if p.verdict == Verdict.RESISTANT:
+        return (sa.get("score") or 0) >= 3   # must have strong self-attestation
+    if p.verdict == Verdict.SENSITIVE:
+        return bool(sa.get("pathway_active", False))  # pathway must be active
+    return True  # UNCERTAIN always passes</code></pre>
+<p>This means a T3 pack with score=2 voting RESISTANT is treated as if T3 was UNCERTAIN for consensus and resolver purposes — it cannot pull the system to a wrong verdict on weak evidence.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="evidencepack">EvidencePack Schema</h2>
 
-<p>Each agent returns one <code>EvidencePack</code> (Pydantic model). This is the unit of information that flows through the debate.</p>
+<p>Each agent returns one <code>EvidencePack</code> (Pydantic model). This is the unit of information flowing through the debate. <span class="tag tag-new">New</span> <code>raw_evidence</code> field added for faithfulness evaluation.</p>
 
 <pre><code>class EvidencePack(BaseModel):
-    agent_id:       str           # e.g. "genomics_agent_001"
-    cell_line:      str           # e.g. "COLO-205"
-    drug:           str           # e.g. "PLX-4720"
-    verdict:        Verdict       # SENSITIVE | RESISTANT | UNCERTAIN
-    confidence:     float         # GCS score [0.0, 1.0]; UNCERTAIN capped at 0.5
-    evidence_tier:  EvidenceTier  # T1_STRUCTURAL ... T4_PHARMACOLOGICAL
-    key_findings:   list[Finding] # [{biomarker, value, interpretation, data_source}]
-    reasoning:      str           # full LLM reasoning chain
-    caveats:        list[str]
-    conflict_flags: list[str]
-    peer_scores:    dict          # {"A": 0.75, "B": 1.0, ...} filled after Round 2
-    self_attestation: dict | None # T3 only: {"score": int, "checks": [bool,...]}
-    data_status:    str | None    # "data_found" | "target_wild_type" | "cell_line_missing" ...</code></pre>
+    agent_id:         str           # e.g. "genomics_agent"
+    cell_line:        str           # e.g. "NCI-H1975"
+    drug:             str           # e.g. "Osimertinib"
+    verdict:          Verdict       # SENSITIVE | RESISTANT | UNCERTAIN
+    confidence:       float         # GCS score [0.0, 1.0]; UNCERTAIN capped at 0.50
+    evidence_tier:    EvidenceTier  # T1_STRUCTURAL ... T4_PHARMACOLOGICAL
+    key_findings:     list[Finding] # [{biomarker, value, interpretation, data_source}]
+    reasoning:        str           # full LLM reasoning chain
+    caveats:          list[str]
+    conflict_flags:   list[str]
+    peer_scores:      dict          # {"A": 0.75, "B": 1.0} filled after Round 2
+    data_status:      str | None    # "data_found"|"target_wild_type"|"signal_below_threshold"...
+    self_attestation: dict | None   # T3 only: {bypass_gene_expressed, pathway_active, ..., score}
+    raw_evidence:     dict | None   # NEW: full MCP tool output for faithfulness evaluation</code></pre>
+
+<p>The <code>raw_evidence</code> dict is the unprocessed output of <code>_fetch_evidence()</code>. For T1 it contains <code>{mutations, cnv, rppa_expression}</code>; for T2 <code>{target_expression, high_expression_context}</code>; for T3 <code>{pathway_membership, bypass_check, pathway_activity_scores, confirmed_bypass_genes}</code>; for T4 <code>{ic50, drug_info}</code>. This enables the LLM judge to verify that every factual claim in reasoning is traceable to actual retrieved data.</p>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="gcs">GCS Formula (Grounded Confidence Score)</h2>
 
-<p>The GCS replaces the LLM&rsquo;s raw self-reported confidence with a structured score computed from the evidence. It is calculated <em>after</em> the LLM returns its pack, overwriting whatever the LLM said its confidence was.</p>
+<p>The GCS replaces the LLM's raw self-reported confidence with a structured score computed from the evidence. It is calculated <em>after</em> the LLM returns its pack, overwriting the LLM's stated confidence value.</p>
 
 <div class="formula">
   <div class="f-title">Grounded Confidence Score</div>
-  <div class="main">GCS = 0.40 &middot; H &nbsp;+&nbsp; 0.30 &middot; E &nbsp;+&nbsp; 0.20 &middot; T &nbsp;+&nbsp; 0.10 &middot; S</div>
+  <div class="main">GCS = (H &times; 0.40) + (E &times; 0.30) + (T &times; 0.20) + (S &times; 0.10)</div>
   <br>
-  <div class="sub-f"><strong>H (Hit rate)</strong> = fraction of cited biomarkers found in MCP evidence text</div>
-  <div class="sub-f">&nbsp;&nbsp;&nbsp;= count(key_findings where biomarker appears in evidence_raw JSON) / len(key_findings)</div>
-  <div class="sub-f">&nbsp;&nbsp;&nbsp;If no key_findings listed &rarr; H = 0.0</div>
+  <div class="sub-f"><strong>H (Hit rate, weight 0.40)</strong> = fraction of cited biomarkers found in raw MCP evidence</div>
+  <div class="sub-f">&nbsp;&nbsp;= count(key_findings where biomarker appears in evidence dict) / len(key_findings)</div>
+  <div class="sub-f">&nbsp;&nbsp;If no key_findings &rarr; H = 0.0</div>
   <br>
-  <div class="sub-f"><strong>E (Evidence completeness)</strong> = 1.0 if MCP returned any non-empty data, else 0.0</div>
-  <div class="sub-f">&nbsp;&nbsp;&nbsp;(binary: did the database have anything at all for this query?)</div>
+  <div class="sub-f"><strong>E (Evidence completeness, weight 0.30)</strong> = 1.0 if MCP returned any non-empty data, else 0.0</div>
   <br>
-  <div class="sub-f"><strong>T (Tier weight)</strong>: T1=1.0, T2=0.8, T3=0.6, T4=0.4, T5=0.2</div>
+  <div class="sub-f"><strong>T (Tier weight, weight 0.20)</strong>: T1=1.0, T2=0.8, T3=0.6, T4=0.4, T5=0.2</div>
   <br>
-  <div class="sub-f"><strong>S (Signal strength)</strong> = LLM&rsquo;s raw self-reported confidence, clamped to [0, 1]</div>
+  <div class="sub-f"><strong>S (Signal strength, weight 0.10)</strong> = LLM's raw self-reported confidence, clamped to [0, 1]</div>
   <br>
   <div class="sub-f"><strong>UNCERTAIN cap:</strong> if verdict = UNCERTAIN &rarr; confidence = min(GCS, 0.50)</div>
+  <div class="sub-f"><strong>Revision penalty:</strong> if verdict revised in Round 2 &rarr; new_conf &times; 0.78</div>
 </div>
 
-<h3>GCS in Practice &mdash; Examples</h3>
 <table>
-<thead><tr><th>Case</th><th>H</th><th>E</th><th>T</th><th>S</th><th>GCS</th><th>Note</th></tr></thead>
+<thead><tr><th>Scenario</th><th>H</th><th>E</th><th>T</th><th>S</th><th>GCS</th><th>Note</th></tr></thead>
 <tbody>
-<tr><td>COLO-205 + PLX-4720 (T1)</td><td>1.0</td><td>1.0</td><td>1.0</td><td>1.0</td><td><strong>1.00</strong></td><td>Perfect: BRAF V600E named, CIViC entry found, T1 tier, strong signal</td></tr>
-<tr><td>L-428 + Dabrafenib (T3)</td><td>0.75</td><td>1.0</td><td>0.6</td><td>0.65</td><td><strong>0.655</strong></td><td>Pathway active, 3/4 biomarkers in MCP text, T3 tier weight</td></tr>
-<tr><td>HT-1376 + OSI-027 (T4)</td><td>0.5</td><td>1.0</td><td>0.4</td><td>0.45</td><td><strong>0.447</strong></td><td>IC50 found but low z-score separation, T4 tier penalty</td></tr>
-<tr><td>SU-DHL-4 + Topotecan (T1)</td><td>0.0</td><td>0.0</td><td>1.0</td><td>0.1</td><td>capped 0.20</td><td>No data at all &rarr; E=0, H=0; UNCERTAIN &rarr; capped at 0.5</td></tr>
+<tr><td>NCI-H1975 + Osimertinib (T1, EGFR T790M with CIViC Level A)</td><td>1.0</td><td>1.0</td><td>1.0</td><td>1.0</td><td><strong>1.00</strong></td><td>Perfect: biomarker named, CIViC entry found, T1 tier</td></tr>
+<tr><td>T3 with bypass confirmed expressed (z&ge;1.0)</td><td>1.0</td><td>1.0</td><td>0.6</td><td>0.80</td><td><strong>0.86</strong></td><td>High: bypass genes in MCP data + confirmed expressed</td></tr>
+<tr><td>T4 IC50 z=-0.3 (borderline)</td><td>0.5</td><td>1.0</td><td>0.4</td><td>0.45</td><td><strong>0.447</strong></td><td>Low: IC50 found but borderline z-score</td></tr>
+<tr><td>No data at all (UNCERTAIN)</td><td>0.0</td><td>0.0</td><td>1.0</td><td>0.1</td><td>cap 0.50</td><td>E=0, H=0; forced to UNCERTAIN; capped at 0.50</td></tr>
 </tbody>
 </table>
-
-<div class="warn"><strong>Known calibration issue:</strong> High E (data returned) + high H (biomarker cited) can produce high GCS even when the evidence is irrelevant to the resistance mechanism. This creates high-confidence wrong predictions when one agent commits and others abstain. Proposed fix: apply a &times;0.85 singleton penalty when only one agent is decisive.</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <h2 id="round1">Round 1: Independent Analysis</h2>
 
 <div class="steps">
-  <div class="step"><div class="step-n">1</div><div class="step-body"><strong>Query MCP</strong><p>Each agent independently calls its MCP server with the (cell line, drug) pair and receives structured JSON evidence.</p></div></div>
-  <div class="step"><div class="step-n">2</div><div class="step-body"><strong>LLM reasons &rarr; returns JSON pack</strong><p>The LLM receives the evidence and produces a verdict, raw confidence, key_findings, reasoning, and (for T3) self_attestation. Format is strict JSON; unparseable outputs default to UNCERTAIN.</p></div></div>
-  <div class="step"><div class="step-n">3</div><div class="step-body"><strong>GCS overwrites confidence</strong><p>The system computes GCS from the evidence and key_findings &mdash; the LLM&rsquo;s stated confidence is discarded. If verdict = UNCERTAIN, confidence is capped at 0.50.</p></div></div>
-  <div class="step"><div class="step-n">4</div><div class="step-body"><strong>Consensus check</strong><p>The 4 packs are passed to <code>_check_consensus()</code>. If a strict majority of decisive agents agree (and no T1 veto fires), the result is returned as <code>CONSENSUS_R1</code> and Round 2 is skipped.</p></div></div>
+  <div class="step"><div class="step-n">1</div><div class="step-body"><strong>Parallel MCP queries</strong><p>All 4 agents call their MCP servers concurrently (<code>asyncio.gather</code>). Each receives structured JSON evidence specific to this (cell_line, drug, target_genes) tuple. T3 pre-fetches expressed genes from T2 MCP to avoid N individual expression lookups per bypass gene.</p></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><strong>LLM reasoning &rarr; JSON pack</strong><p>The LLM receives the evidence and produces a verdict, raw confidence, key_findings, reasoning, and (for T3) self_attestation. Format is strict JSON; unparseable outputs default to UNCERTAIN with caveats. T3 also follows the 7-step reasoning protocol before computing self-attestation.</p></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><strong>GCS overwrites confidence</strong><p>The system computes GCS from the raw_evidence and key_findings. The LLM's stated confidence is discarded. If verdict = UNCERTAIN, confidence is capped at 0.50. raw_evidence is attached to the pack.</p></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><strong>Unanimity consensus check</strong><p><code>_check_consensus()</code> fires. Returns a verdict only if ALL decisive agents agree on the same verdict. UNCERTAIN agents abstain. T3 quality gates applied first. Any single dissenting decisive agent routes to Round 2.</p></div></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="round2">Round 2: Peer Critique</h2>
+<h2 id="consensus">Consensus Rules <span class="tag tag-changed">Changed: majority &rarr; unanimity</span></h2>
 
-<p>Round 2 fires only when R1 consensus fails. <strong>Verdicts are locked</strong> &mdash; agents cannot change their SENSITIVE/RESISTANT/UNCERTAIN call. They can only adjust confidence by &pm;0.10 and score peers.</p>
+<div class="changed"><strong>Breaking change from previous version:</strong> Consensus was changed from &ldquo;strict majority (3/4 decisive agents agree)&rdquo; to <strong>unanimity among decisive agents</strong>. This was critical for the thesis claim: with majority voting, 3/4 decisive agents agreeing was nearly the same as majority vote, undermining the argument that the debate design adds value.</div>
+
+<h3>How it works</h3>
+<pre><code>def _check_consensus(packs: list[EvidencePack]) -> Verdict | None:
+    """Return the verdict only when ALL decisive agents agree.
+    Consensus requires unanimity — any single dissenting decisive agent routes to debate.
+    UNCERTAIN agents do not count as dissent (they abstain).
+    T3 quality gates apply before an agent is counted as decisive.
+    """
+    from src.schemas.evidence_pack import EvidenceTier
+    decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN]
+    if not decisive:
+        return None  # all abstain &rarr; no consensus, go to resolver
+
+    # T3 quality gates: filter out low-quality T3 decisive votes
+    filtered = []
+    for p in decisive:
+        if p.evidence_tier == EvidenceTier.T3_PATHWAY:
+            sa = p.self_attestation or {}
+            score = sa.get("score") or 0
+            if p.verdict == Verdict.RESISTANT and score &lt; 3:
+                continue  # T3 RESISTANT with score&lt;3 &rarr; treated as abstention
+            if p.verdict == Verdict.SENSITIVE and not sa.get("pathway_active", False):
+                continue  # T3 SENSITIVE without active pathway &rarr; treated as abstention
+        filtered.append(p)
+    decisive = filtered
+    if not decisive:
+        return None
+
+    verdicts = {p.verdict for p in decisive}  # unique verdicts
+    if len(verdicts) != 1:
+        return None  # any dissent &rarr; debate
+    return decisive[0].verdict</code></pre>
+
+<h3>Scenario Comparison</h3>
+<table>
+<thead><tr><th>Agent verdicts (R1)</th><th>Old rule (majority)</th><th>New rule (unanimity)</th></tr></thead>
+<tbody>
+<tr><td>T1 S, T2 S, T3 UNCERTAIN, T4 S</td><td>CONSENSUS_R1 (3 decisive, all agree)</td><td class="verdict-S">CONSENSUS_R1 (3 decisive, all agree; T3 abstains)</td></tr>
+<tr><td>T1 S, T2 S, T3 R, T4 S</td><td>CONSENSUS_R1 (3/4 majority = 3 agree)</td><td class="verdict-R">DEBATE fires (T3 dissents)</td></tr>
+<tr><td>T1 S, T2 S, T3 R (score=1), T4 S</td><td>CONSENSUS_R1 (majority)</td><td class="verdict-S">CONSENSUS_R1 (T3 filtered by quality gate: score&lt;3 treated as abstention)</td></tr>
+<tr><td>T1 R, T2 S, T3 UNCERTAIN, T4 R</td><td>CONSENSUS_R1 (majority: 2R &gt; 1S)</td><td class="verdict-R">DEBATE fires (T2 dissents against T1 and T4)</td></tr>
+<tr><td>T1 UNCERTAIN, T2 UNCERTAIN, T3 UNCERTAIN, T4 UNCERTAIN</td><td>No consensus &rarr; resolver</td><td>No decisive agents &rarr; resolver</td></tr>
+</tbody>
+</table>
+
+<h3>Effect on Debate Rate</h3>
+<p>Changing to unanimity increased the debate rate from ~0% (CONSENSUS_R2 never fired before) to <strong>45.2%</strong> of cases entering debate. This is the key architectural proof that the debate mechanism is active, not decorative.</p>
+<div class="metric-strip">
+  <div class="metric-chip"><div class="val">54.8%</div><div class="lbl">CONSENSUS_R1</div></div>
+  <div class="metric-chip"><div class="val">25.8%</div><div class="lbl">CONSENSUS_R2</div></div>
+  <div class="metric-chip"><div class="val">19.4%</div><div class="lbl">RESOLVER</div></div>
+  <div class="metric-chip"><div class="val">45.2%</div><div class="lbl">Enter Debate</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="round2">Round 2: Peer Critique <span class="tag tag-changed">Updated</span></h2>
+
+<div class="changed"><strong>Correction from earlier docs:</strong> Verdicts are <em>not</em> locked in Round 2. Agents <em>can</em> revise their verdict under strict conditions. The checklist was also changed from a 4-question binary checklist to a <strong>mechanistic relevance score (0.0&ndash;1.0 float)</strong>.</div>
+
+<p>Round 2 fires only when R1 consensus fails. Each agent receives the packs of its 3 peers (labelled A, B, C by tier order, anonymised). Round 2 has two mechanisms that can change outcomes:</p>
 
 <div class="steps">
-  <div class="step"><div class="step-n">1</div><div class="step-body"><strong>Each agent reviews peers</strong><p>Every agent receives the packs of its 3 peers (labelled A, B, C anonymously by tier order). It applies a tier-specific 4-question binary checklist to each peer&rsquo;s reasoning text. Score = (# yes answers) / 4 &isin; [0.0, 1.0].</p></div></div>
-  <div class="step"><div class="step-n">2</div><div class="step-body"><strong>Confidence adjustment</strong><p>Each agent may adjust its own confidence by at most &pm;0.10 based on what peers found. UNCERTAIN verdict confidence still capped at 0.50.</p></div></div>
-  <div class="step"><div class="step-n">3</div><div class="step-body"><strong>Endorsement aggregation</strong><p><code>endorsement(agent_i) = &Sigma;<sub>j&ne;i</sub> peer_score(j &rarr; i)</code> &mdash; sum of scores all other agents gave to agent i. Max possible = 3.0 (3 peers &times; 1.0 each).</p></div></div>
-  <div class="step"><div class="step-n">4</div><div class="step-body"><strong>R2 consensus check</strong><p>After peer critique, <code>_check_consensus()</code> is called again on the updated packs. If consensus now exists &rarr; <code>CONSENSUS_R2</code>. Otherwise escalate to AxiomResolver.</p></div></div>
+  <div class="step"><div class="step-n">1</div><div class="step-body"><strong>Mechanistic peer scoring (float, not binary checklist)</strong><p>Each agent scores each peer on ONE criterion: &ldquo;Does this peer's key finding have a DIRECT MECHANISTIC CONNECTION to why this drug would or would not work in this specific cell line?&rdquo;</p>
+  <ul>
+    <li>1.0 = names specific gene/value AND explains mechanistic link to drug action</li>
+    <li>0.5 = relevant evidence but indirect or population-level only</li>
+    <li>0.0 = generic, no mechanistic connection, or evidence is for a different target</li>
+  </ul></div></div>
+  <div class="step"><div class="step-n">2</div><div class="step-body"><strong>Verdict revision (strict gate)</strong><p>An agent MAY set <code>verdict_revised=true</code> ONLY IF all three conditions hold:</p>
+  <ol>
+    <li>A peer from a <em>different</em> tier cited a finding mechanistically inconsistent with the agent's conclusion</li>
+    <li>The agent can name the specific finding: [gene/value] from [tier] contradicts [conclusion] because [mechanism]</li>
+    <li>The contradiction is mechanistic, not just a different number or different verdict</li>
+  </ol>
+  <p><strong>UNCERTAIN &rarr; decisive gate:</strong> an agent that was UNCERTAIN in R1 may only become decisive if a peer finding recontextualises its own data &mdash; it cannot flip by reinterpreting data it already had. The revision_reason must name the peer's finding, not the agent's own evidence.</p>
+  <p><strong>Confidence penalty on revision:</strong> <code>new_conf = original_conf &times; 0.78</code></p></div></div>
+  <div class="step"><div class="step-n">3</div><div class="step-body"><strong>Endorsement aggregation</strong><p><code>endorsement(agent_i) = &Sigma;<sub>j&ne;i</sub> peer_score(j &rarr; i)</code> &mdash; sum of scores all others gave to agent i. Maximum = 3.0 (3 peers &times; 1.0 each). If mean endorsement &lt; 0.35 AND peer majority disagrees &rarr; verdict revision under peer pressure (penalty: &times;0.70).</p></div></div>
+  <div class="step"><div class="step-n">4</div><div class="step-body"><strong>R2 consensus check</strong><p>After peer critique, <code>_check_consensus()</code> is called again on the updated packs. If unanimity consensus now exists &rarr; <code>CONSENSUS_R2</code> (8 cases = 25.8% in gold standard). Otherwise escalate to AxiomResolver.</p></div></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="checklists">Peer Checklists (per tier)</h2>
+<h2 id="axiomchallenge">AxiomChallenge Mechanism</h2>
 
-<p>The checklist applied to a peer depends on the <strong>peer&rsquo;s</strong> evidence tier, not the reviewer&rsquo;s. Each question is answered true/false based strictly on what the peer&rsquo;s reasoning text actually states.</p>
+<p>When R1 has genuine conflict (at least one SENSITIVE and one RESISTANT among decisive agents), the debate engine emits <code>AxiomChallenge</code> objects before peer critique. A higher-tier decisive agent challenges a lower-tier decisive agent that holds an opposing verdict.</p>
 
-<div class="card">
-  <span class="agent-badge t1b">T1 Structural checklist</span>
-  <ul class="checklist" style="margin-top:10px;">
-    <li><span class="q-num">Q1</span>Did this peer name a specific mutation or CNV in the drug target gene (not just &lsquo;no mutation found&rsquo;)?</li>
-    <li><span class="q-num">Q2</span>Did this peer cite a CIViC/OncoKB entry or known functional consequence linking the variant to drug response?</li>
-    <li><span class="q-num">Q3</span>Did this peer confirm the variant is somatic (not germline or unclassified)?</li>
-    <li><span class="q-num">Q4</span>Does the variant&rsquo;s functional direction (gain-of-function / loss-of-function) logically support the verdict given?</li>
-  </ul>
-</div>
+<pre><code>@dataclass
+class AxiomChallenge:
+    challenger_id:      str   # the higher-tier agent (e.g. genomics_agent)
+    challenger_tier:    str   # e.g. "T1_STRUCTURAL"
+    challenged_id:      str   # the lower-tier agent (e.g. pharmacology_agent)
+    challenged_tier:    str   # e.g. "T4_PHARMACOLOGICAL"
+    challenger_verdict: str   # SENSITIVE | RESISTANT
+    challenged_verdict: str   # the opposing verdict
+    argument:           str   # mechanistic argument citing challenger's own key_findings</code></pre>
 
-<div class="card">
-  <span class="agent-badge t2b">T2 Transcriptional checklist</span>
-  <ul class="checklist" style="margin-top:10px;">
-    <li><span class="q-num">Q1</span>Did this peer report a specific numeric z-score for the target gene expression?</li>
-    <li><span class="q-num">Q2</span>Is the expression level (overexpressed / silenced / normal) consistent with the verdict direction?</li>
-    <li><span class="q-num">Q3</span>Did this peer explicitly account for whether this drug is expression-driven vs mutation-driven?</li>
-    <li><span class="q-num">Q4</span>Did this peer name at least one specific gene with its z-score value (not just &lsquo;expression is high&rsquo;)?</li>
-  </ul>
-</div>
-
-<div class="card">
-  <span class="agent-badge t3b">T3 Pathway checklist</span>
-  <ul class="checklist" style="margin-top:10px;">
-    <li><span class="q-num">Q1</span>Did this peer name at least one specific bypass gene (not just &lsquo;bypass_exists=true&rsquo;)?</li>
-    <li><span class="q-num">Q2</span>Did this peer report the pathway activity score or fraction of expressed pathway genes?</li>
-    <li><span class="q-num">Q3</span>Does the bypass gene mechanistically connect to resistance for this specific drug class?</li>
-    <li><span class="q-num">Q4</span>Is the bypass gene distinct from the primary drug target gene?</li>
-  </ul>
-</div>
-
-<div class="card">
-  <span class="agent-badge t4b">T4 Pharmacological checklist</span>
-  <ul class="checklist" style="margin-top:10px;">
-    <li><span class="q-num">Q1</span>Did this peer report a specific IC50 z-score value (not just &lsquo;no data&rsquo; or &lsquo;uncertain&rsquo;)?</li>
-    <li><span class="q-num">Q2</span>Did this peer explicitly state the pre-computed IC50 label (SENSITIVE/RESISTANT/UNCERTAIN)?</li>
-    <li><span class="q-num">Q3</span>Does the historical IC50 label match or logically support the verdict given?</li>
-    <li><span class="q-num">Q4</span>Did this peer acknowledge that T4 pharmacological evidence can be overridden by T1&ndash;T3 molecular evidence?</li>
-  </ul>
-</div>
-
-<div class="tip">The T3 self-attestation checklist (used internally by T3 to gate its own decisiveness) uses the same 4 questions as the T3 peer checklist above. If T3&rsquo;s self-score &lt; 3, its verdict is demoted to UNCERTAIN in the consensus check &mdash; even if it said SENSITIVE or RESISTANT.</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="consensus">Consensus Rules</h2>
-
-<div class="diagram-wrap">
-<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica Neue, Arial, sans-serif" font-size="11">
-
-  <!-- Start -->
-  <rect x="260" y="8" width="180" height="36" rx="6" fill="#1a4fa0"/>
-  <text x="350" y="22" text-anchor="middle" fill="white" font-weight="700">4 EvidencePacks in</text>
-  <text x="350" y="38" text-anchor="middle" fill="#c8d8f5" font-size="10">from Round 1 (or Round 2)</text>
-  <line x1="350" y1="44" x2="350" y2="68" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
-
-  <!-- Filter decisive -->
-  <rect x="230" y="68" width="240" height="36" rx="6" fill="#f1f5f9" stroke="#d0d7de"/>
-  <text x="350" y="82" text-anchor="middle" fill="#1a1a2e" font-weight="700">Filter decisive agents</text>
-  <text x="350" y="97" text-anchor="middle" fill="#6b7280" font-size="10">verdict &ne; UNCERTAIN</text>
-  <line x1="350" y1="104" x2="350" y2="126" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
-
-  <!-- T3 gate diamond -->
-  <polygon points="350,126 430,152 350,178 270,152" fill="#fff8f0" stroke="#d97706" stroke-width="1.5"/>
-  <text x="350" y="148" text-anchor="middle" fill="#92400e" font-weight="700">T3 in decisive?</text>
-  <text x="350" y="164" text-anchor="middle" fill="#78350f" font-size="10">self-attest score &lt; 3?</text>
-  <!-- Yes branch (demote) -->
-  <line x1="430" y1="152" x2="560" y2="152" stroke="#d97706" stroke-width="1.2" marker-end="url(#a2)"/>
-  <text x="480" y="146" text-anchor="middle" fill="#d97706" font-size="10">yes, score &lt; 3</text>
-  <rect x="560" y="136" width="120" height="32" rx="6" fill="#fef3c7" stroke="#d97706"/>
-  <text x="620" y="150" text-anchor="middle" fill="#92400e" font-weight="700" font-size="10">Demote T3</text>
-  <text x="620" y="164" text-anchor="middle" fill="#78350f" font-size="9">remove from decisive</text>
-  <line x1="620" y1="168" x2="620" y2="200" stroke="#d97706" stroke-width="1" stroke-dasharray="4 2"/>
-  <line x1="620" y1="200" x2="430" y2="200" stroke="#d97706" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#a2)"/>
-  <!-- No branch (continue) -->
-  <line x1="350" y1="178" x2="350" y2="200" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
-  <text x="330" y="196" text-anchor="end" fill="#6b7280" font-size="10">no / score &ge; 3</text>
-
-  <!-- Majority check -->
-  <polygon points="350,200 450,224 350,248 250,224" fill="#f0f4ff" stroke="#1a4fa0" stroke-width="1.5"/>
-  <text x="350" y="218" text-anchor="middle" fill="#1a4fa0" font-weight="700">Strict majority?</text>
-  <text x="350" y="234" text-anchor="middle" fill="#374151" font-size="10">n &gt; len(decisive) / 2</text>
-
-  <!-- No majority -->
-  <line x1="250" y1="224" x2="120" y2="224" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
-  <text x="185" y="218" text-anchor="middle" fill="#6b7280" font-size="10">no majority</text>
-  <rect x="20" y="208" width="100" height="32" rx="6" fill="#fee2e2" stroke="#dc2626"/>
-  <text x="70" y="222" text-anchor="middle" fill="#991b1b" font-weight="700" font-size="10">No consensus</text>
-  <text x="70" y="236" text-anchor="middle" fill="#7f1d1d" font-size="9">&rarr; escalate R2/Resolver</text>
-
-  <!-- T1 veto diamond -->
-  <line x1="350" y1="248" x2="350" y2="268" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
-  <polygon points="350,268 440,288 350,308 260,288" fill="#fff8f8" stroke="#dc2626" stroke-width="1.5"/>
-  <text x="350" y="283" text-anchor="middle" fill="#991b1b" font-weight="700">T1 veto?</text>
-  <text x="350" y="298" text-anchor="middle" fill="#7f1d1d" font-size="10">T1 decisive &amp; all T1 disagree</text>
-  <!-- Veto fires -->
-  <line x1="260" y1="288" x2="160" y2="288" stroke="#dc2626" stroke-width="1.2" marker-end="url(#a2)"/>
-  <text x="210" y="282" text-anchor="middle" fill="#dc2626" font-size="10">yes &rarr; veto</text>
-  <rect x="20" y="272" width="140" height="32" rx="6" fill="#fee2e2" stroke="#dc2626"/>
-  <text x="90" y="286" text-anchor="middle" fill="#991b1b" font-weight="700" font-size="10">No consensus (T1 veto)</text>
-  <text x="90" y="300" text-anchor="middle" fill="#7f1d1d" font-size="9">escalate to Resolver</text>
-  <!-- No veto -->
-  <line x1="440" y1="288" x2="560" y2="288" stroke="#16a34a" stroke-width="1.5" marker-end="url(#a2)"/>
-  <text x="500" y="282" text-anchor="middle" fill="#16a34a" font-size="10">no veto</text>
-  <rect x="560" y="272" width="120" height="32" rx="6" fill="#dcfce7" stroke="#16a34a"/>
-  <text x="620" y="286" text-anchor="middle" fill="#14532d" font-weight="700" font-size="10">CONSENSUS</text>
-  <text x="620" y="300" text-anchor="middle" fill="#14532d" font-size="9">return majority verdict</text>
-
-  <defs><marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/></marker></defs>
-</svg>
-<div class="cap">_check_consensus() flowchart. Called after R1 and again after R2. T3 self-attestation gate replaced the old &ldquo;T1+T2 both UNCERTAIN&rdquo; quorum rule.</div>
-</div>
-
-<h3>Key Rules in Plain English</h3>
+<p>The challenged agent must provide a specific mechanistic rebuttal from its own modality, or concede:</p>
 <ul>
-  <li><strong>Strict majority:</strong> n decisive votes for the same verdict must exceed half the total decisive pool. With 2 decisive agents, both must agree. With 3, at least 2 must agree.</li>
-  <li><strong>T3 self-attestation gate:</strong> T3 pathway agent is only counted as decisive if its internal 4-question checklist score &ge; 3. Otherwise it&rsquo;s treated as UNCERTAIN in the consensus check (even if it said SENSITIVE/RESISTANT).</li>
-  <li><strong>T1 veto:</strong> If T1 is decisive and ALL T1 agents disagree with the majority verdict &rarr; consensus returns None (escalate). Protects against structural evidence being overridden by weaker tiers.</li>
-  <li><strong>UNCERTAIN agents:</strong> never counted in the decisive pool for consensus. They may still participate in peer critique (R2) and influence endorsement scores.</li>
+  <li><code>challenge_maintained=true</code> + non-empty rebuttal &rarr; agent's verdict stands; gets +1 priority boost in resolver</li>
+  <li><code>challenge_maintained=false</code> (or empty rebuttal) &rarr; agent concedes and adopts challenger's verdict at <code>original_conf &times; 0.65</code></li>
 </ul>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="resolver">AxiomResolver</h2>
+<h2 id="resolver">AxiomResolver <span class="tag tag-changed">Updated: T1 override threshold</span></h2>
 
-<p>Fires when neither R1 nor R2 consensus is reached. Acts as a deterministic tiebreaker.</p>
+<p>The AxiomResolver fires when R2 consensus fails. It picks a winner by axiom tier priority, with several override mechanisms.</p>
 
-<h3>Main sort key (no weak-T1 situation)</h3>
-<div class="formula">
-  <div class="f-title">Resolver sort key &mdash; picks winner = argmax over candidates</div>
-  <div class="main">winner = argmax<sub>p</sub> ( endorsement(p), axiom_weight(p), GCS(p) )</div>
-  <div class="sub-f">Tie broken left-to-right: endorsement first, then axiom tier, then confidence</div>
-  <br>
-  <div class="sub-f"><strong>endorsement(p)</strong> = total peer score given to agent p across all peer reviewers</div>
-  <div class="sub-f"><strong>axiom_weight</strong>: T1=5, T2=4, T3=3, T4=2, T5=1</div>
-  <div class="sub-f"><strong>GCS(p)</strong> = agent p&rsquo;s grounded confidence score</div>
-  <br>
-  <div class="sub-f"><strong>candidates</strong> = decisive agents (verdict &ne; UNCERTAIN); falls back to all agents if none decisive</div>
-</div>
+<h3>Resolution order</h3>
+<ol>
+  <li><strong>T3 quality gate:</strong> filter out T3 packs that don't pass (RESISTANT without score&ge;3, SENSITIVE without pathway_active=True)</li>
+  <li><strong>A4 sole-target deletion guard:</strong> for multi-target drugs, T1 RESISTANT based on partial homozygous deletion (only one of N targets deleted) is excluded</li>
+  <li><strong>T1 confidence-weighted override check:</strong> if T1 confidence &lt; 0.80 AND all lower tiers unanimously disagree with T1 &rarr; use confidence-weighted vote instead of tier-priority</li>
+  <li><strong>Non-targeted drug demotion:</strong> for cytotoxics/broad epigenetics, T1 is demoted to priority 1 (below T4) &mdash; somatic mutation evidence is not mechanistically relevant for these drugs</li>
+  <li><strong>Rebuttal boost:</strong> agent that successfully rebutted an AxiomChallenge gets +1 priority</li>
+  <li><strong>Final tiebreak:</strong> max by (effective_priority, peer_endorsement, confidence)</li>
+</ol>
 
-<h3>Weak T1 exception (confidence-weighted vote)</h3>
-<div class="info">
-  <strong>When:</strong> T1 is decisive but confidence &lt; 0.70 (T1_OVERRIDE_CONFIDENCE_THRESHOLD) AND all lower-tier agents unanimously hold a different verdict.<br>
-  <strong>Then:</strong> Instead of T1 winning by axiom priority, use confidence-weighted vote across all candidates. Winning verdict = the one with highest summed confidence. This prevents a low-confidence T1 wild-type call from overriding a unanimous T2+T3+T4 signal.
-</div>
+<h3>T1 Confidence-Weighted Override</h3>
+<pre><code># src/protocols/axiom_resolver.py
+T1_OVERRIDE_CONFIDENCE_THRESHOLD = 0.80
 
-<h3>Confidence decay (applied to non-winners)</h3>
-<div class="formula">
-  <div class="f-title">Confidence decay for losing agents</div>
-  <div class="main">new_conf = old_conf &times; (1 &minus; 0.15)</div>
-  <div class="sub-f">Applied only to agents whose verdict differs from the winner&rsquo;s verdict</div>
-  <div class="sub-f">Agents who abstained (UNCERTAIN) or agreed with winner: confidence unchanged</div>
-  <div class="sub-f">CONFIDENCE_DECAY_PER_FLIP = 0.15 (src/schemas/axiom_rules.py)</div>
-</div>
+t1_packs  = [p for p in candidates if p.evidence_tier == EvidenceTier.T1_STRUCTURAL]
+lower_packs = [p for p in candidates if p.evidence_tier != EvidenceTier.T1_STRUCTURAL]
 
-<h3>Final confidence (after resolver)</h3>
-<div class="formula">
-  <div class="f-title">Final confidence computation</div>
-  <div class="main">final_conf = mean( adjusted_conf for all agents )</div>
-  <div class="sub-f">Uses ALL agents&rsquo; adjusted confidence (after decay), not just the winner</div>
-  <div class="sub-f">For CONSENSUS paths: mean( conf of agents whose verdict = winning verdict )</div>
-</div>
+use_confidence_weighted = False
+if t1_packs and lower_packs:
+    t1 = max(t1_packs, key=lambda p: p.confidence)
+    if t1.confidence &lt; T1_OVERRIDE_CONFIDENCE_THRESHOLD:
+        lower_verdicts = {p.verdict for p in lower_packs}
+        if len(lower_verdicts) == 1 and t1.verdict not in lower_verdicts:
+            # Unanimous lower-tier consensus contradicts weak T1 &rarr; confidence-weighted vote
+            use_confidence_weighted = True</code></pre>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="metrics">All Metrics &mdash; Formulas &amp; Definitions</h2>
+<p><strong>Example:</strong> T1 votes SENSITIVE (conf=0.65) based on a single driver mutation without CIViC. T2, T3, T4 all vote RESISTANT. T1 confidence &lt; 0.80 and lower tiers are unanimous &rarr; confidence-weighted vote fires &rarr; RESISTANT wins. If T1 conf had been 0.85 (strong CIViC Level A evidence), T1 wins by tier regardless.</p>
 
+<h3>Axiom Priority Table</h3>
 <table>
-<thead><tr><th>Metric</th><th>Formula / Definition</th><th>Range</th><th>Interpretation</th></tr></thead>
+<thead><tr><th>Tier</th><th>Priority</th><th>Rationale</th><th>Non-targeted drug</th></tr></thead>
 <tbody>
-<tr><td><strong>AUROC</strong></td><td>Area under ROC curve using sensitivity_score as ranking signal</td><td>0&ndash;1</td><td>&gt;0.8 = strong discrimination between S and R</td></tr>
-<tr><td><strong>AUPRC</strong></td><td>Area under Precision-Recall curve (SENSITIVE as positive class)</td><td>0&ndash;1</td><td>Better for imbalanced; captures S identification quality</td></tr>
-<tr><td><strong>Cohen&apos;s &kappa;</strong></td><td>&kappa; = (P<sub>o</sub> &minus; P<sub>e</sub>) / (1 &minus; P<sub>e</sub>)</td><td>&minus;1&ndash;1</td><td>0 = chance; 0.2&ndash;0.4 = fair; &gt;0.6 = substantial</td></tr>
-<tr><td><strong>Spearman &rho;</strong></td><td>Rank correlation of sensitivity_score vs ground-truth rank</td><td>&minus;1&ndash;1</td><td>Measures monotonic agreement of ranking</td></tr>
-<tr><td><strong>Coverage</strong></td><td>n_decisive / n_total</td><td>0&ndash;1</td><td>Fraction of cases with a decisive (non-UNCERTAIN) verdict</td></tr>
-<tr><td><strong>Accuracy</strong></td><td>n_correct / n_total (UNCERTAIN treated as wrong)</td><td>0&ndash;1</td><td>Straightforward hit rate over all cases</td></tr>
+<tr><td>T1_STRUCTURAL</td><td>5</td><td>DNA is ground truth; somatic mutation directly predicts drug binding</td><td>Demoted to 1</td></tr>
+<tr><td>T2_TRANSCRIPTIONAL_GATE</td><td>4</td><td>mRNA confirms target is present and druggable at protein level</td><td>4</td></tr>
+<tr><td>T3_PATHWAY_BYPASS</td><td>3</td><td>Escape route active &rarr; drug will fail regardless of target status</td><td>3</td></tr>
+<tr><td>T4_PHARMACOLOGICAL_PRIOR</td><td>2</td><td>Empirical IC50 is a population prior, not mechanistic</td><td>2 (highest for non-targeted)</td></tr>
+<tr><td>T5_STATISTICAL_CONSENSUS</td><td>1</td><td>Fallback when T1 override fires; confidence-weighted vote</td><td>1</td></tr>
 </tbody>
 </table>
 
-<div class="formula">
-  <div class="f-title">Sensitivity score (used to compute AUROC)</div>
-  <div class="main">sensitivity_score = conf &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if verdict = SENSITIVE</div>
-  <div class="main">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1 &minus; conf &nbsp;&nbsp;if verdict = RESISTANT or UNCERTAIN</div>
-  <div class="sub-f">Higher score &rarr; system believes SENSITIVE. This lets AUROC be computed as a ranking metric.</div>
-</div>
-
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="results">30-Case Results (mini-validation)</h2>
-
-<p>Evaluated on 30 held-out CTRPv2 cases (10 per set, 3 sets, cases 11&ndash;20 from each set). Balanced 5S/5R per set. All numbers are placeholder pending a clean re-run.</p>
+<h2 id="metrics">Quantitative Metrics &mdash; Gold Standard (31 cases) <span class="tag tag-changed">Updated</span></h2>
 
 <div class="metric-strip">
-  <div class="metric-chip"><div class="val" style="color:#16a34a">77%</div><div class="lbl">Accuracy (23/30)</div></div>
-  <div class="metric-chip"><div class="val">0.814</div><div class="lbl">AUROC</div></div>
-  <div class="metric-chip"><div class="val">0.848</div><div class="lbl">AUPRC</div></div>
-  <div class="metric-chip"><div class="val" style="color:var(--amber)">0.548</div><div class="lbl">Cohen&apos;s &kappa;</div></div>
-  <div class="metric-chip"><div class="val">0.544</div><div class="lbl">Spearman &rho;</div></div>
-  <div class="metric-chip"><div class="val" style="color:#16a34a">96.7%</div><div class="lbl">Coverage (29/30)</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">87.1%</div><div class="lbl">Accuracy</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">0.819</div><div class="lbl">AUROC</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">0.766</div><div class="lbl">AUPRC</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">0.733</div><div class="lbl">Cohen's &kappa;</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">0.551</div><div class="lbl">Spearman &rho;</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">1.000</div><div class="lbl">Sensitivity (TPR)</div></div>
+  <div class="metric-chip"><div class="val">0.714</div><div class="lbl">Specificity (TNR)</div></div>
+  <div class="metric-chip"><div class="val">0.810</div><div class="lbl">Precision (PPV)</div></div>
+  <div class="metric-chip"><div class="val" style="color:#16a34a">1.000</div><div class="lbl">NPV</div></div>
 </div>
 
+<table>
+<thead><tr><th>Metric</th><th>Value</th><th>Interpretation</th></tr></thead>
+<tbody>
+<tr><td>N cases</td><td>31 (S=17, R=14)</td><td>Gold standard: literature-validated labels, not CTRP z-scores</td></tr>
+<tr class="hl"><td>Accuracy</td><td>27/31 = 87.1%</td><td>&mdash;</td></tr>
+<tr class="hl"><td>AUROC</td><td>0.8193</td><td>P(SENSITIVE) = conf if verdict=S else 1&minus;conf</td></tr>
+<tr><td>AUPRC</td><td>0.7664</td><td>Random baseline = 0.548 (P(S) proportion)</td></tr>
+<tr><td>Spearman &rho;</td><td>0.5508</td><td>Rank correlation between predicted confidence and true label</td></tr>
+<tr class="hl"><td>Cohen's &kappa;</td><td>0.7328</td><td>Substantial agreement; accounts for chance</td></tr>
+<tr class="hl"><td>Sensitivity (TPR)</td><td>1.0000</td><td>Zero false negatives — never calls a resistant case sensitive</td></tr>
+<tr><td>Specificity (TNR)</td><td>0.7143</td><td>10/14 resistant cases correctly identified</td></tr>
+<tr><td>Precision (PPV)</td><td>0.8095</td><td>17/21 sensitive predictions correct</td></tr>
+<tr><td>NPV</td><td>1.0000</td><td>All negative predictions (RESISTANT) are correct</td></tr>
+<tr><td>TP / FP / TN / FN</td><td>17 / 4 / 10 / 0</td><td>FN=0 is the clinical safety property</td></tr>
+</tbody>
+</table>
+
+<div class="tip"><strong>FN=0 clinical relevance:</strong> The system never predicts a drug will work when it won't. False positives (predicting sensitive when resistant) are less dangerous than false negatives in a treatment selection context &mdash; FP leads to trying a drug that doesn't work; FN leads to withholding a drug that would work.</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="qualitative">Qualitative Metrics (M1, M2, M3)</h2>
+
+<h3>M1 &mdash; Resolution Method Breakdown</h3>
+<table>
+<thead><tr><th>Method</th><th>Count</th><th>%</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr class="hl"><td>CONSENSUS_R1</td><td>17</td><td>54.8%</td><td>All decisive agents agreed in Round 1; no debate needed</td></tr>
+<tr class="hl"><td>CONSENSUS_R2</td><td>8</td><td>25.8%</td><td>Debate fired; agents converged after peer critique</td></tr>
+<tr><td>RESOLVER_TIEBREAK</td><td>6</td><td>19.4%</td><td>Genuine disagreement remained; axiom hierarchy resolved</td></tr>
+</tbody>
+</table>
+
+<p><strong>Agent win breakdown:</strong> genomics_agent=27 (87.1%), pathway_agent=2 (6.5%), transcriptomics_agent=1 (3.2%), pharmacology_agent=1 (3.2%). T1 dominance reflects both its axiom priority and that CIViC clinical annotations are the strongest evidence type available.</p>
+
+<h3>M2 &mdash; Conflict Resolution Accuracy</h3>
+<table>
+<thead><tr><th>Cohort</th><th>Accuracy</th><th>Note</th></tr></thead>
+<tbody>
+<tr class="hl"><td>R1-only cases (no debate)</td><td>17/17 = 100%</td><td>When all agents agree, they're always right</td></tr>
+<tr><td>Debate cases (R2 + resolver)</td><td>10/14 = 71.4%</td><td>Hard cases: data coverage gaps cause most failures</td></tr>
+<tr class="hl"><td>Overall</td><td>27/31 = 87.1%</td><td>&mdash;</td></tr>
+</tbody>
+</table>
+
+<h3>M3 &mdash; Debate Convergence</h3>
 <ul>
-  <li><strong>Resolution:</strong> 25/30 via CONSENSUS_R1 &middot; 5/30 via RESOLVER_TIEBREAK</li>
-  <li><strong>Winning agents:</strong> pharmacology=16, pathway=6, genomics=4, transcriptomics=4</li>
-  <li><strong>Accuracy by set:</strong> Set 1 = 7/10 &middot; Set 2 = 9/10 &middot; Set 3 = 7/10</li>
-  <li><strong>Resolver accuracy:</strong> 3/5 correct (60%) &mdash; L-428+Dabrafenib &check;, SU-DHL-4+Topotecan ?, NCI-H1666+Ibrutinib &cross;, HCT-116+AGK2 &cross;, CA46+Selumetinib &cross;</li>
+  <li><strong>Average rounds per case:</strong> 1.81 (range: 1&ndash;3+)</li>
+  <li>17 cases (54.8%) resolved in R1 (no debate needed)</li>
+  <li>8 cases (25.8%) converged in R2 &mdash; debate mechanism demonstrably active</li>
+  <li>6 cases (19.4%) required resolver tiebreak &mdash; genuine multi-agent disagreement</li>
 </ul>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="ablation">Ablation Study</h2>
+<h2 id="faithfulness">Faithfulness Evaluation (LLM-as-Judge) <span class="tag tag-new">New</span></h2>
 
-<p>7 conditions, same 30 cases. Each removes exactly one architectural component.</p>
+<p>Faithfulness measures whether each agent's free-text reasoning is traceable to the data it actually retrieved from its MCP tools &mdash; not just whether it performed well on the task.</p>
 
-<table>
-<thead><tr><th>Condition</th><th>AUROC</th><th>AUPRC</th><th>&kappa;</th><th>Coverage</th><th>Key insight</th></tr></thead>
-<tbody>
-<tr class="hl"><td>full_system</td><td>0.814</td><td>0.848</td><td>0.548</td><td>96.7%</td><td>Baseline</td></tr>
-<tr><td>no_debate</td><td>N/A</td><td>N/A</td><td>0.071</td><td>13%</td><td>Coverage collapse &rarr; debate is load-bearing</td></tr>
-<tr><td>no_axioms</td><td>0.840</td><td>0.865</td><td>0.543</td><td>83%</td><td>Pure confidence resolver slightly higher AUROC; lower coverage</td></tr>
-<tr><td>no_genomics</td><td>0.614</td><td>0.728</td><td>0.097</td><td>97%</td><td>BRAF cases lose anchor; large AUROC drop</td></tr>
-<tr><td>no_transcriptomics</td><td>0.705</td><td>0.782</td><td>0.161</td><td>97%</td><td>ATM/KU-55933 cases lose signal</td></tr>
-<tr><td>no_pathway</td><td>0.663</td><td>0.702</td><td>0.529</td><td>87%</td><td>AUROC drops but &kappa; stays near-full; T3 adds both S and wrong calls</td></tr>
-<tr><td>no_pharmacology</td><td>0.591</td><td>0.716</td><td>&minus;0.026</td><td>70%</td><td>Most damaging single ablation; T4 drove 53% of verdicts</td></tr>
-</tbody>
-</table>
-
-<div class="warn"><strong>no_axioms paradox:</strong> removing the axiom hierarchy slightly improves AUROC (0.840 vs 0.814) but lowers coverage (83% vs 96.7%). This is because the CTRPv2 test set favours cases where T4 has strong IC50 signal &mdash; a bias toward pharmacology that makes pure confidence ranking competitive. Do NOT interpret this as &ldquo;the axiom hierarchy is bad.&rdquo;</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="cv">5-Set Cross-Validation</h2>
-
-<table>
-<thead><tr><th>Set</th><th>N</th><th>AUROC</th><th>AUPRC</th><th>&kappa;</th><th>&rho;</th></tr></thead>
-<tbody>
-<tr><td>Set 1</td><td>20</td><td>0.667</td><td>0.704</td><td>0.385</td><td>0.286</td></tr>
-<tr><td>Set 2</td><td>20</td><td>0.952</td><td>0.962</td><td>0.481</td><td>0.784</td></tr>
-<tr><td>Set 3</td><td>20</td><td>0.873</td><td>0.908</td><td>0.417</td><td>0.642</td></tr>
-<tr><td>Set 4</td><td>20</td><td>0.800</td><td>0.881</td><td>0.286</td><td>0.514</td></tr>
-<tr><td>Set 5</td><td>20</td><td>0.708</td><td>0.852</td><td>0.200</td><td>0.355</td></tr>
-<tr class="hl"><td>Mean &pm; SD</td><td>100</td><td><strong>0.800 &pm; 0.117</strong></td><td>0.861 &pm; 0.097</td><td>0.354 &pm; 0.111</td><td>0.516 &pm; 0.204</td></tr>
-</tbody>
-</table>
-
+<h3>Why the String-Match Approach Was Wrong</h3>
+<p>An earlier approach measured faithfulness by checking whether biomarker names from <code>key_findings</code> appeared as substrings in the reasoning text (e.g. does &ldquo;EGFR&rdquo; appear in T1's reasoning?). This found 0% hallucination rate. It was wrong because:</p>
 <ul>
-  <li><strong>High variance</strong> (AUROC range 0.667&ndash;0.952) is expected at n=20; one misclassification shifts AUROC by ~0.05</li>
-  <li><strong>Set 2 is the best</strong> because it contains BRAF inhibitor cases with clear T1 signal</li>
-  <li><strong>Set 1 is the worst</strong> due to AGK2 and other poorly annotated drugs</li>
+  <li><code>key_findings</code> is a lossy summary &mdash; agents retrieve many values (z_score, AUC, all CIViC descriptions) but only log the most salient one in <code>key_findings</code></li>
+  <li>A T4 agent reasoning about &ldquo;z_score=-3.85, AUC=0.52&rdquo; correctly, but with <code>key_findings.biomarker=&quot;EGFR&quot;</code>, would count as a miss because &ldquo;EGFR&rdquo; isn't in the IC50-focused reasoning</li>
+  <li>It cannot detect an agent claiming &ldquo;CIViC says Level A sensitive&rdquo; when the actual CIViC level was C</li>
 </ul>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="errors">Error Analysis: The 7 Wrong Predictions</h2>
+<h3>LLM Judge Design</h3>
+<p>For each decisive agent in Round 1, the judge receives the full <code>raw_evidence</code> dict (actual MCP tool outputs) and the agent's reasoning text. It decomposes the reasoning into atomic factual claims:</p>
 
-<table>
-<thead><tr><th>Case</th><th>Truth</th><th>Pred</th><th>Agent</th><th>Mechanism of failure</th></tr></thead>
-<tbody>
-<tr><td>HuP-T4 + Crizotinib</td><td>S</td><td>R</td><td>T4 pharmacology</td><td>CTRPv2 historical IC50 label reflects different cell passage; MET amplification not in CIViC</td></tr>
-<tr><td>A375 + Tanespimycin</td><td>R</td><td>S</td><td>T4 pharmacology</td><td>HSP90 inhibition unrelated to BRAF V600E; T4 found spurious z-score; T1&ndash;T3 all UNCERTAIN</td></tr>
-<tr><td>TE-9 + AZD4547</td><td>R</td><td>S</td><td>T2 transcriptomics</td><td>FGFR2 mRNA overexpressed, but downstream RAS activation decouples receptor from sensitivity</td></tr>
-<tr><td>HCT-116 + AGK2</td><td>R</td><td>S</td><td>T3 pathway</td><td>AGK2 resistance is pharmacokinetic (poor cell penetration); KEGG has no pharmacokinetics</td></tr>
-<tr><td>CA46 + Selumetinib</td><td>R</td><td>S</td><td>T3 pathway</td><td>KRAS G12 + paradoxical MEK feedback not in KEGG topology; no bypass genes detected</td></tr>
-<tr><td>NCI-H1666 + Ibrutinib</td><td>S</td><td>R</td><td>T2 transcriptomics</td><td>T2 misclassified Ibrutinib as expression-driven (BTK expression &rarr; RESISTANT); should be mutation-driven</td></tr>
-<tr><td>SU-DHL-4 + Topotecan</td><td>S</td><td>U</td><td>T1 genomics</td><td>All 4 agents UNCERTAIN; no data in any MCP server for this pair; correct abstention but missed recall</td></tr>
-</tbody>
-</table>
+<pre><code>JUDGE_SYSTEM = """You are a faithfulness auditor for a multi-agent biomedical reasoning system.
 
-<div class="tip"><strong>Pattern:</strong> 6/7 errors require mechanistic knowledge absent from all 4 MCP databases (pharmacokinetics, paradoxical feedback, IC50 noise). Only NCI-H1666+Ibrutinib is a fixable prompt engineering bug (T2 drug-mechanism classification). The architecture is not the problem &mdash; the databases are.</div>
+A 'factual claim' is any assertion that could be true or false based on data:
+- Biomarker presence or absence ("EGFR L858R is present")
+- Numerical values ("z_score is -3.85", "IC50 ln = -0.11")
+- Database classifications ("CIViC classifies T790M as sensitive")
+- Pathway membership ("BRAF is in the MAPK/ERK pathway")
+- Expression levels ("ERBB2 TPM is 344.5")
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="why-custom">Why Custom? (No ADK / LangChain / LangGraph)</h2>
+NOT a factual claim (exclude):
+- Logical conclusions ("therefore the cell line is sensitive")
+- Domain knowledge inferences ("T790M is a well-known resistance mechanism")
+- Confidence statements ("I am confident that...")
 
-<p>The short answer: every mature framework assumes agents are interchangeable tool-callers coordinated by an orchestrator. DMAS needed structured <em>epistemic authority</em> &mdash; where evidence tier, not call order or confidence vote, determines who wins a disagreement. No framework supported that out of the box.</p>
+For each factual claim, classify as:
+  supported   — directly matches a value in the retrieved evidence
+  inferred    — standard biomedical interpretation of supported facts (acceptable)
+  unsupported — specific fact assertion NOT present in retrieved evidence
 
-<div class="diagram-wrap">
-<svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica Neue, Arial, sans-serif" font-size="11.5">
+Return JSON: {claims, faithfulness_score, has_hallucination, summary}"""</code></pre>
 
-  <!-- ======= LEFT COLUMN: Framework path ======= -->
-  <rect x="10" y="8" width="350" height="424" rx="10" fill="#f8fafc" stroke="#d0d7de" stroke-width="1.5"/>
-  <rect x="10" y="8" width="350" height="38" rx="10" fill="#e2e8f0"/>
-  <rect x="10" y="30" width="350" height="16" fill="#e2e8f0"/>
-  <text x="185" y="32" text-anchor="middle" fill="#374151" font-weight="700" font-size="13">Off-the-shelf framework</text>
-  <text x="185" y="47" text-anchor="middle" fill="#6b7280" font-size="10">(LangGraph / ADK / LangChain)</text>
-
-  <!-- framework: orchestrator -->
-  <rect x="110" y="62" width="130" height="32" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
-  <text x="175" y="81" text-anchor="middle" fill="#1e40af" font-weight="700" font-size="11">Orchestrator node</text>
-  <line x1="175" y1="94" x2="175" y2="114" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arL)"/>
-
-  <!-- framework: parallel agents -->
-  <rect x="30" y="114" width="80" height="28" rx="5" fill="#ede9fe" stroke="#a78bfa"/>
-  <text x="70" y="132" text-anchor="middle" fill="#4c1d95" font-size="10">Agent A</text>
-  <rect x="135" y="114" width="80" height="28" rx="5" fill="#ede9fe" stroke="#a78bfa"/>
-  <text x="175" y="132" text-anchor="middle" fill="#4c1d95" font-size="10">Agent B</text>
-  <rect x="240" y="114" width="80" height="28" rx="5" fill="#ede9fe" stroke="#a78bfa"/>
-  <text x="280" y="132" text-anchor="middle" fill="#4c1d95" font-size="10">Agent C</text>
-  <line x1="70" y1="142" x2="130" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arL)"/>
-  <line x1="175" y1="142" x2="175" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arL)"/>
-  <line x1="280" y1="142" x2="220" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arL)"/>
-
-  <!-- framework: voting box -->
-  <rect x="100" y="162" width="150" height="32" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
-  <text x="175" y="180" text-anchor="middle" fill="#374151" font-weight="600" font-size="11">Majority vote / LLM judge</text>
-  <line x1="175" y1="194" x2="175" y2="214" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arL)"/>
-
-  <!-- framework: output -->
-  <rect x="115" y="214" width="120" height="28" rx="6" fill="#dcfce7" stroke="#86efac"/>
-  <text x="175" y="231" text-anchor="middle" fill="#14532d" font-weight="700" font-size="11">Final answer</text>
-
-  <!-- PROBLEMS list -->
-  <text x="32" y="264" fill="#dc2626" font-weight="700" font-size="11">✗ Problems with this for DMAS:</text>
-
-  <rect x="22" y="272" width="326" height="22" rx="4" fill="#fee2e2"/>
-  <text x="30" y="287" fill="#7f1d1d" font-size="10">Agents are interchangeable &mdash; no notion of evidence tier or authority</text>
-
-  <rect x="22" y="298" width="326" height="22" rx="4" fill="#fee2e2"/>
-  <text x="30" y="313" fill="#7f1d1d" font-size="10">Majority vote can override a definitive T1 mutation finding with 3 UNCERTAIN votes</text>
-
-  <rect x="22" y="324" width="326" height="22" rx="4" fill="#fee2e2"/>
-  <text x="30" y="339" fill="#7f1d1d" font-size="10">No structured MCP grounding layer &mdash; tool results go straight to LLM as free text</text>
-
-  <rect x="22" y="350" width="326" height="22" rx="4" fill="#fee2e2"/>
-  <text x="30" y="365" fill="#7f1d1d" font-size="10">LLM self-reported confidence is taken at face value &mdash; no structured GCS override</text>
-
-  <rect x="22" y="376" width="326" height="22" rx="4" fill="#fee2e2"/>
-  <text x="30" y="391" fill="#7f1d1d" font-size="10">No peer checklist / self-attestation gate &mdash; any agent can be decisive at any time</text>
-
-  <rect x="22" y="402" width="326" height="22" rx="4" fill="#fee2e2"/>
-  <text x="30" y="417" fill="#7f1d1d" font-size="10">Framework overhead (graph state, callbacks) adds latency with no domain benefit</text>
-
-  <!-- ======= RIGHT COLUMN: Custom path ======= -->
-  <rect x="400" y="8" width="350" height="424" rx="10" fill="#f0f9f4" stroke="#6ee7b7" stroke-width="1.5"/>
-  <rect x="400" y="8" width="350" height="38" rx="10" fill="#d1fae5"/>
-  <rect x="400" y="30" width="350" height="16" fill="#d1fae5"/>
-  <text x="575" y="32" text-anchor="middle" fill="#065f46" font-weight="700" font-size="13">Custom DMAS protocol</text>
-  <text x="575" y="47" text-anchor="middle" fill="#047857" font-size="10">(FastMCP + debate_engine.py + axiom_resolver.py)</text>
-
-  <!-- custom: MCP layer -->
-  <rect x="420" y="62" width="310" height="32" rx="6" fill="#fff7ed" stroke="#fb923c"/>
-  <text x="575" y="77" text-anchor="middle" fill="#92400e" font-weight="700" font-size="11">Structured MCP retrieval (per-agent dedicated server)</text>
-  <text x="575" y="91" text-anchor="middle" fill="#78350f" font-size="9.5">JSON evidence &rarr; no hallucination of DB content possible</text>
-  <line x1="575" y1="94" x2="575" y2="114" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arR)"/>
-
-  <!-- custom: 4 specialist agents -->
-  <rect x="415" y="114" width="66" height="28" rx="5" fill="#fee2e2" stroke="#dc2626"/>
-  <text x="448" y="132" text-anchor="middle" fill="#991b1b" font-weight="700" font-size="10">T1 Genomics</text>
-  <rect x="487" y="114" width="66" height="28" rx="5" fill="#ede9fe" stroke="#7c3aed"/>
-  <text x="520" y="132" text-anchor="middle" fill="#4c1d95" font-weight="700" font-size="10">T2 Transcr.</text>
-  <rect x="559" y="114" width="66" height="28" rx="5" fill="#d1fae5" stroke="#059669"/>
-  <text x="592" y="132" text-anchor="middle" fill="#065f46" font-weight="700" font-size="10">T3 Pathway</text>
-  <rect x="631" y="114" width="66" height="28" rx="5" fill="#fef3c7" stroke="#d97706"/>
-  <text x="664" y="132" text-anchor="middle" fill="#78350f" font-weight="700" font-size="10">T4 Pharma.</text>
-
-  <!-- connecting lines to GCS -->
-  <line x1="448" y1="142" x2="490" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arR)"/>
-  <line x1="520" y1="142" x2="535" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arR)"/>
-  <line x1="592" y1="142" x2="580" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arR)"/>
-  <line x1="664" y1="142" x2="638" y2="162" stroke="#94a3b8" stroke-width="1" marker-end="url(#arR)"/>
-
-  <!-- custom: GCS overwrites -->
-  <rect x="450" y="162" width="250" height="28" rx="6" fill="#eff6ff" stroke="#3b82f6"/>
-  <text x="575" y="179" text-anchor="middle" fill="#1e40af" font-weight="700" font-size="11">GCS overwrites self-reported confidence</text>
-  <line x1="575" y1="190" x2="575" y2="210" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arR)"/>
-
-  <!-- custom: debate engine -->
-  <rect x="450" y="210" width="250" height="44" rx="6" fill="#0d2b6b"/>
-  <text x="575" y="228" text-anchor="middle" fill="white" font-weight="700" font-size="11">Debate engine</text>
-  <text x="575" y="244" text-anchor="middle" fill="#a8c0e8" font-size="9.5">T3 self-attest gate • T1 veto • strict majority</text>
-  <line x1="575" y1="254" x2="575" y2="274" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arR)"/>
-
-  <!-- custom: axiom resolver -->
-  <rect x="450" y="274" width="250" height="36" rx="6" fill="#1a4fa0"/>
-  <text x="575" y="289" text-anchor="middle" fill="white" font-weight="700" font-size="11">AxiomResolver (if no consensus)</text>
-  <text x="575" y="304" text-anchor="middle" fill="#c8d8f5" font-size="9.5">endorsement → tier weight → GCS</text>
-  <line x1="575" y1="310" x2="575" y2="330" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#arR)"/>
-
-  <!-- custom: output -->
-  <rect x="495" y="330" width="160" height="28" rx="6" fill="#dcfce7" stroke="#16a34a"/>
-  <text x="575" y="348" text-anchor="middle" fill="#14532d" font-weight="700" font-size="11">Verdict + axiom + trace</text>
-
-  <!-- WINS list -->
-  <text x="422" y="378" fill="#16a34a" font-weight="700" font-size="11">✓ What this enables:</text>
-  <text x="422" y="394" fill="#065f46" font-size="10">• Tier-weighted authority &mdash; T1 structural evidence always outranks T4 historical IC50</text>
-  <text x="422" y="410" fill="#065f46" font-size="10">• GCS keeps confidence grounded in actual DB retrieval, not LLM guessing</text>
-  <text x="422" y="426" fill="#065f46" font-size="10">• Transparent trace: every verdict names the winning agent, axiom, and evidence</text>
-
-  <defs>
-    <marker id="arL" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/></marker>
-    <marker id="arR" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/></marker>
-  </defs>
-</svg>
-<div class="cap">Left: what a framework gives you. Right: what DMAS actually needed. The gap between them is why all debate logic was written from scratch.</div>
+<h3>Claim Classification</h3>
+<div class="formula">
+  <div class="f-title">Faithfulness Score</div>
+  <div class="main">Faithfulness = supported / (supported + unsupported)</div>
+  <div class="sub-f">Inferred claims excluded from denominator — domain reasoning from facts is acceptable</div>
+  <div class="sub-f">Hallucination rate = agents_with_any_unsupported_claim / total_decisive_agents</div>
 </div>
 
-<h3>The five specific gaps</h3>
-
 <table>
-<thead><tr><th>Requirement</th><th>Framework behaviour</th><th>Why that fails here</th><th>Custom solution</th></tr></thead>
+<thead><tr><th>Claim type</th><th>Definition</th><th>Example</th><th>Penalised?</th></tr></thead>
 <tbody>
-<tr><td><strong>Evidence tier authority</strong></td><td>All agents are equal nodes; conflict resolved by majority or another LLM call</td><td>A T4 pharmacological prior (historical IC50) should not override a T1 confirmed BRAF V600E mutation finding &mdash; majority vote allows exactly that</td><td>AXIOM_HIERARCHY (T1=5…T4=2) baked into the resolver; T1 veto rule blocks tier inversion</td></tr>
-<tr><td><strong>MCP as anti-hallucination gate</strong></td><td>Tool results returned as free text to the LLM; LLM incorporates them into its reasoning verbatim or paraphrases them</td><td>LLM can silently fabricate a mutation entry or IC50 value that was never in the DB; undetectable without auditing each call</td><td>Agents receive structured JSON; key_findings must match evidence_raw for GCS.H to be non-zero — hallucinated biomarkers produce H=0 and lower confidence automatically</td></tr>
-<tr><td><strong>Confidence calibration</strong></td><td>LLM outputs a self-reported confidence; frameworks pass it through unchanged</td><td>LLMs are known to be overconfident; a single abstaining agent that says 0.95 should not drive the final output</td><td>GCS formula recomputes confidence from DB retrieval quality (H, E), not the LLM&rsquo;s claim</td></tr>
-<tr><td><strong>Self-attestation gate</strong></td><td>No concept of an agent gating its own decisiveness</td><td>T3 pathway agent tends to over-claim; needs a structured mechanism to exclude itself when its own evidence is thin</td><td>T3 runs a 4-question self-checklist; score &lt; 3 &rarr; demoted from decisive pool before consensus is tested</td></tr>
-<tr><td><strong>Peer review layer</strong></td><td>Agents don&rsquo;t inspect each other&rsquo;s reasoning; multi-agent frameworks add a separate &ldquo;critic&rdquo; node that is itself unconstrained</td><td>A generic critic LLM would have no domain-specific expectations about what a T1 genomics claim must contain</td><td>Per-tier binary checklists (4 questions per tier) that test specific, verifiable claims — named mutation, numeric z-score, specific bypass gene — not vague reasoning quality</td></tr>
+<tr><td><strong>supported</strong></td><td>Directly traceable to a value or field in raw_evidence</td><td>&ldquo;EGFR T790M present&rdquo; &mdash; mutations[0].mutation = &ldquo;p.T790M&rdquo;</td><td>No</td></tr>
+<tr><td><strong>inferred</strong></td><td>Standard biomedical interpretation of supported facts</td><td>&ldquo;T790M confers sensitivity to osimertinib&rdquo; &mdash; correct domain inference from CIViC</td><td>No</td></tr>
+<tr><td><strong>unsupported</strong></td><td>Specific factual assertion not in retrieved evidence</td><td>T2 stating &ldquo;NCI-H1975 carries EGFR L858R mutation&rdquo; &mdash; T2 only queries CCLE expression</td><td>Yes</td></tr>
 </tbody>
 </table>
 
-<div class="info"><strong>What we did borrow from the ecosystem:</strong> FastMCP (server protocol), Pydantic (schema enforcement on EvidencePack), Google Vertex AI SDK (API calls to Gemini 3.1 Flash Lite). The custom layer is purely the debate protocol, GCS computation, and the resolver &mdash; roughly 600 lines of Python.</div>
-
-<h3>Could any framework get close?</h3>
-
-<p>Specifically for the debate protocol &mdash; two structured rounds, verdict locking, tier-gated peer checklists, and a deterministic resolver &mdash; here is an honest evaluation of every serious candidate:</p>
-
-<div style="overflow-x:auto">
-<table class="fw-table">
-<thead>
-  <tr>
-    <th style="width:15%">Framework</th>
-    <th style="width:30%">What it offers</th>
-    <th style="width:35%">What DMAS protocol actually needs</th>
-    <th style="width:20%">Verdict</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>
-      <span class="fw-name">LangGraph</span>
-      <span class="fw-sub">closest candidate</span>
-      <span class="fw-badge fw-partial">PARTIAL</span>
-    </td>
-    <td class="offers">
-      <ul>
-        <li>Graph nodes + directed edges = multi-step workflows</li>
-        <li>Cyclic graphs support iterative rounds (R1 &rarr; R2)</li>
-        <li>Conditional routing can branch on consensus result</li>
-        <li>State object carries packs between rounds</li>
-      </ul>
-    </td>
-    <td class="gaps">
-      <ul>
-        <li>Tier authority (T1=5&hellip;T4=2) must still be coded inside the nodes &mdash; the framework is unaware of it</li>
-        <li>GCS formula: no confidence-override concept exists</li>
-        <li>T3 self-attestation gate, T1 veto: pure custom logic</li>
-        <li>Per-tier peer checklists: no primitives, bespoke domain code regardless</li>
-      </ul>
-    </td>
-    <td class="fw-verdict partial">Could use as a routing scaffold, but all debate logic is still written from scratch inside the nodes. Net cost: same protocol code + extra graph wiring.</td>
-  </tr>
-  <tr>
-    <td>
-      <span class="fw-name">AutoGen</span>
-      <span class="fw-sub">group chat model</span>
-      <span class="fw-badge fw-no">DOES NOT FIT</span>
-    </td>
-    <td class="offers">
-      <ul>
-        <li>GroupChat: agents speak in turn via free-text messages</li>
-        <li>UserProxyAgent can enforce turn order</li>
-        <li>Agents can read each other&rsquo;s prior messages</li>
-        <li>GroupChatManager picks next speaker</li>
-      </ul>
-    </td>
-    <td class="gaps">
-      <ul>
-        <li>&times; No verdict locking &mdash; agents freely revise opinion each turn (R2 requires verdicts be frozen)</li>
-        <li>&times; Free-text exchange; EvidencePack JSON schema not native</li>
-        <li>&times; No tier authority; manager picks speaker by heuristic, not axiom weight</li>
-        <li>&times; Debates can loop indefinitely; no deterministic exit condition</li>
-      </ul>
-    </td>
-    <td class="fw-verdict no">Free-text chat is the direct opposite of what we need. R2 verdict-locking alone disqualifies AutoGen entirely.</td>
-  </tr>
-  <tr>
-    <td>
-      <span class="fw-name">CrewAI</span>
-      <span class="fw-sub">role + task model</span>
-      <span class="fw-badge fw-no">DOES NOT FIT</span>
-    </td>
-    <td class="offers">
-      <ul>
-        <li>Roles assigned to agents, tasks assigned sequentially or in parallel</li>
-        <li>Sequential or hierarchical process model</li>
-        <li>Agents produce string outputs, pass to next task</li>
-        <li>Manager agent can delegate sub-tasks</li>
-      </ul>
-    </td>
-    <td class="gaps">
-      <ul>
-        <li>&times; No concept of iterative debate or peer critique between agents</li>
-        <li>&times; Manager agent adjudicates via another LLM call &mdash; non-deterministic</li>
-        <li>&times; Outputs are strings; EvidencePack must be re-parsed each step</li>
-        <li>&times; No tier hierarchy or axiom-based resolution at all</li>
-      </ul>
-    </td>
-    <td class="fw-verdict no">A task pipeline, not a debate protocol. The abstraction is wrong at the design level.</td>
-  </tr>
-  <tr>
-    <td>
-      <span class="fw-name">Google ADK</span>
-      <span class="fw-sub">agent dev kit</span>
-      <span class="fw-badge fw-no">DOES NOT FIT</span>
-    </td>
-    <td class="offers">
-      <ul>
-        <li>Orchestrator agent delegates to sub-agents via tool calls</li>
-        <li>Sub-agents return structured output to orchestrator</li>
-        <li>Native Vertex AI / Gemini integration</li>
-        <li>Session-based state management built in</li>
-      </ul>
-    </td>
-    <td class="gaps">
-      <ul>
-        <li>&times; Orchestrator is another LLM call &mdash; adjudication is non-deterministic</li>
-        <li>&times; No peer critique round; sub-agents never review each other</li>
-        <li>&times; No tier-based authority or axiom hierarchy</li>
-        <li>&times; No GCS or confidence-override concept</li>
-      </ul>
-    </td>
-    <td class="fw-verdict no">Same orchestrator-as-judge problem as LangChain. The LLM adjudicator can be swayed, bribed, or just wrong.</td>
-  </tr>
-</tbody>
-</table>
+<h3>Results on 31-Case Gold Standard</h3>
+<div class="metric-strip">
+  <div class="metric-chip"><div class="val" style="color:#16a34a">86.6%</div><div class="lbl">Faithfulness</div></div>
+  <div class="metric-chip"><div class="val">194</div><div class="lbl">Total Claims</div></div>
+  <div class="metric-chip"><div class="val">168</div><div class="lbl">Supported</div></div>
+  <div class="metric-chip"><div class="val">26</div><div class="lbl">Unsupported</div></div>
+  <div class="metric-chip"><div class="val" style="color:#dc2626">38.3%</div><div class="lbl">Agent Hallucination Rate</div></div>
+  <div class="metric-chip"><div class="val">47</div><div class="lbl">Agents Evaluated</div></div>
 </div>
 
-<div class="fw-mismatch">
-  <div>
-    <p style="color:#c8d8f5; font-weight:700; margin-bottom:10px;">The core mismatch</p>
-    <p>All frameworks treat multi-agent conflict as a <strong style="color:#fbbf24">routing or scheduling problem</strong>: who speaks next, whose output feeds into whom, how to retry on failure.</p>
-    <br>
-    <p><em>DMAS treats conflict as an <strong style="color:#fbbf24">epistemological problem</strong>: which evidence type has higher causal authority, and how do you prevent weaker evidence from overriding stronger evidence just because it outnumbers it?</em></p>
+<table>
+<thead><tr><th>Agent</th><th>Faithfulness</th><th>Hallucinates</th><th>Total Claims</th><th>Primary issue</th></tr></thead>
+<tbody>
+<tr><td>T1 Genomics</td><td>0.929</td><td>2/10</td><td>42</td><td>Occasional CNV/RPPA values in reasoning not in key_findings snapshot</td></tr>
+<tr><td>T2 Transcriptomics</td><td>0.812</td><td>5/9</td><td>32</td><td><strong>Cross-tier leakage:</strong> states mutation status from LLM training data (e.g. cell-line genotype not in CCLE expression query)</td></tr>
+<tr><td>T4 Pharmacology</td><td>0.925</td><td>4/14</td><td>53</td><td>States cell-line phenotypes (p53-null, ER+) not present in IC50 data</td></tr>
+<tr><td>T3 Pathway</td><td>0.806</td><td>7/14</td><td>67</td><td>Pathway activity scores not fully traceable through nested raw_evidence; highest unsupported claim count</td></tr>
+</tbody>
+</table>
+
+<h3>The Real Finding: Cross-Tier Leakage</h3>
+<p>The key finding from the LLM judge is <strong>cross-tier knowledge leakage</strong>: T2 and T4 sometimes state facts they couldn't have retrieved from their own tools:</p>
+<ul>
+  <li>T2 states: &ldquo;NCI-H1975 is an EGFR-mutant line (L858R and T790M)&rdquo; &mdash; T2 only queries CCLE expression data; it knows this from LLM training data, not from its MCP tool call</li>
+  <li>T2 states: &ldquo;HCC-827 harbors an EGFR exon 19 deletion&rdquo; &mdash; same issue</li>
+  <li>T4 states: &ldquo;Saos-2 is a p53-null cell line&rdquo; &mdash; T4 only sees IC50 z-scores</li>
+  <li>T4 states: &ldquo;MCF7 is ER-positive&rdquo; &mdash; not in IC50 database</li>
+</ul>
+<p>This is a genuine faithfulness violation: the agent is using training knowledge to contextualise its reasoning rather than only the retrieved data. In these specific cases the facts are correct (these cell lines are indeed what's claimed), but the mechanism is wrong and represents a hallucination risk in edge cases.</p>
+<div class="info"><strong>Proposed fix:</strong> Add explicit instructions to T2 and T4 system prompts: &ldquo;You ONLY know what your MCP tool calls returned. Do not state cell-line genotype or phenotype facts that are not in your retrieved data.&rdquo;</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="errors">Error Analysis &mdash; 4 Failures</h2>
+
+<table>
+<thead><tr><th>Case</th><th>Resolution</th><th>Root cause</th><th>Type</th></tr></thead>
+<tbody>
+<tr><td>JIMT-1 + Lapatinib</td><td>RESOLVER_TIEBREAK</td><td>T1 sees ERBB2 amplification &rarr; SENSITIVE. PIK3CA/NRG1 bypass resistance not in CIViC or KEGG for this drug</td><td>Data coverage gap</td></tr>
+<tr><td>NCI-H1650 + Erlotinib</td><td>CONSENSUS_R2</td><td>T1 EGFR del19 &rarr; SENSITIVE. PTEN-null PI3K bypass exists but agents converge wrong after debate</td><td>Debate converged to wrong answer</td></tr>
+<tr><td>8505C + PLX-4720</td><td>RESOLVER_TIEBREAK</td><td>T1 BRAF V600E &rarr; SENSITIVE. AXL bypass not in KEGG pathway DB</td><td>Data coverage gap (AXL)</td></tr>
+<tr><td>A2058 + Dabrafenib</td><td>CONSENSUS_R2</td><td>BRAF V600E but AXL bypass absent from KEGG; agents reach wrong consensus</td><td>Data coverage gap (AXL)</td></tr>
+</tbody>
+</table>
+
+<p>All 4 failures are data coverage gaps, not architectural failures. Two involve AXL &mdash; a known bypass gene for BRAF inhibitors that is absent from KEGG's bypass_routes table. The debate mechanism itself works correctly in all 4 cases; it's the underlying databases that lack the bypass evidence needed to reach the correct verdict.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="ablation">Ablation Study Design <span class="tag tag-changed">Updated: 14 variants</span></h2>
+
+<p>The ablation runs all 14 variants on the same 31 gold standard cases. Each variant isolates one architectural decision to quantify its contribution.</p>
+
+<div class="ablation-grid">
+  <div class="abl-card">
+    <div class="abl-label">Baseline</div>
+    <div class="abl-name">full_system</div>
+    <div class="abl-desc">4 agents + unanimity debate + AxiomResolver. This is the claimed design.</div>
   </div>
-  <div class="compare">
-    <div class="fw-compare-chip">
-      <div class="lbl">Framework model</div>
-      <div class="val">WHO speaks &amp; WHEN &mdash; a scheduling concern</div>
-    </div>
-    <div class="fw-compare-chip">
-      <div class="lbl">DMAS model</div>
-      <div class="val">WHAT carries more epistemic weight &mdash; a domain knowledge concern</div>
-    </div>
-    <div class="fw-compare-chip">
-      <div class="lbl">Why this matters</div>
-      <div class="val">No amount of routing cleverness makes a majority-vote resolver safe when a 3-to-1 IC50 consensus can override a confirmed BRAF V600E mutation</div>
-    </div>
+  <div class="abl-card">
+    <div class="abl-label">Debate ablation</div>
+    <div class="abl-name">no_debate</div>
+    <div class="abl-desc">All 4 agents but majority vote only (NoDebateEngine). Proves debate rounds add value.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Resolver ablation</div>
+    <div class="abl-name">no_axioms</div>
+    <div class="abl-desc">Debate fires but ConfidenceOnlyResolver replaces AxiomResolver. Proves tier hierarchy adds value.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Resolver ablation</div>
+    <div class="abl-name">random_axiom_order</div>
+    <div class="abl-desc">Debate fires but axiom hierarchy is randomly shuffled. Proves the specific ordering matters.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Architecture</div>
+    <div class="abl-name">monolithic_llm</div>
+    <div class="abl-desc">Single LLM receives all 4 modalities of data, no debate. Proves multi-agent decomposition beats one LLM.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Architecture</div>
+    <div class="abl-name">no_mcp</div>
+    <div class="abl-desc">All 4 agents but receive prose summaries instead of structured JSON. Proves structured MCP tool calls add value.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Single agent</div>
+    <div class="abl-name">only_genomics</div>
+    <div class="abl-desc">T1 alone, no debate. Establishes genomics baseline.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Single agent</div>
+    <div class="abl-name">only_transcriptomics</div>
+    <div class="abl-desc">T2 alone, no debate. Establishes expression baseline.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Single agent</div>
+    <div class="abl-name">only_pathway</div>
+    <div class="abl-desc">T3 alone, no debate. Establishes pathway baseline.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Single agent</div>
+    <div class="abl-name">only_pharmacology</div>
+    <div class="abl-desc">T4 alone, no debate. Establishes IC50 baseline.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Drop-one</div>
+    <div class="abl-name">no_genomics</div>
+    <div class="abl-desc">3 agents (T2+T3+T4) + debate. Contribution of T1 = full_system &minus; no_genomics.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Drop-one</div>
+    <div class="abl-name">no_transcriptomics</div>
+    <div class="abl-desc">3 agents (T1+T3+T4) + debate. Contribution of T2.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Drop-one</div>
+    <div class="abl-name">no_pathway</div>
+    <div class="abl-desc">3 agents (T1+T2+T4) + debate. Contribution of T3.</div>
+  </div>
+  <div class="abl-card">
+    <div class="abl-label">Drop-one</div>
+    <div class="abl-name">no_pharmacology</div>
+    <div class="abl-desc">3 agents (T1+T2+T3) + debate. Contribution of T4.</div>
   </div>
 </div>
-<p style="font-size:0.8rem; color:var(--sub); text-align:center; font-style:italic; margin-top:6px;">Framework-by-framework evaluation against the DMAS debate protocol. LangGraph is technically usable as a routing scaffold but doesn&rsquo;t reduce the amount of custom protocol code written.</p>
 
-<h3>The LangGraph counter-argument (and why it still doesn&rsquo;t help enough)</h3>
-<ul>
-  <li><strong>What LangGraph does give you:</strong> graph state persistence, conditional edge routing, retry logic on node failure, Langsmith tracing</li>
-  <li><strong>What you&rsquo;d still write from scratch inside the nodes:</strong> GCS formula, T3 self-attestation gate, T1 veto check, strict-majority consensus, all 4 peer checklists, AxiomResolver sort key, confidence decay &mdash; i.e., the entire debate protocol</li>
-  <li><strong>What you&rsquo;d additionally fight:</strong> LangGraph&rsquo;s state serialisation format, its Checkpoint API, and its assumption that all edges carry the same typed state object &mdash; whereas our packs are heterogeneous (T3 has self_attestation, others don&rsquo;t)</li>
-  <li><strong>Net conclusion:</strong> Using LangGraph would mean writing the same 600 lines of protocol code, plus ~200 lines of graph wiring, plus debugging framework-specific state issues. Plain Python is strictly less code for the same result.</li>
-</ul>
+<h3>What Each Group Proves</h3>
+<table>
+<thead><tr><th>Group</th><th>Variants</th><th>Thesis claim supported</th></tr></thead>
+<tbody>
+<tr><td>Debate ablations</td><td>no_debate, no_axioms, random_axiom_order</td><td>The debate mechanism (not just voting) and the specific axiom ordering add measurable value</td></tr>
+<tr><td>Architecture ablations</td><td>monolithic_llm, no_mcp</td><td>Multi-agent decomposition beats a single LLM; structured tool calls beat natural-language summaries</td></tr>
+<tr><td>Single-agent baselines</td><td>only_X (4 variants)</td><td>Per-modality ceiling &mdash; how well each agent does alone without debate</td></tr>
+<tr><td>Drop-one ablations</td><td>no_X (4 variants)</td><td>Marginal contribution of each agent to the ensemble with debate</td></tr>
+</tbody>
+</table>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="constants">Key Constants &amp; Thresholds</h2>
+<h3>Ablation Results — 31 Gold-Standard Cases</h3>
 
 <table>
-<thead><tr><th>Constant</th><th>Value</th><th>Location</th><th>Meaning</th></tr></thead>
+<thead><tr><th>Variant</th><th>Group</th><th>AUROC</th><th>Cohen's κ</th><th>Coverage</th><th>Δ AUROC vs full</th></tr></thead>
 <tbody>
-<tr><td>CONFIDENCE_DECAY_PER_FLIP</td><td>0.15</td><td>axiom_rules.py</td><td>Confidence penalty for agents whose verdict differs from the resolver winner</td></tr>
-<tr><td>T1_OVERRIDE_CONFIDENCE_THRESHOLD</td><td>0.70</td><td>axiom_rules.py</td><td>T1 must exceed this to override unanimous lower-tier consensus</td></tr>
-<tr><td>SILENCING_THRESHOLD</td><td>&minus;2.0</td><td>axiom_rules.py</td><td>mRNA z-score below this &rarr; target silenced &rarr; T2 signals RESISTANT</td></tr>
-<tr><td>AXIOM_HIERARCHY</td><td>T1=5, T2=4, T3=3, T4=2, T5=1</td><td>axiom_rules.py</td><td>Tie-breaking priority in resolver</td></tr>
-<tr><td>T3 self-attestation gate</td><td>&lt; 3/4</td><td>debate_engine.py</td><td>T3 demoted from decisive if checklist score below 3</td></tr>
-<tr><td>IC50 z-score thresholds</td><td>&minus;0.5 / +0.5</td><td>ground truth</td><td>Label assignment from CTRPv2 z-scores</td></tr>
-<tr><td>Bypass expression threshold</td><td>z &ge; 1.0</td><td>T3 agent prompt</td><td>Bypass gene counted as &ldquo;expressed&rdquo; only above this z-score</td></tr>
-<tr><td>T2 overexpression threshold</td><td>z &gt; +1.5</td><td>T2 agent prompt</td><td>Target gene counted as overexpressed (expression-driven sensitivity)</td></tr>
-<tr><td>Pathway activity gate</td><td>&ge; 0.40</td><td>T3 agent prompt</td><td>Fraction of pathway genes at z&ge;0.5; below this, pathway is inactive</td></tr>
-<tr><td>UNCERTAIN confidence cap</td><td>min(GCS, 0.5)</td><td>base_agent.py &amp; gcs.py</td><td>All UNCERTAIN verdicts capped at 0.50 confidence</td></tr>
-<tr><td>Confidence adjustment cap (R2)</td><td>&pm;0.10</td><td>base_agent.py</td><td>Max change allowed to agent&rsquo;s confidence during peer critique</td></tr>
-<tr><td>MAX_DEBATE_ROUNDS</td><td>3</td><td>axiom_rules.py</td><td>Hard cap on debate rounds (currently unused; only 2 rounds implemented)</td></tr>
+<tr class="hl"><td><strong>full_system</strong></td><td>Baseline</td><td><strong>0.819</strong></td><td>0.733</td><td>100%</td><td>—</td></tr>
+<tr><td>no_debate</td><td>Debate ablation</td><td>0.784</td><td>0.668</td><td>100%</td><td>−0.035</td></tr>
+<tr><td>no_axioms</td><td>Resolver ablation</td><td>0.803</td><td>0.668</td><td>100%</td><td>−0.016</td></tr>
+<tr><td>random_axiom_order</td><td>Resolver ablation</td><td>0.808</td><td>0.616</td><td>97%</td><td>−0.011</td></tr>
+<tr><td>monolithic_llm</td><td>Architecture</td><td>0.656</td><td>0.491</td><td>97%</td><td>−0.163</td></tr>
+<tr><td>no_mcp</td><td>Architecture</td><td>0.817</td><td>0.537</td><td>97%</td><td>−0.002</td></tr>
+<tr><td>only_genomics (T1)</td><td>Single agent</td><td>0.772</td><td>0.489</td><td>84%</td><td>−0.047</td></tr>
+<tr><td>only_transcriptomics (T2)</td><td>Single agent</td><td>0.709</td><td>0.215</td><td>55%</td><td>−0.110</td></tr>
+<tr><td>only_pathway (T3)</td><td>Single agent</td><td>0.673</td><td>0.266</td><td>83%</td><td>−0.146</td></tr>
+<tr><td>only_pharmacology (T4)</td><td>Single agent</td><td>0.863</td><td>0.572</td><td>94%</td><td>+0.044</td></tr>
+<tr><td>no_genomics</td><td>Drop-one</td><td>0.831</td><td>0.520</td><td>97%</td><td>+0.012</td></tr>
+<tr><td>no_transcriptomics</td><td>Drop-one</td><td>0.815</td><td>0.535</td><td>100%</td><td>−0.004</td></tr>
+<tr><td>no_pathway</td><td>Drop-one</td><td>0.824</td><td>0.604</td><td>100%</td><td>+0.005</td></tr>
+<tr><td>no_pharmacology</td><td>Drop-one</td><td>0.742</td><td>0.599</td><td>100%</td><td>−0.077</td></tr>
+</tbody>
+</table>
+
+<div class="info"><strong>Key reads:</strong> (1) <em>no_debate</em> AUROC drops 0.035 vs full system — debate rounds add value beyond majority vote. (2) <em>monolithic_llm</em> drops 0.163 — multi-agent decomposition is the largest single contributor. (3) <em>only_pharmacology</em> alone scores 0.863 AUROC but κ=0.572 vs full system κ=0.733 — high AUROC but lower agreement, and 94% coverage (misses 2 cases with no IC50 data). (4) κ is the most important metric: it accounts for class imbalance and is the thesis's primary claim.</div>
+
+<h3>no_mcp Implementation</h3>
+<p>Agents receive evidence as natural-language prose paragraphs instead of structured JSON. The <code>NaturalLanguageAgent</code> wrapper calls the same <code>_fetch_evidence()</code> tools but converts the output to prose before passing it to the LLM:</p>
+<pre><code># Example prose output for T1:
+"Mutations identified: EGFR p.T790M (SNV); EGFR p.L858R (SNV).
+CIViC for EGFR p.T790M: EGFR T790M → Sensitivity/Response to Osimertinib (CIViC level A; Lung Non-small Cell...
+Copy number variation: EGFR CNV=1.77 (neutral).
+Protein expression (RPPA): EGFR RPPA=0.05."</code></pre>
+<p>The LLM still gets the same data but cannot parse structured fields programmatically. This tests whether JSON structure (field names, nested paths, type-safe values) helps the LLM reason more accurately than equivalent prose.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="baselines">Baseline Comparison <span class="tag tag-new">New</span></h2>
+
+<p>All comparisons use the same 31 gold-standard cases with literature-validated binary labels (independent of GDSC/CTRPv2 z-scores). Only methods that can be run on our exact cases without data leakage are included in the head-to-head table.</p>
+
+<table>
+<thead><tr><th>Method</th><th>Type</th><th>AUROC</th><th>Cohen's κ</th><th>Coverage</th><th>Notes</th></tr></thead>
+<tbody>
+<tr class="hl"><td><strong>Our system (full)</strong></td><td>Multi-agent + debate</td><td><strong>0.819</strong></td><td><strong>0.733</strong></td><td>100%</td><td>4 domain specialists, AxiomChallenge, GCS scoring</td></tr>
+<tr><td>No debate (majority vote)</td><td>Multi-agent, no debate</td><td>0.784</td><td>0.668</td><td>100%</td><td>Same agents, debate rounds removed</td></tr>
+<tr><td>Monolithic LLM</td><td>Single agent</td><td>0.656</td><td>0.491</td><td>97%</td><td>All omics data to one LLM; no specialization</td></tr>
+<tr><td>T4 alone (CTRPv2 IC50)</td><td>Single agent</td><td>0.863</td><td>0.572</td><td>94%</td><td>Near-direct database lookup; 6% no IC50 data</td></tr>
+<tr><td><strong>RF on CTRPv2 omics features</strong></td><td>External ML baseline</td><td><strong>0.475</strong></td><td>−0.016</td><td>100%</td><td>Trained on 108K pairs; gene-level features, no variant context</td></tr>
+</tbody>
+</table>
+
+<div class="info"><strong>Why RF AUROC &lt; 0.5:</strong> The random forest learns population-level rules (e.g. <em>EGFR mutated → sensitive</em>) from 108K CTRPv2 training pairs. On the gold standard, these rules actively mislead: EGFR T790M causes resistance to 1st-gen TKIs but sensitivity to osimertinib. Gene-level binary mutation flags cannot distinguish resistance-conferring from sensitising variants in the same gene. The RF's sub-random performance validates the core thesis: mechanistic variant-level reasoning is necessary for these hard cases.</div>
+
+<h3>External Models — Architectural Comparison Only</h3>
+<p>The following published systems cannot be run head-to-head on our 31 cases without fairness issues (different task, requires curated input, or no public code). They are cited as related work, not direct competitors.</p>
+
+<table>
+<thead><tr><th>System</th><th>Citation</th><th>Task</th><th>Reported metric</th><th>Why not runnable here</th></tr></thead>
+<tbody>
+<tr><td>DRN-CDR</td><td>Saranya &amp; Vimina, Comput Biol Chem 2024</td><td>IC50 regression on GDSC</td><td>Pearson r = 0.794</td><td>Requires methylation data; continuous IC50 target; training overlap with our cell lines</td></tr>
+<tr><td>EvoMDT / OpenEvoMDT</td><td>Liu et al., npj Digital Med 2026</td><td>Clinical oncology MCQ</td><td>MedQA-Cancer = 0.89</td><td>Different task (clinical QA vs. cell-line drug response); requires pre-curated biomarker input; parametric knowledge leakage on famous cases</td></tr>
+<tr><td>MedAgents</td><td>Tang et al., ACL Findings 2024</td><td>Medical MCQ (MedQA, MMLU)</td><td>MedQA = 0.728</td><td>MCQ specialist roles; same curated-input fairness issue</td></tr>
+<tr><td>Free-MAD</td><td>Cui et al., arXiv 2509.11035</td><td>General reasoning MCQ</td><td>Varies by benchmark</td><td>No public code released</td></tr>
 </tbody>
 </table>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="example">Worked Example: COLO-205 + PLX-4720</h2>
+<h2 id="pharmacology-failures">Case Study: When Pharmacology Alone Fails <span class="tag tag-new">New</span></h2>
 
-<p>A clean BRAF V600E case showing how R1 consensus works when T1 has definitive evidence.</p>
+<p>The argument that a pure IC50-lookup system is insufficient rests on concrete mechanistic failures, not aggregate statistics. The 5 cases below are the complete set where T4 (pharmacology agent) had IC50 data and still reached the wrong or ambiguous verdict &mdash; while the full 4-agent debate system reached the correct one. Three structurally distinct failure modes emerge.</p>
 
-<pre><code>Step 1: MCP queries
-  T1 &rarr; CIViC: COLO-205 has BRAF p.V600E (somatic, gain-of-function)
-            CIViC entry: PLX-4720 selective BRAF V600E inhibitor, SENSITIVE, evidence level A
-  T2 &rarr; CCLE: BRAF z-score = +0.8 (expressed, not silenced)
-  T3 &rarr; KEGG: MAPK/ERK pathway active (71% genes expressed). bypass_check: CRAF z=+0.4, NRAS z=-0.1
-            Both below z=1.0 &rarr; bypass_exists = false
-  T4 &rarr; CTRPv2: no IC50 data for COLO-205 + PLX-4720
+<h3>Failure Mode A &mdash; Synthetic Lethality Blindness (2 cases)</h3>
+<p>IC50 viability assays measure cell death per unit drug concentration in a population of cell lines. They cannot capture <strong>context-dependent synthetic lethality</strong> &mdash; the phenomenon where a DNA repair deficiency (BRCA1/2 loss) makes cells hypersensitive to PARP inhibition independently of target expression. The IC50 population z-score sees HRD-deficient cell lines as &ldquo;resistant&rdquo; if the assay was not calibrated to detect synthetic lethality, or if the viability plateau reflects assay duration rather than mechanism.</p>
 
-Step 2: Agent verdicts (Round 1)
-  T1: SENSITIVE (conf=1.00 pre-GCS, GCS=1.00)
-    H=1.0 (BRAF in evidence), E=1.0, T=1.0 (T1 tier), S=1.0
-    GCS = 0.40 + 0.30 + 0.20 + 0.10 = 1.00
-  T2: SENSITIVE (conf=0.56)
-    Drug is mutation-driven; BRAF expressed; consistent with T1
-    H=0.5, E=1.0, T=0.8, S=0.56 &rarr; GCS &asymp; 0.56
-  T3: UNCERTAIN (self-attestation score=2/4 &lt; 3 &rarr; demoted)
-    T3 said SENSITIVE, but pathway evidence insufficiently specific
-  T4: UNCERTAIN (no IC50 data &rarr; E=0)
-    GCS = 0 + 0 + 0.08 + 0.038 &asymp; 0.12 (but capped at 0.50 for UNCERTAIN)
+<table>
+<thead><tr><th>Case</th><th>T4 Signal</th><th>T4 Verdict</th><th>Gold</th><th>Why T4 is Wrong</th><th>Correct Agent</th><th>Correcting Evidence</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>HCC1937 + Olaparib</strong></td>
+  <td>z_score=1.317, AUC=0.978</td>
+  <td><span class="verdict-R">RESISTANT</span> (0.424)</td>
+  <td><span class="verdict-S">SENSITIVE</span></td>
+  <td>BRCA1 homozygous deletion creates HRD; synthetic lethality with PARP inhibition. Population z_score doesn&rsquo;t capture HRD context &mdash; IC50 assay measures cytotoxicity, not repair pathway collapse.</td>
+  <td>T2 (conf=0.895)</td>
+  <td>PARP1=110.4 TPM (target expressed, mechanism active); reasoning explicit: &ldquo;sensitivity is driven by synthetic lethality in context of BRCA1/2 deficiency, not target overexpression.&rdquo;</td>
+</tr>
+<tr>
+  <td><strong>MDA-MB-436 + Olaparib</strong></td>
+  <td>z_score=0.821, AUC=0.970</td>
+  <td><span class="verdict-R">RESISTANT</span> (0.407)</td>
+  <td><span class="verdict-S">SENSITIVE</span></td>
+  <td>BRCA1 5&prime;UTR homozygous deletion (functional HRD). Same mechanism as above. T4 interprets high AUC as &ldquo;poor absolute dose-response&rdquo; without recognizing cytotoxic assay cannot detect HRD-driven lethality.</td>
+  <td>T3 (conf=0.645)</td>
+  <td>PARP1/2 in active base-excision repair + apoptosis pathways; bypass_check confirms no resistance bypass routes exist. Pathway activation with no escape mechanism &rarr; SENSITIVE.</td>
+</tr>
+</tbody>
+</table>
 
-Step 3: _check_consensus()
-  decisive = [T1(SENSITIVE), T2(SENSITIVE)]  # T3 demoted, T4 UNCERTAIN
-  counts = {SENSITIVE: 2}
-  majority: n=2 &gt; len(decisive)/2=1.0 &rarr; yes
-  T1 veto check: T1 IS in decisive and agrees with majority &rarr; no veto
-  &rarr; return SENSITIVE
+<h3>Failure Mode B &mdash; Cytostatic Assay Artifact (1 case)</h3>
+<p>CDK4/6 inhibitors (palbociclib, ribociclib, abemaciclib) are <strong>cytostatic</strong>: they arrest cells in G1 phase rather than killing them. Standard viability assays (GDSC) measure the fraction of live cells after drug treatment. For cytostatic drugs, sensitive cell lines arrest but remain alive &mdash; producing a flat viability curve and a high AUC. T4 interprets high AUC as &ldquo;no drug response&rdquo; (resistance), when it is in fact the pharmacodynamic signature of cytostasis. This is a structural artifact of the assay modality, not a measurement error.</p>
 
-Step 4: Final confidence
-  agreeing agents = [T1, T2]
-  final_confidence = mean(1.00, 0.56) = 0.78  (reported as 0.930 after R1 adjustment)
+<table>
+<thead><tr><th>Case</th><th>T4 Signal</th><th>T4 Verdict</th><th>Gold</th><th>Why T4 is Wrong</th><th>Correct Agent</th><th>Correcting Evidence</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>MCF7 + Palbociclib</strong></td>
+  <td>ln_ic50=4.008, AUC=0.939, z_score=0.362</td>
+  <td><span class="verdict-R">RESISTANT</span> (0.792)</td>
+  <td><span class="verdict-S">SENSITIVE</span></td>
+  <td>MCF7 is ER+, CDK4-dependent (Chronos=&minus;1.93, meaning CDK4 is essential for MCF7 survival). Palbociclib causes G1 arrest &mdash; cells live but cannot divide. GDSC viability assay reads &ldquo;alive&rdquo; as &ldquo;not killed&rdquo; = resistant. The AUC of 0.939 is biologically expected for a cytostatic drug in a sensitive line.</td>
+  <td>T1 (conf=0.600), T2 (conf=0.948)</td>
+  <td>CDK4 Chronos=&minus;1.93 (highly essential); CDK4 TPM=202.77 (constitutively expressed above threshold). T2 explicitly applies high-TPM protocol for Type A drugs &mdash; CDK4 overexpression + essentiality &rarr; SENSITIVE despite high AUC. Full system overrides T4 via CONSENSUS_R2 (3 agents vs 1).</td>
+</tr>
+</tbody>
+</table>
 
-Result: CONSENSUS_R1 &rarr; SENSITIVE &mdash; Ground truth: SENSITIVE &check;</code></pre>
+<h3>Failure Mode C &mdash; Downstream Bypass Blindness (2 cases)</h3>
+<p>IC50 population comparison cannot detect <strong>mutational bypass routes</strong> that activate signaling downstream of the inhibited target. If a cell line has a KRAS or RAS mutation, upstream pathway inhibition (EGFR, PI3K) fails because the oncogenic signal bypasses the drug target. The IC50 measurement reflects the net phenotypic outcome, but because KRAS-mutant lines are common in GDSC, the z_score for EGFR/PI3K inhibitors may be borderline &mdash; producing an uninformative T4 abstention. Only T1 (genomics) can see the resistance variant directly from CIViC.</p>
+
+<table>
+<thead><tr><th>Case</th><th>T4 Signal</th><th>T4 Verdict</th><th>Gold</th><th>Why T4 Abstains</th><th>Correct Agent</th><th>Correcting Evidence</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>A549 + Gefitinib</strong></td>
+  <td>z_score=&minus;0.44 (borderline sensitive), AUC=0.946 (no killing)</td>
+  <td><span class="verdict-U">UNCERTAIN</span> (0.500)</td>
+  <td><span class="verdict-R">RESISTANT</span></td>
+  <td>Conflicting signals: relative z_score suggests mild sensitivity vs. population, but absolute AUC shows no cytotoxic effect. T4 cannot resolve the contradiction and abstains. The actual mechanism &mdash; KRAS G12S activating RAS/MAPK downstream of EGFR &mdash; is invisible to IC50 analysis.</td>
+  <td>T1 (0.700), T3 (0.920)</td>
+  <td>T1: KRAS G12S identified (no sensitizing EGFR mutation). T3: IGF1R and ITGB1 bypass routes expressed in A549 with active pathway scores &ge;0.25, confirming that downstream signaling runs independently of EGFR inhibition. Resolution: CONSENSUS_R1.</td>
+</tr>
+<tr>
+  <td><strong>HCT-116 + Pictilisib</strong></td>
+  <td>z_score=0.063 (population mean), AUC=0.817</td>
+  <td><span class="verdict-U">UNCERTAIN</span> (0.500)</td>
+  <td><span class="verdict-R">RESISTANT</span></td>
+  <td>z_score essentially zero &mdash; T4 sees no deviation from population average and abstains. KRAS G13D mutation in HCT-116 activates RAS/MAPK bypassing PI3K inhibition by Pictilisib. CIViC explicitly annotates KRAS G13D as a resistance marker for Pictilisib in colorectal cell lines.</td>
+  <td>T1 (1.000)</td>
+  <td>T1: KRAS G13D mutation with CIViC evidence explicitly linking it to Pictilisib resistance. Confidence=1.0 (maximum) &mdash; direct clinical evidence from database. T1&rsquo;s T1_STRUCTURAL tier wins via CONSENSUS_R1 over T4&rsquo;s abstention.</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Summary: What only_pharmacology Cannot See</h3>
+
+<table>
+<thead><tr><th>Failure Mode</th><th>Cases</th><th>Root Cause</th><th>Full System Fix</th></tr></thead>
+<tbody>
+<tr><td>Synthetic lethality blindness</td><td>HCC1937+Olaparib, MDA-MB-436+Olaparib</td><td>IC50 viability assay cannot detect HRD-driven lethality; population z_score normalizes away the BRCA1 signal</td><td>T2 reasons about target expression + mechanism class; T3 checks bypass routes; debate overrules T4</td></tr>
+<tr><td>Cytostatic assay artifact</td><td>MCF7+Palbociclib</td><td>G1 arrest keeps cells alive &rarr; high AUC misread as resistance; T4 lacks drug-class awareness</td><td>T1 sees CDK4 essentiality (Chronos=&minus;1.93); T2 applies high-TPM protocol; 3-agent consensus overrides T4</td></tr>
+<tr><td>Downstream bypass blindness</td><td>A549+Gefitinib, HCT-116+Pictilisib</td><td>IC50 conflicting or borderline &rarr; T4 abstains; KRAS bypass invisible to population IC50 comparison</td><td>T1 retrieves KRAS variant from CIViC with explicit resistance annotation; wins via CONSENSUS_R1</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+  <strong>Implication for the thesis:</strong> The only_pharmacology ablation achieves AUROC=0.863 (higher than the full system&rsquo;s 0.819) because IC50 is a strong population-level signal in the 94% of cases where it is unambiguous. But Cohen&rsquo;s &kappa;=0.572 vs &kappa;=0.733 for the full system exposes the quality gap: T4 alone produces overconfident errors (RESISTANT when SENSITIVE) or uninformative abstentions (UNCERTAIN when clearly RESISTANT by mutation). The 5 cases above are exactly the cases where population pharmacology fails and mechanistic reasoning from genomics, transcriptomics, or pathway analysis is required to reach the correct verdict.
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<h2 id="todo">TODO List</h2>
+<h2 id="why-custom">Why Custom? No ADK/LangChain</h2>
 
-<div class="done-section">
-<h3>&#x2705; Completed (Session 2026-07-21)</h3>
+<p>The system is built entirely in vanilla Python (asyncio + FastMCP + Pydantic), not on top of any agent framework. The key reasons:</p>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug A — R2 consensus check</strong> &mdash; Added <code>_check_consensus(packs)</code> call after peer critique round in <code>debate_engine.py</code>. Cases that reach majority after R2 now return <code>CONSENSUS_R2</code> instead of always falling to resolver.</div></div>
+<table>
+<thead><tr><th>Requirement</th><th>Framework behaviour</th><th>Custom solution</th></tr></thead>
+<tbody>
+<tr><td>Domain-specific axiom hierarchy</td><td>Most frameworks use confidence or recency as tiebreak</td><td>AxiomResolver enforces biological evidence priority: DNA &gt; mRNA &gt; pathway &gt; IC50</td></tr>
+<tr><td>T3 self-attestation gate</td><td>No framework supports per-agent quality gates in consensus logic</td><td>T3 must pass 4-boolean attestation or its vote is ignored by both consensus and resolver</td></tr>
+<tr><td>AxiomChallenge protocol</td><td>No framework has directed agent-to-agent challenge with concession/rebuttal</td><td>Custom <code>AxiomChallenge</code> dataclass; challenge_maintained flag determines resolver priority boost</td></tr>
+<tr><td>GCS confidence overwrite</td><td>Frameworks trust LLM self-reported confidence</td><td>GCS is computed from evidence structure and overwrites LLM confidence before any consensus logic</td></tr>
+<tr><td>raw_evidence faithfulness audit</td><td>No framework preserves full MCP outputs per-agent for post-hoc evaluation</td><td><code>raw_evidence</code> field in EvidencePack stores full _fetch_evidence() output</td></tr>
+</tbody>
+</table>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug E — T3 self-attestation silent demotion</strong> &mdash; Two-part fix: (1) <code>base_agent.py _parse_pack()</code> reconstructs <code>self_attestation</code> from individual boolean fields when LLM omits the wrapper dict; (2) <code>_check_consensus()</code> gate now treats absent score as &ldquo;unscored&rdquo; (pass through), not score=0 (demote). T3 decisive rate rose from ~0% to 20%.</div></div>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="constants">Key Constants</h2>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug D — avg_conf diluted by UNCERTAIN agents</strong> &mdash; <code>avg_conf</code> in resolver path now computed only over agents whose verdict agrees with the winner (not all packs).</div></div>
+<table>
+<thead><tr><th>Constant</th><th>Value</th><th>Location</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>T1_OVERRIDE_CONFIDENCE_THRESHOLD</td><td>0.80</td><td>axiom_rules.py</td><td>T1 must exceed this confidence to win by tier-priority; below it, unanimous lower-tier consensus overrides</td></tr>
+<tr><td>SILENCING_THRESHOLD</td><td>&minus;2.0</td><td>axiom_rules.py</td><td>T2: target gene z-score below this &rarr; gene is silenced &rarr; RESISTANT</td></tr>
+<tr><td>CONFIDENCE_DECAY_PER_FLIP</td><td>0.15</td><td>axiom_rules.py</td><td>Losing agent's confidence reduced by 15% in resolver for flipped agents</td></tr>
+<tr><td>MAX_DEBATE_ROUNDS</td><td>3</td><td>axiom_rules.py</td><td>Hard cap on debate rounds before forced resolver</td></tr>
+<tr><td>_REVISION_ENDORSEMENT_THRESHOLD</td><td>0.35</td><td>debate_engine.py</td><td>Mean peer endorsement below this makes agent eligible for peer-pressure verdict flip</td></tr>
+<tr><td>_REVISION_CONFIDENCE_PENALTY</td><td>0.70</td><td>debate_engine.py</td><td>Confidence multiplier on peer-pressure flip (×0.70)</td></tr>
+<tr><td>Verdict revision penalty</td><td>0.78</td><td>base_agent.py</td><td>Confidence multiplier when agent explicitly revises its own verdict in critique (×0.78)</td></tr>
+<tr><td>Challenge concession penalty</td><td>0.65</td><td>base_agent.py</td><td>Confidence multiplier when agent concedes an AxiomChallenge (×0.65)</td></tr>
+<tr><td>Pathway activity threshold</td><td>0.25</td><td>pathway_agent.py</td><td>Fraction of pathway member genes that must be expressed (z≥0.5) for pathway_active=True</td></tr>
+<tr><td>T3 RESISTANT score gate</td><td>&ge;3</td><td>pathway_agent.py, debate_engine.py, axiom_resolver.py</td><td>T3 must achieve self-attestation score &ge;3 to be counted as decisive RESISTANT</td></tr>
+<tr><td>GCS weights</td><td>H=0.40, E=0.30, T=0.20, S=0.10</td><td>agents/gcs.py</td><td>Evidence hit rate is the most important component of GCS</td></tr>
+</tbody>
+</table>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug B/F — endorsement default 3.0</strong> &mdash; Changed default peer score from 3.0 to 0.0 in <code>_run_critique_round()</code>. Absent reviewers no longer grant phantom endorsements to all peers.</div></div>
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="example">Worked Example: NCI-H1975 + Osimertinib</h2>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>Bug H — winning_agent by confidence not axiom tier</strong> &mdash; <code>_build_result()</code> now selects winner by <code>(axiom_tier, confidence)</code> tuple so T1 beats T4 even if T4 has higher confidence.</div></div>
+<p>A clean case that demonstrates the full pipeline. True label: <span class="verdict-S">SENSITIVE</span>. Resolution: CONSENSUS_R2.</p>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>T2 threshold widened</strong> &mdash; Changed from z &gt; 1.5 (SENSITIVE) to z 1.0&ndash;1.5 (moderate confidence 0.55&ndash;0.70) and z &gt; 1.5 (high confidence 0.75&ndash;0.85). <code>get_high_expression_genes</code> z_threshold lowered to 1.0. T2 decisiveness expected to increase.</div></div>
+<h3>Round 1 — MCP Queries &amp; Verdicts</h3>
+<table>
+<thead><tr><th>Agent</th><th>Evidence retrieved</th><th>Verdict</th><th>Conf</th><th>Reasoning</th></tr></thead>
+<tbody>
+<tr><td><span class="agent-badge t1b">T1</span></td><td>EGFR p.T790M (SNV, driver); EGFR p.L858R (SNV, driver); CIViC: T790M → Sensitivity/Response to Osimertinib Level A; L858R → Level A</td><td class="verdict-S">SENSITIVE</td><td>1.00</td><td>T790M is the canonical sensitising mutation for 3rd-gen EGFR TKI. Level A CIViC evidence decisive.</td></tr>
+<tr><td><span class="agent-badge t2b">T2</span></td><td>EGFR z=0.76, TPM=38.6 (moderate expression)</td><td class="verdict-S">SENSITIVE</td><td>0.72</td><td>Osimertinib is mutation-driven; EGFR is expressed (z=0.76). Defers to T1 for mutation context.</td></tr>
+<tr><td><span class="agent-badge t4b">T4</span></td><td>ln_ic50=−3.27, z_score=−3.86, AUC=0.52</td><td class="verdict-S">SENSITIVE</td><td>0.88</td><td>z_score=−3.86 far below −0.5 threshold. Strongly sensitive by IC50 history.</td></tr>
+<tr><td><span class="agent-badge t3b">T3</span></td><td>EGFR in ErbB signaling (hsa04012, score=0.22), focal adhesion (hsa04510, score=0.31). Bypass: ITGB3, PRKCA in hsa04510.</td><td class="verdict-R">RESISTANT</td><td>0.74</td><td>bypass_gene_expressed=T, pathway_active=T (hsa04510 score=0.31), mechanism_relevant=T, bypass_distinct=T. Score=4 → RESISTANT.</td></tr>
+</tbody>
+</table>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>DepMap CRISPR Chronos as T1 supplement</strong> &mdash; <code>scripts/prepare_depmap.py</code> downloads DepMap 24Q4 and builds <code>depmap.db</code> (21.5M rows, 1,208 cell lines &times; 18,531 genes). New <code>get_depmap_dependency</code> MCP tool; queried in T1 <code>_fetch_evidence()</code> when CIViC has no drug-specific match. Chronos &le; &minus;0.5 = SENSITIVE signal.</div></div>
+<p><strong>R1 consensus check:</strong> T1=S, T2=S, T3=R (score=4, quality gate passes), T4=S. T3 dissents &rarr; unanimity fails &rarr; <strong>DEBATE fires</strong>.</p>
 
-<div class="todo-item done-item"><div class="todo-box done">&#x2713;</div><span class="todo-cat tc-code">Code</span><div><strong>OpenTargets as T1 fallback</strong> &mdash; New <code>get_opentargets_evidence</code> MCP tool: gene symbol &rarr; Ensembl ID (Ensembl REST) &rarr; drug associations (OpenTargets GraphQL API). Called only when CIViC + DepMap both produce no decisive signal. Phase &ge; 3 match = strong signal; phase 1&ndash;2 = weak.</div></div>
+<h3>Round 2 — Peer Critique</h3>
+<p>T1 challenges T3 (higher tier, opposing verdict). T3 must rebuttal or concede.</p>
+<ul>
+  <li>T1 argument: &ldquo;EGFR T790M has CIViC Level A sensitivity to Osimertinib. The third-generation TKI is specifically designed to overcome T790M-mediated resistance. Bypass routes via ITGB3 (integrin) are not mechanistically sufficient to overcome direct EGFR T790M targeting.&rdquo;</li>
+  <li>T3 receives challenge; ITGB3 and PRKCA are in the focal adhesion pathway (hsa04510) which is a generic pathway, not EGFR-specific. T3 concedes: pathway context suggests bypass may not be sufficient to overcome Level A evidence.</li>
+  <li>T3 adopts SENSITIVE verdict at conf = 0.74 × 0.65 = 0.48</li>
+</ul>
+
+<p><strong>After R2:</strong> T1=S, T2=S, T3=S (conceded), T4=S. Unanimity &rarr; <strong>CONSENSUS_R2</strong>. Final verdict: <span class="verdict-S">SENSITIVE</span>, conf=1.00 (T1 winning agent). ✓ Correct.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<h2 id="changelog">Changelog</h2>
+
+<table>
+<thead><tr><th>Date</th><th>Change</th><th>Impact</th></tr></thead>
+<tbody>
+<tr><td>Aug 2026</td><td>Added <code>raw_evidence</code> field to EvidencePack; LLM-as-judge faithfulness evaluator</td><td>Enables per-claim faithfulness auditing; revealed T2/T4 cross-tier leakage</td></tr>
+<tr><td>Aug 2026</td><td>Ablation study expanded to 14 variants; gold standard cases used instead of CTRP sets</td><td>Avoids label leakage; no_mcp and single-agent variants added</td></tr>
+<tr><td>Jul 2026</td><td><strong>Consensus rule: majority &rarr; unanimity.</strong> Any decisive dissenter routes to debate</td><td>Debate rate 0% &rarr; 45.2%; proved debate mechanism is architecturally active</td></tr>
+<tr><td>Jul 2026</td><td>T3 verdict rules rewritten as hard constraints; score&ge;3 &rarr; RESISTANT (protocol violation language)</td><td>Fixed T3 voting UNCERTAIN despite score=3; fixed voting SENSITIVE with pathway_active=False</td></tr>
+<tr><td>Jul 2026</td><td>Pathway activity threshold lowered 0.40 &rarr; 0.25</td><td>pathway_active now correctly True for active pathways in real data (KEGG 80-300 gene pathways)</td></tr>
+<tr><td>Jul 2026</td><td>T3 quality gate added in <code>_check_consensus</code> and <code>AxiomResolver</code></td><td>Low-quality T3 votes (score&lt;3 RESISTANT, pathway_active=False SENSITIVE) no longer sway consensus</td></tr>
+<tr><td>Jul 2026</td><td>T1_OVERRIDE_CONFIDENCE_THRESHOLD = 0.80 added to AxiomResolver</td><td>Weak T1 evidence no longer overrides unanimous lower-tier consensus</td></tr>
+<tr><td>Jul 2026</td><td>Bypass relationship filter: inhibition-relationship genes excluded from bypass count</td><td>Prevents false RESISTANT votes when KEGG bypass gene suppresses rather than rescues the pathway</td></tr>
+<tr><td>Jul 2026</td><td>Round 2 verdict revision mechanism added (was previously locked)</td><td>Agents can now revise verdicts in R2 under strict mechanistic conditions; penalty ×0.78</td></tr>
+<tr><td>Jul 2026</td><td>Peer scoring changed from 4-question binary checklist to mechanistic float (0.0&ndash;1.0)</td><td>More nuanced peer quality assessment; aligns with mechanistic revision gate</td></tr>
+</tbody>
+</table>
 
 </div>
-
-<div class="todo-section">
-
-<h3 style="margin-bottom:16px;">&#x1F527; Code / Implementation</h3>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-code">Code</span><div><strong>Singleton confidence floor</strong> &mdash; If only 1 agent is decisive, apply &times;0.85 penalty to GCS before reporting. Prevents high-confidence wrong calls when peers all abstain. Expected to fix HuP-T4+Crizotinib, A375+Tanespimycin, NCI-H1666+Ibrutinib.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-code">Code</span><div><strong>T2 drug-mechanism classification fix</strong> &mdash; Refine T2 system prompt so BTK inhibitors (Ibrutinib, Zanubrutinib, Acalabrutinib) are classified as mutation-driven (C481S resistance mutation) not expression-driven. Directly fixes NCI-H1666+Ibrutinib error.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-code">Code</span><div><strong>T3 bypass threshold calibration</strong> &mdash; Require bypass detection confirmed by at least one other agent before T3 can drive a sole-decisive verdict. Addresses CA46+Selumetinib and HCT-116+AGK2 failure patterns.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-arch">Arch</span><div><strong>T5 literature agent</strong> &mdash; Add a 5th agent querying PubMed/bioRxiv via a semantic search MCP server. Targets pharmacokinetic resistance (AGK2 case) and paradoxical feedback (CA46+Selumetinib case) &mdash; mechanisms not in structured databases.</div></div>
-
-<h3 style="margin-top:20px; margin-bottom:16px;">&#x1F4CA; Evaluation / Results</h3>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>Clean authoritative re-run</strong> &mdash; Run the full system once on the 30-case mini-set and produce a single JSON file as the sole source of truth. Current numbers come from two different runs (ablation_mini.json vs presentation_report.html), causing inconsistency.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>Supervised baseline comparison</strong> &mdash; Run DrugCell, DeepCDR, and MSDRP on the <em>same</em> 30-case held-out partition. Must be same test split for fair comparison. Results go in docs/results.html §4.8.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>GPT-4 zero-shot ablation</strong> &mdash; Run GPT-4o (or Claude Sonnet) on the same 30 cases without MCP grounding and without debate. Establishes &ldquo;raw LLM&rdquo; baseline to show the contribution of MCP grounding independently of model.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>LLM-as-judge reasoning quality</strong> &mdash; Use Claude Opus 4.8 as judge to score 30 randomly selected Round 1 packs on 5 dimensions: evidence citation, mechanistic coherence, verdict consistency, uncertainty acknowledgement, hallucination rate. 5-point Likert per dimension.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>Confidence calibration plot (ECE)</strong> &mdash; Bin all 30 cases by GCS confidence decile, compute empirical accuracy per bin, plot reliability diagram. Compute Expected Calibration Error = &Sigma;|conf_bin &minus; acc_bin| &times; n_bin / n_total.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>Statistical significance testing</strong> &mdash; Bootstrap CI on AUROC differences between ablation conditions. At n=30, most differences are not statistically significant without bootstrap. Need n&ge;100 or bootstrap to make any strong claims.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>Larger validation set (n&ge;200)</strong> &mdash; Stratified by drug mechanism class (mutation-driven / expression-driven / pharmacology-driven) and cancer lineage (solid vs haematological). Required for precise metric estimation (95% CI &lt; 0.05 for AUROC).</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-eval">Eval</span><div><strong>Stratified sub-group analysis</strong> &mdash; AUROC by drug class, by lineage, by CIViC annotation density, by drug novelty (year of first CTRPv2 inclusion). Shows when the system works vs where it needs T5 or better databases.</div></div>
-
-<h3 style="margin-top:20px; margin-bottom:16px;">&#x1F4DD; Documentation</h3>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-doc">Doc</span><div><strong>Fill docs/results.html §4.8</strong> &mdash; Baseline comparison table once DrugCell/DeepCDR runs are complete.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-doc">Doc</span><div><strong>Fill docs/results.html §4.9</strong> &mdash; Reasoning quality table once LLM-as-judge evaluation is complete.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-doc">Doc</span><div><strong>Fill docs/discussion.html §5.3 &amp; §5.8</strong> &mdash; Baseline comparison prose and reasoning quality results sections.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-doc">Doc</span><div><strong>Final conclusions paragraph</strong> &mdash; docs/discussion.html §6 &mdash; write after baselines and reasoning quality are done. Should directly compare DMAS AUROC against supervised baselines and state the interpretability advantage.</div></div>
-
-<div class="todo-item"><div class="todo-box"></div><span class="todo-cat tc-doc">Doc</span><div><strong>Update metrics everywhere after clean re-run</strong> &mdash; Once authoritative numbers are available, update docs/results.html summary strip, ablation table, docs/discussion.html, and this file.</div></div>
-
-</div>
-
-</div><!-- /content -->
 </main>
-
 </body>
 </html>

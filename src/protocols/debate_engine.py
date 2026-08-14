@@ -500,6 +500,7 @@ class DebateEngine:
                     "key_findings": [f.model_dump() for f in p.key_findings],
                     "reasoning": p.reasoning,
                     "self_attestation": p.self_attestation,
+                    "raw_evidence": p.raw_evidence,
                     "peer_scores_given": p.peer_scores or {},
                     "verdict_changed_from": (
                         prev_verdicts[p.agent_id].value
@@ -533,6 +534,7 @@ def agent_snapshot(packs: list[EvidencePack]) -> list[dict]:
             "key_findings": [f.model_dump() for f in p.key_findings],
             "reasoning": p.reasoning,
             "self_attestation": p.self_attestation,
+            "raw_evidence": p.raw_evidence,
         }
         for p in packs
     ]

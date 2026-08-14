@@ -1,0 +1,228 @@
+{
+  "model": "vertex:gemini-3.1-flash-lite",
+  "framework": "OpenEvoMDT",
+  "n_cases": 31,
+  "n_valid": 31,
+  "auroc": 0.9349,
+  "kappa": 0.8697,
+  "accuracy": 0.9355,
+  "per_case": [
+    {
+      "case_id": "NCI-H1975__Osimertinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "BT-474__Lapatinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "JIMT-1__Lapatinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "NCI-H1975__Erlotinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "NCI-H1975__Gefitinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "A375__Erlotinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "A375__Gefitinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "MCF7__Erlotinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "A549__Gefitinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "HCT-116__Erlotinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "HCC-827__Erlotinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "NCI-H1650__Erlotinib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "A375__PLX-4720",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "A375__Trametinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "SK-MEL-28__PLX-4720",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "K-562__Nilotinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "K-562__Dasatinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "CAPAN-1__Olaparib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "HCC1937__Olaparib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "MDA-MB-436__Olaparib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "MDA-MB-231__Olaparib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "NCI-H3122__Crizotinib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "T47D__Alpelisib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "MCF7__Palbociclib",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "HCT-116__Nutlin-3a_-",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "8505C__PLX-4720",
+      "predicted": "A",
+      "gold": "B",
+      "correct": false,
+      "accuracy": 0.0
+    },
+    {
+      "case_id": "A2058__Dabrafenib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "HCT-116__Pictilisib",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "SJSA-1__Nutlin-3a_-",
+      "predicted": "A",
+      "gold": "A",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "Saos-2__Nutlin-3a_-",
+      "predicted": "B",
+      "gold": "B",
+      "correct": true,
+      "accuracy": 1.0
+    },
+    {
+      "case_id": "KMOE-2__Trametinib",
+      "predicted": "B",
+      "gold": "A",
+      "correct": false,
+      "accuracy": 0.0
+    }
+  ]
+}

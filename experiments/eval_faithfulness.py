@@ -60,8 +60,24 @@ Return JSON only, no prose:
   "summary": "<one sentence>"
 }"""
 
-def format_evidence(key_findings: list[dict]) -> str:
-    lines = ["Retrieved evidence (from database tool calls):"]
+def format_evidence(raw_evidence: dict) -> str:
+    import json as _json
+    lines = ["Retrieved evidence (raw MCP tool outputs):"]
+    # Exclude non-data metadata keys
+    skip = {"data_status", "error"}
+    for key, val in raw_evidence.items():
+        if key in skip or val is None:
+            continue
+        # Serialize compactly; truncate very long values
+        val_str = _json.dumps(val, default=str)
+        if len(val_str) > 800:
+            val_str = val_str[:800] + "... [truncated]"
+        lines.append(f"  [{key}]: {val_str}")
+    return "\n".join(lines)
+
+
+def format_evidence_from_key_findings(key_findings: list[dict]) -> str:
+    lines = ["Retrieved evidence (key_findings summary — raw_evidence not available):"]
     for i, kf in enumerate(key_findings, 1):
         lines.append(f"  [{i}] biomarker={kf.get('biomarker')} | value={kf.get('value')} | "
                      f"interpretation={kf.get('interpretation')} | source={kf.get('data_source')}")
@@ -69,8 +85,8 @@ def format_evidence(key_findings: list[dict]) -> str:
 
 
 async def judge_one(client: LLMClient, cell_line: str, drug: str, agent: str,
-                    key_findings: list[dict], reasoning: str) -> dict:
-    evidence_str = format_evidence(key_findings)
+                    key_findings: list[dict], reasoning: str, raw_evidence: dict | None = None) -> dict:
+    evidence_str = format_evidence(raw_evidence) if raw_evidence else format_evidence_from_key_findings(key_findings)
     user_msg = f"""Case: {cell_line} + {drug}
 Agent: {agent}
 
@@ -124,8 +140,9 @@ async def main():
 
             total_decisive_agents += 1
             print(f"  judging {cell_line}+{drug} | {agent}...", flush=True)
+            raw_ev = v.get("raw_evidence") or {}
             try:
-                judgment = await judge_one(client, cell_line, drug, agent, kf, reasoning)
+                judgment = await judge_one(client, cell_line, drug, agent, kf, reasoning, raw_ev)
             except Exception as e:
                 print(f"    ERROR: {e}")
                 continue

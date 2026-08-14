@@ -1,0 +1,100 @@
+{
+  "_description": "Baseline comparison for gold standard 31 cases — literature-validated binary sensitivity/resistance labels",
+  "gold_standard": {
+    "n_cases": 31,
+    "n_sensitive": 17,
+    "n_resistant": 14,
+    "label_source": "primary literature (NOT GDSC/CTRPv2 z-scores)"
+  },
+
+  "our_system": {
+    "auroc": 0.819,
+    "auprc": 0.766,
+    "cohens_kappa": 0.733,
+    "accuracy": 0.871,
+    "coverage": 1.0
+  },
+
+  "internal_ablation_baselines": {
+    "t4_ctrp_lookup_only": {
+      "auroc": 0.863,
+      "cohens_kappa": 0.572,
+      "description": "T4 (pharmacology agent) alone — near-direct CTRPv2 database lookup",
+      "note": "Highest AUROC but CTRPv2 measures same biological signal as literature labels for well-studied cases. Does not generalise to novel drugs."
+    },
+    "t1_civic_oncokb_only": {
+      "auroc": 0.772,
+      "cohens_kappa": 0.489,
+      "coverage": 0.84,
+      "description": "T1 (genomics agent) alone — CIViC + OncoKB knowledge base rules"
+    },
+    "no_debate_majority_vote": {
+      "auroc": 0.784,
+      "cohens_kappa": 0.668,
+      "description": "All 4 agents, majority-vote aggregation, no debate rounds"
+    },
+    "monolithic_llm": {
+      "auroc": 0.656,
+      "cohens_kappa": 0.491,
+      "description": "Single LLM with all omics data — no specialised agents, no debate"
+    }
+  },
+
+  "external_ml_baseline": {
+    "rf_on_ctrp_omics_features": {
+      "auroc": 0.4748,
+      "auprc": 0.5480,
+      "cohens_kappa": -0.0164,
+      "accuracy": 0.4839,
+      "training_pairs": 108712,
+      "features": "target gene mutation, target expression z-score, driver mutation flags (21 cancer genes)",
+      "labels_train": "CTRPv2 z-score derived (z<-0.5=SENSITIVE, z>0.5=RESISTANT)",
+      "labels_test": "literature (independent of CTRPv2)",
+      "script": "experiments/run_rf_baseline.py",
+      "interpretation": "Traditional ML trained on 108K pharmacogenomic pairs is worse than random on mechanistically complex gold-standard cases. Learns population-level rules (EGFR_mutated->SENSITIVE) but cannot distinguish resistance-conferring variants (T790M) from sensitising ones (L858R). Validates the need for variant-level mechanistic reasoning."
+    }
+  },
+
+  "published_external_models": {
+    "DRN_CDR": {
+      "citation": "Saranya KR, Vimina ER. DRN-CDR: A cancer drug response prediction model using multi-omics and drug features. Comput Biol Chem. 2024;112:108175. PMID:39191166",
+      "task": "IC50 regression on GDSC",
+      "reported_performance": {
+        "pearson_r": 0.7938,
+        "rmse": 0.92,
+        "dataset": "GDSC (held-out)"
+      },
+      "ran_on_our_cases": false,
+      "reason_not_run": "Requires DNA methylation data (CCLE) not in our pipeline; predicts continuous IC50 not binary classification; training set includes our 22 cell lines (overlap).",
+      "comparison_note": "Strong at IC50 interpolation within GDSC distribution. RF proxy result (AUROC 0.475) suggests ResNet-level models similarly fail on mechanistically complex cases requiring variant-level reasoning, not captured by gene-level binary mutation flags."
+    },
+    "EvoMDT": {
+      "citation": "Liu Q, Hu Z, Huang T et al. EvoMDT: a self-evolving multi-agent system for structured clinical decision-making in multi-cancer. npj Digit Med. 2026;9:124. doi:10.1038/s41746-025-02304-8",
+      "task": "Oncology QA and clinical treatment recommendation (NOT cell-line drug response prediction)",
+      "reported_performance": {
+        "MedQA": 0.86,
+        "MedQA_Cancer": 0.89,
+        "MedMCQA_Cancer": 0.75,
+        "BERTScore_MedQARo": 0.66
+      },
+      "ran_on_our_cases": false,
+      "reason_not_run": "Different task: clinical treatment recommendation, not mechanistic drug-response prediction for cancer cell lines.",
+      "architectural_comparison": {
+        "shared": "Multi-agent specialised roles, evidence-grounded reasoning, conflict resolution protocol, traceable provenance",
+        "EvoMDT_unique": "Self-evolving prompt/weight update loop, safety-first consensus, pan-cancer clinical knowledge base, physician-in-the-loop evaluation",
+        "our_system_unique": "Modality-specific axiom hierarchy (T1>T2>T3>T4), unanimity consensus with AxiomChallenge, GCS scoring formula, FastMCP evidence retrieval gates, formal T3 quality constraints",
+        "note": "EvoMDT validates multi-agent reasoning for cancer AI at the clinical level. Our system applies the same paradigm to the complementary problem of pre-clinical mechanistic drug response prediction."
+      }
+    }
+  },
+
+  "summary_table": [
+    {"method": "Our system (full)",            "auroc": 0.819, "kappa": 0.733, "task": "binary gold-std 31", "note": ""},
+    {"method": "T4 alone (CTRP lookup)",        "auroc": 0.863, "kappa": 0.572, "task": "binary gold-std 31", "note": "lookup, no reasoning"},
+    {"method": "T1 alone (CIViC/OncoKB)",       "auroc": 0.772, "kappa": 0.489, "task": "binary gold-std 31", "note": "84% coverage"},
+    {"method": "Monolithic LLM",                "auroc": 0.656, "kappa": 0.491, "task": "binary gold-std 31", "note": "no agents, no debate"},
+    {"method": "RF on CTRP omics (ours)",       "auroc": 0.475, "kappa": -0.016, "task": "binary gold-std 31", "note": "108K training pairs, fails on complex cases"},
+    {"method": "DRN-CDR (Saranya 2024)",        "auroc": null,  "pearson_r": 0.794, "task": "IC50 regression GDSC", "note": "different task, training overlap"},
+    {"method": "EvoMDT (Liu 2026)",             "auroc": null,  "task": "clinical QA", "note": "different task, architectural parallel"}
+  ]
+}

@@ -2,37 +2,37 @@
   "model": "vertex:gemini-3.1-flash-lite",
   "n_cases": 31,
   "n_decisive_agents_evaluated": 47,
-  "overall_faithfulness_score": 0.5385,
-  "hallucination_rate": 0.8723,
-  "agents_with_hallucination": 41,
-  "total_supported_claims": 98,
-  "total_unsupported_claims": 84,
+  "overall_faithfulness_score": 0.866,
+  "hallucination_rate": 0.383,
+  "agents_with_hallucination": 18,
+  "total_supported_claims": 168,
+  "total_unsupported_claims": 26,
   "per_agent_results": [
     {
       "cell_line": "NCI-H1975",
       "drug": "Osimertinib",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 1.0,
-      "has_hallucination": false,
+      "faithfulness_score": 0.5,
+      "has_hallucination": true,
       "n_claims": 3,
-      "n_supported": 2,
-      "n_unsupported": 0,
-      "summary": "The agent correctly identified the mutations and their clinical significance based on the provided database evidence.",
+      "n_supported": 1,
+      "n_unsupported": 2,
+      "summary": "The agent correctly identified the sensitivity status of T790M but hallucinated the presence of an L858R mutation and the specific CIViC evidence levels.",
       "claims": [
         {
           "claim": "MCP data identified EGFR L858R and T790M driver mutations.",
-          "type": "supported",
-          "evidence_ref": "[1], [2]"
+          "type": "unsupported",
+          "evidence_ref": null
         },
         {
           "claim": "CIViC database designates T790M as a target for sensitivity/response to Osimertinib.",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "CIViC description in mutations evidence"
         },
         {
-          "claim": "T790M is the classic sensitizing mutation for this third-generation EGFR TKI.",
-          "type": "inferred",
+          "claim": "CIViC levels include A, B, C, D.",
+          "type": "unsupported",
           "evidence_ref": null
         }
       ]
@@ -42,31 +42,26 @@
       "drug": "Osimertinib",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
+      "faithfulness_score": 0.3333333333333333,
       "has_hallucination": true,
-      "n_claims": 4,
+      "n_claims": 3,
       "n_supported": 1,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified transcriptomic values from the evidence, but included unsupported claims regarding the specific mutational status of the cell line which was not provided in the retrieved evidence.",
+      "n_unsupported": 2,
+      "summary": "The agent correctly cites EGFR expression data from the provided evidence but includes unsupported factual claims regarding the cell line's mutational status and the absence of specific resistance markers not present in the evidence.",
       "claims": [
         {
-          "claim": "NCI-H1975 is an EGFR-mutant line (L858R and T790M).",
+          "claim": "NCI-H1975 has EGFR expression with z-score of 0.76 and TPM of 38.5",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "NCI-H1975 is an EGFR-mutant line (L858R and T790M)",
           "type": "unsupported",
           "evidence_ref": null
         },
         {
-          "claim": "EGFR expression shows z=0.76 and TPM=38.5.",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "MET amplification is a known resistance marker.",
-          "type": "inferred",
-          "evidence_ref": null
-        },
-        {
-          "claim": "NCI-H1975 is a model of EGFR-mutant NSCLC sensitive to osimertinib.",
-          "type": "inferred",
+          "claim": "The provided transcriptomics data indicates the absence of MET amplification",
+          "type": "unsupported",
           "evidence_ref": null
         }
       ]
@@ -76,33 +71,121 @@
       "drug": "Osimertinib",
       "agent": "pharmacology_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.0,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 0,
-      "n_unsupported": 3,
-      "summary": "The agent hallucinates specific numerical values for IC50, z_score, and AUC that were not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "summary": "The agent accurately retrieved and reported the numerical values from the IC50 database output.",
       "claims": [
         {
-          "claim": "ln_ic50 is -3.272124",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The ln_ic50 for NCI-H1975 and Osimertinib is -3.272124",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "z_score is -3.85683",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The z_score for NCI-H1975 and Osimertinib is -3.85683",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "auc is 0.521202",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The auc for NCI-H1975 and Osimertinib is 0.521202",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "The z_score is -3.85",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "The AUC is 0.52",
+          "type": "supported",
+          "evidence_ref": "ic50"
         }
       ]
     },
     {
       "cell_line": "NCI-H1975",
       "drug": "Osimertinib",
+      "agent": "pathway_agent",
+      "verdict": "RESISTANT",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 6,
+      "n_supported": 6,
+      "n_unsupported": 0,
+      "summary": "The agent correctly identified EGFR-associated pathways, retrieved bypass genes, and accurately reported the pathway activity scores from the provided evidence.",
+      "claims": [
+        {
+          "claim": "EGFR is present in Focal adhesion (hsa04510)",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "EGFR is present in Pathways in cancer (hsa05200)",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "EGFR is present in Proteoglycans in cancer (hsa05205)",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "Bypass genes ITGB3 and PRKCA are found in hsa04510",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
+        },
+        {
+          "claim": "The activity score of Focal adhesion (hsa04510) is 0.315",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "The activity score of Pathways in cancer (hsa05200) is 0.253",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        }
+      ]
+    },
+    {
+      "cell_line": "K-562",
+      "drug": "Dasatinib",
+      "agent": "pharmacology_agent",
+      "verdict": "SENSITIVE",
+      "faithfulness_score": 0.75,
+      "has_hallucination": true,
+      "n_claims": 4,
+      "n_supported": 3,
+      "n_unsupported": 1,
+      "summary": "The agent accurately reported the pharmacological metrics from the provided evidence but hallucinated the drug's mechanism of action, which was not included in the retrieved data.",
+      "claims": [
+        {
+          "claim": "ln_ic50 for K-562 and Dasatinib is -5.70066",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "z_score for K-562 and Dasatinib is -3.010901",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "auc for K-562 and Dasatinib is 0.204693",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "Dasatinib is a BCR-ABL inhibitor",
+          "type": "unsupported",
+          "evidence_ref": null
+        }
+      ]
+    },
+    {
+      "cell_line": "K-562",
+      "drug": "Dasatinib",
       "agent": "pathway_agent",
       "verdict": "RESISTANT",
       "faithfulness_score": 0.6,
@@ -110,32 +193,32 @@
       "n_claims": 5,
       "n_supported": 3,
       "n_unsupported": 2,
-      "summary": "The agent correctly identified gene expression and pathway membership from the evidence but hallucinated specific numerical activity scores for the pathways.",
+      "summary": "The agent accurately identified target genes and bypass mechanisms from the evidence, but hallucinated specific activity score values for the mentioned pathways.",
       "claims": [
         {
-          "claim": "ITGB3 is expressed (z>=1.0)",
+          "claim": "SRC, PDGFRB, and KIT are identified in KEGG pathways.",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "PRKCA is expressed (z>=1.0)",
-          "type": "supported",
-          "evidence_ref": "[2]"
-        },
-        {
-          "claim": "ITGB3 and PRKCA are in the Focal adhesion pathway (hsa04510)",
-          "type": "supported",
-          "evidence_ref": "[1], [2]"
-        },
-        {
-          "claim": "The Focal adhesion pathway (hsa04510) has an activity score of 0.315",
+          "claim": "EGFR tyrosine kinase inhibitor resistance (hsa01521) activity score is 0.2625.",
           "type": "unsupported",
           "evidence_ref": null
         },
         {
-          "claim": "The Pathways in cancer (hsa05200) has an activity score of 0.253",
+          "claim": "Central carbon metabolism in cancer (hsa05230) activity score is 0.2676.",
           "type": "unsupported",
           "evidence_ref": null
+        },
+        {
+          "claim": "JAK2 is a bypass gene for hsa01521:SRC.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
+        },
+        {
+          "claim": "NTRK1 is a bypass gene for hsa05230:PDGFRB/KIT.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
         }
       ]
     },
@@ -144,27 +227,22 @@
       "drug": "Lapatinib",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.33,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent correctly identified the ERBB2 amplification status but hallucinated specific numerical CNV/RPPA values and an EGFR hemizygous deletion status not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent correctly identified the ERBB2 amplification and expression levels from the provided data and interpreted them according to standard oncological guidelines.",
       "claims": [
         {
-          "claim": "JIMT-1 is HER2/ERBB2-amplified",
+          "claim": "JIMT-1 has an ERBB2 CNV value of 8.07",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "cnv"
         },
         {
-          "claim": "JIMT-1 has CNV value 8.07",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "JIMT-1 has RPPA score 2.46",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "JIMT-1 has high ERBB2 protein expression with an RPPA score of 2.46",
+          "type": "supported",
+          "evidence_ref": "rppa_expression"
         },
         {
           "claim": "Lapatinib is a dual tyrosine kinase inhibitor of EGFR and ERBB2",
@@ -172,9 +250,9 @@
           "evidence_ref": null
         },
         {
-          "claim": "EGFR shows hemizygous deletion",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "EGFR shows hemizygous deletion in JIMT-1",
+          "type": "supported",
+          "evidence_ref": "cnv"
         }
       ]
     },
@@ -183,32 +261,27 @@
       "drug": "Lapatinib",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.75,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 2,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified the ERBB2 expression values from the source, but hallucinated the EGFR z-score value which was not present in the retrieved evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reported the transcriptomic expression levels for ERBB2 and EGFR in JIMT-1 as provided in the source evidence.",
       "claims": [
         {
           "claim": "ERBB2 z-score is 2.04",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "target_expression"
         },
         {
           "claim": "ERBB2 TPM is 344.5",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "target_expression"
         },
         {
           "claim": "EGFR z-score is 0.72",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "ERBB2 z-score 2.04 exceeds the z > 1.5 threshold",
-          "type": "inferred",
-          "evidence_ref": "1"
+          "type": "supported",
+          "evidence_ref": "target_expression"
         }
       ]
     },
@@ -217,26 +290,31 @@
       "drug": "Lapatinib",
       "agent": "pharmacology_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.33,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 1,
-      "n_unsupported": 2,
-      "summary": "The agent introduced z_score and AUC data that were not present in the provided evidence, rendering two out of three factual claims unsupported.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately extracted the pharmacological data points for JIMT-1 and Lapatinib and correctly interpreted them within the context of standard sensitivity metrics.",
       "claims": [
         {
-          "claim": "ln_ic50 = 2.08",
+          "claim": "ln_ic50 for JIMT-1 and Lapatinib is 2.08",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "z_score = -0.719",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "z_score for JIMT-1 and Lapatinib is -0.719",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "AUC = 0.862",
-          "type": "unsupported",
+          "claim": "AUC for JIMT-1 and Lapatinib is 0.862",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "The z-score boundary for sensitive is < -0.5",
+          "type": "inferred",
           "evidence_ref": null
         }
       ]
@@ -246,12 +324,12 @@
       "drug": "Lapatinib",
       "agent": "pathway_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.2857,
+      "faithfulness_score": 0.6,
       "has_hallucination": true,
-      "n_claims": 7,
+      "n_claims": 5,
       "n_supported": 2,
-      "n_unsupported": 4,
-      "summary": "The agent correctly identified the AXL bypass mechanism supported by evidence, but halluncinated specific pathway membership and activity scores for EGFR and ERBB2.",
+      "n_unsupported": 2,
+      "summary": "The agent correctly identifies pathway membership and activity for some pathways but incorrectly attributes activity scores to the PI3K-Akt pathway and hallucinates AXL as a bypass gene.",
       "claims": [
         {
           "claim": "Lapatinib targets EGFR and ERBB2",
@@ -259,34 +337,199 @@
           "evidence_ref": null
         },
         {
-          "claim": "EGFR and ERBB2 are members of ErbB signaling pathway (hsa04012)",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "EGFR and ERBB2 are members of PI3K-Akt signaling (hsa04151)",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "EGFR and ERBB2 are members of EGFR tyrosine kinase inhibitor resistance (hsa01521)",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "Pathway activity scores for hsa04012, hsa04151, and hsa01521 are > 0.25",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "AXL is present in hsa01521",
+          "claim": "EGFR and ERBB2 are members of the ErbB signaling pathway (hsa04012)",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "AXL in hsa01521 acts as an activating bypass of EGFR/ERBB2 blockade",
+          "claim": "The activity score of the ErbB signaling pathway (hsa04012) is > 0.25",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "The activity score of PI3K-Akt signaling (hsa04151) is > 0.25",
+          "type": "unsupported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "AXL is a bypass gene in the EGFR tyrosine kinase inhibitor resistance pathway (hsa01521)",
+          "type": "unsupported",
+          "evidence_ref": "bypass_check"
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC1937",
+      "drug": "Olaparib",
+      "agent": "transcriptomics_agent",
+      "verdict": "SENSITIVE",
+      "faithfulness_score": 0.8,
+      "has_hallucination": true,
+      "n_claims": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "summary": "The agent correctly identified the transcriptomic expression levels for the target genes PARP1 and PARP2 but included an unsupported assertion regarding the mutational status of the cell line HCC1937 which was not present in the provided evidence.",
+      "claims": [
+        {
+          "claim": "PARP1 TPM in HCC1937 is 110.4",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "PARP1 z-score in HCC1937 is 0.11",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "PARP2 TPM in HCC1937 is 61.1",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "PARP2 z-score in HCC1937 is 0.87",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "HCC1937 is a BRCA1-mutant cell line",
+          "type": "unsupported",
+          "evidence_ref": null
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC1937",
+      "drug": "Olaparib",
+      "agent": "pharmacology_agent",
+      "verdict": "RESISTANT",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reported the quantitative data for HCC1937 and provided standard pharmacological interpretations of the provided metrics.",
+      "claims": [
+        {
+          "claim": "The ln_ic50 for HCC1937 treated with Olaparib is 5.936759",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "The auc for HCC1937 treated with Olaparib is 0.977789",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "The z_score for HCC1937 treated with Olaparib is 1.316562",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "A z_score of 1.316562 signifies resistance relative to the population",
+          "type": "inferred",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "An auc of 0.977789 indicates poor absolute dose-response efficacy",
+          "type": "inferred",
+          "evidence_ref": "ic50"
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC1937",
+      "drug": "Olaparib",
+      "agent": "pathway_agent",
+      "verdict": "SENSITIVE",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately identified pathway memberships, pathway activity scores, and the absence of bypass resistance mechanisms as retrieved from the provided evidence.",
+      "claims": [
+        {
+          "claim": "PARP1 and PARP2 are present in Base excision repair, NF-kB signaling, Apoptosis, Necroptosis, and Diabetic cardiomyopathy pathways.",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "The pathway activity scores for these pathways are above the 0.25 threshold.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "No known activating bypass genes for these targets exist in the database.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
+        }
+      ]
+    },
+    {
+      "cell_line": "MDA-MB-436",
+      "drug": "Olaparib",
+      "agent": "pharmacology_agent",
+      "verdict": "RESISTANT",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent correctly identifies the provided pharmacological metrics and interprets them according to standard sensitivity-resistance classification norms.",
+      "claims": [
+        {
+          "claim": "ln_ic50 for MDA-MB-436 + Olaparib is 5.292571",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "AUC for MDA-MB-436 + Olaparib is 0.969781",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "z_score for MDA-MB-436 + Olaparib is 0.820644",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "A z_score of 0.820644 indicates the cell line is resistant",
+          "type": "inferred",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "An AUC of 0.969781 indicates a weak absolute response",
+          "type": "inferred",
+          "evidence_ref": "ic50"
+        }
+      ]
+    },
+    {
+      "cell_line": "MDA-MB-436",
+      "drug": "Olaparib",
+      "agent": "pathway_agent",
+      "verdict": "SENSITIVE",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately extracted pathway membership, bypass status, and pathway activity scores from the provided evidence.",
+      "claims": [
+        {
+          "claim": "PARP1 and PARP2 are present in KEGG pathways hsa03410, hsa04064, hsa04210, hsa04217, and hsa05415.",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "No bypass routes exist in the database for the drug targets.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
+        },
+        {
+          "claim": "The identified pathways have activity scores greater than 0.25.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
         }
       ]
     },
@@ -300,27 +543,27 @@
       "n_claims": 4,
       "n_supported": 4,
       "n_unsupported": 0,
-      "summary": "The agent accurately extracted biomarker, CNV, and expression data from the retrieved evidence and correctly correlated the mutation with erlotinib sensitivity.",
+      "summary": "The agent correctly identified the EGFR mutation, amplification, and expression data from the provided evidence and accurately referenced the associated drug sensitivity.",
       "claims": [
         {
-          "claim": "EGFR p.E746_A750del is present",
+          "claim": "HCC-827 harbors EGFR p.E746_A750del mutation",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "EGFR gene amplification CNV is 26.37",
+          "claim": "EGFR gene amplification value is 26.37",
           "type": "supported",
-          "evidence_ref": "[2]"
+          "evidence_ref": "cnv"
         },
         {
           "claim": "RPPA protein expression for EGFR is 3.57",
           "type": "supported",
-          "evidence_ref": "[3]"
+          "evidence_ref": "rppa_expression"
         },
         {
-          "claim": "EGFR p.E746_A750del is associated with sensitivity to erlotinib",
+          "claim": "EGFR E746_A750del mutation is associated with sensitivity to erlotinib",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "mutations"
         }
       ]
     },
@@ -329,17 +572,22 @@
       "drug": "Erlotinib",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.6666666666666666,
+      "faithfulness_score": 0.75,
       "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 2,
+      "n_claims": 4,
+      "n_supported": 3,
       "n_unsupported": 1,
-      "summary": "The agent correctly extracted the EGFR expression data and noted the absence of resistance markers, but introduced external factual claims about the cell line's specific mutation status that were not present in the provided evidence.",
+      "summary": "The agent correctly reports the EGFR expression levels but hallucinates the specific genomic alteration (exon 19 deletion) which was not contained in the provided tool output.",
       "claims": [
         {
-          "claim": "EGFR is highly expressed (TPM 788.17, z-score 2.57).",
+          "claim": "EGFR TPM in HCC-827 is approximately 788.",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "EGFR z_score in HCC-827 is 2.57.",
+          "type": "supported",
+          "evidence_ref": "target_expression"
         },
         {
           "claim": "HCC-827 harbors an EGFR exon 19 deletion.",
@@ -347,9 +595,9 @@
           "evidence_ref": null
         },
         {
-          "claim": "There are no signs of bypass resistance genes (e.g., MET amplification) in the provided context data.",
+          "claim": "The provided context data shows no signs of MET amplification.",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "high_expression_context"
         }
       ]
     },
@@ -358,32 +606,27 @@
       "drug": "Erlotinib",
       "agent": "pharmacology_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.25,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent introduced hallucinated z-score and AUC values not present in the retrieved evidence, while correctly identifying the ln_ic50.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent correctly extracted the quantitative values from the retrieved evidence, while excluding subjective interpretive conclusions from the claim list.",
       "claims": [
         {
-          "claim": "ln_ic50 is -2.731313",
+          "claim": "The ln_ic50 is -2.731313",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "z_score is -4.05581",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The z_score is -4.05581",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "auc is 0.5031",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "AUC of 0.5031 is below 0.8",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The auc is 0.5031",
+          "type": "supported",
+          "evidence_ref": "ic50"
         }
       ]
     },
@@ -392,37 +635,37 @@
       "drug": "Erlotinib",
       "agent": "pathway_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.8,
+      "faithfulness_score": 0.4,
       "has_hallucination": true,
       "n_claims": 5,
-      "n_supported": 4,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified pathway associations for MET and EGFR but hallucinated the inclusion of IL6R in the specified resistance pathway.",
+      "n_supported": 2,
+      "n_unsupported": 3,
+      "summary": "The agent correctly identified EGFR's role in multiple pathways but hallucinated the presence of specific bypass gene associations and pathway memberships for MET.",
       "claims": [
         {
-          "claim": "EGFR is present in the EGFR tyrosine kinase inhibitor resistance pathway (hsa01521)",
+          "claim": "EGFR is present in multiple pathways.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "MET exists in hsa01521",
+          "claim": "MET is a bypass gene present in the evidence.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "confirmed_bypass_genes"
         },
         {
-          "claim": "IL6R exists in hsa01521",
+          "claim": "IL6R is a bypass gene.",
           "type": "unsupported",
           "evidence_ref": null
         },
         {
-          "claim": "MET is present in focal adhesion pathway",
-          "type": "supported",
-          "evidence_ref": "1"
+          "claim": "MET is present in focal adhesion pathways.",
+          "type": "unsupported",
+          "evidence_ref": null
         },
         {
-          "claim": "MET is present in central carbon metabolism pathways",
-          "type": "supported",
-          "evidence_ref": "1"
+          "claim": "MET is present in central carbon metabolism pathways.",
+          "type": "unsupported",
+          "evidence_ref": null
         }
       ]
     },
@@ -431,32 +674,32 @@
       "drug": "Erlotinib",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.75,
-      "has_hallucination": true,
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
       "n_claims": 4,
-      "n_supported": 3,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified the EGFR mutation and protein expression levels from the provided evidence, but hallucinated a claim about neutral EGFR copy number which was not present in the retrieved data.",
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately retrieved and correctly interpreted the mutation, CNV, and protein expression data to support the sensitivity categorization.",
       "claims": [
         {
-          "claim": "EGFR p.E746_A750del mutation is present in NCI-H1650",
+          "claim": "NCI-H1650 has an EGFR p.E746_A750del mutation.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "EGFR copy number is neutral",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "NCI-H1650 has a neutral EGFR copy number.",
+          "type": "supported",
+          "evidence_ref": "cnv"
         },
         {
-          "claim": "CIViC classifies EGFR p.E746_A750del as associated with sensitivity to erlotinib",
+          "claim": "CIViC classifies the EGFR p.E746_A750del mutation as sensitive/response to erlotinib with level C evidence.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "EGFR total protein expression value is 0.5431",
+          "claim": "NCI-H1650 has an EGFR total protein expression score of 0.5431.",
           "type": "supported",
-          "evidence_ref": "2"
+          "evidence_ref": "rppa_expression"
         }
       ]
     },
@@ -470,12 +713,12 @@
       "n_claims": 2,
       "n_supported": 1,
       "n_unsupported": 1,
-      "summary": "The agent correctly identified the EGFR expression level from the retrieved evidence but included an external, unverified claim regarding the specific mutation status of the NCI-H1650 cell line.",
+      "summary": "The agent correctly identifies the EGFR TPM value from the provided data but makes an unsupported factual claim regarding the specific mutation status of the NCI-H1650 cell line which was not present in the retrieved evidence.",
       "claims": [
         {
-          "claim": "EGFR TPM is ~69.6",
+          "claim": "EGFR TPM in NCI-H1650 is 69.58530704879934",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "target_expression"
         },
         {
           "claim": "NCI-H1650 is an EGFR-mutant cell line (delE746-A750)",
@@ -489,32 +732,37 @@
       "drug": "Erlotinib",
       "agent": "pharmacology_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.25,
+      "faithfulness_score": 0.8,
       "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent hallucinates numerical IC50, AUC, and Z-score data that were not provided in the retrieved evidence, while correctly identifying the EGFR mutation status.",
+      "n_claims": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "summary": "The agent correctly extracted numerical values from the database but hallucinated a specific claim regarding the cell line's EGFR mutation status which was not present in the provided evidence.",
       "claims": [
         {
-          "claim": "ln_ic50 is 1.153674",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "auc is 0.84808",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "z_score is -1.205988",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "EGFR status is mutant",
+          "claim": "ln_ic50 for NCI-H1650 with Erlotinib is 1.153674",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "auc for NCI-H1650 with Erlotinib is 0.84808",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "z_score for NCI-H1650 with Erlotinib is -1.205988",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "Erlotinib targets the EGFR gene",
+          "type": "supported",
+          "evidence_ref": "drug_info"
+        },
+        {
+          "claim": "NCI-H1650 has known EGFR mutation status",
+          "type": "unsupported",
+          "evidence_ref": null
         }
       ]
     },
@@ -523,35 +771,45 @@
       "drug": "Erlotinib",
       "agent": "pathway_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.6,
+      "faithfulness_score": 0.7142857142857143,
       "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 3,
+      "n_claims": 7,
+      "n_supported": 5,
       "n_unsupported": 2,
-      "summary": "The agent correctly identified FGFR2 and CSF1R as bypass genes from the provided evidence but hallucinated activity scores and the status of MAP2K1.",
+      "summary": "The agent correctly identified most pathway associations and bypass genes but hallucinated the inclusion of MAP2K1 as a bypass gene and included a pathway not present in the evidence.",
       "claims": [
         {
-          "claim": "EGFR is found in KEGG pathways hsa04014, hsa04151, and hsa01521",
+          "claim": "EGFR is found in pathway hsa04014",
           "type": "supported",
-          "evidence_ref": "hsa04151, hsa01521"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "Pathway activity scores for these pathways are all above the 0.25 threshold",
+          "claim": "EGFR is found in pathway hsa04151",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "EGFR is found in pathway hsa01521",
           "type": "unsupported",
           "evidence_ref": null
         },
         {
-          "claim": "CSF1R is an activating bypass route",
+          "claim": "Pathway activity scores are above the 0.25 threshold",
           "type": "supported",
-          "evidence_ref": "KEGG hsa04151"
+          "evidence_ref": "pathway_activity_scores"
         },
         {
-          "claim": "FGFR2 is an activating bypass route",
+          "claim": "CSF1R is identified as a bypass gene",
           "type": "supported",
-          "evidence_ref": "KEGG hsa01521"
+          "evidence_ref": "confirmed_bypass_genes"
         },
         {
-          "claim": "MAP2K1 is an activating bypass route",
+          "claim": "FGFR2 is identified as a bypass gene",
+          "type": "supported",
+          "evidence_ref": "confirmed_bypass_genes"
+        },
+        {
+          "claim": "MAP2K1 is identified as a bypass gene",
           "type": "unsupported",
           "evidence_ref": null
         }
@@ -562,32 +820,37 @@
       "drug": "PLX-4720",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 2,
-      "n_unsupported": 2,
-      "summary": "The agent accurately reflects the mutation status and sensitivity from the database but includes unsubstantiated claims regarding CNV and RPPA data not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "summary": "The agent accurately extracted and interpreted genomic and functional data regarding BRAF V600E status and drug sensitivity in A375 cells.",
       "claims": [
         {
           "claim": "A375 cell line contains a BRAF V600E mutation",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "CIViC identifies BRAF V600E as conferring sensitivity to PLX-4720",
+          "claim": "BRAF V600E is a driver mutation",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "A375 cell line has a hemizygous deletion for BRAF",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "CIViC identifies BRAF V600E as conferring sensitivity to PLX-4720 in melanoma cell lines",
+          "type": "supported",
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "RPPA expression data for A375 is neutral/average",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "A375 has a hemizygous deletion for BRAF",
+          "type": "supported",
+          "evidence_ref": "cnv"
+        },
+        {
+          "claim": "RPPA expression scores for BRAF are near 0",
+          "type": "supported",
+          "evidence_ref": "rppa_expression"
         }
       ]
     },
@@ -596,35 +859,30 @@
       "drug": "PLX-4720",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.8,
-      "has_hallucination": true,
-      "n_claims": 5,
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
       "n_supported": 2,
-      "n_unsupported": 1,
-      "summary": "The agent accurately extracted the BRAF z-score and mutation status from the evidence, but hallucinated a specific TPM value not present in the retrieved data.",
+      "n_unsupported": 0,
+      "summary": "The agent correctly identifies the BRAF expression data from the provided evidence and appropriately classifies the biological context as needing mutation status for accurate sensitivity prediction.",
       "claims": [
         {
-          "claim": "BRAF z-score is 0.469",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "BRAF tpm is 11.6",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "A375 is a BRAF V600E-mutant cell line",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "NRAS amplification is a resistance mechanism for PLX-4720",
+          "claim": "PLX-4720 is a selective BRAF inhibitor.",
           "type": "inferred",
           "evidence_ref": null
         },
         {
-          "claim": "MET overexpression is a resistance mechanism for PLX-4720",
+          "claim": "BRAF expression level in A375 is z-score 0.469.",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "BRAF expression level in A375 is 11.6 TPM.",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "A375 is a BRAF V600E-mutant cell line.",
           "type": "inferred",
           "evidence_ref": null
         }
@@ -635,27 +893,32 @@
       "drug": "PLX-4720",
       "agent": "pharmacology_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.0,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 0,
-      "n_unsupported": 3,
-      "summary": "The agent hallucinates numerical pharmacological metrics (IC50, AUC, and z_score) that were not provided in the retrieved evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reported the quantitative metrics provided in the retrieved evidence for the A375 cell line treated with PLX-4720.",
       "claims": [
         {
           "claim": "ln_ic50 is -0.115581",
-          "type": "unsupported",
-          "evidence_ref": null
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "AUC is 0.627612",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "auc is 0.627612",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
           "claim": "z_score is -2.940336",
-          "type": "unsupported",
-          "evidence_ref": null
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "AUC is 0.627612, which is below 0.8",
+          "type": "supported",
+          "evidence_ref": "ic50"
         }
       ]
     },
@@ -664,32 +927,110 @@
       "drug": "PLX-4720",
       "agent": "pathway_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.75,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 3,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identifies the mechanism of ARAF-mediated resistance but hallucinates specific activity scores for the KEGG pathways in the A375 cell line.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 6,
+      "n_supported": 6,
+      "n_unsupported": 0,
+      "summary": "The agent correctly identified BRAF's pathway membership, the presence of ARAF as a bypass gene, and accurately retrieved pathway activity scores for the specified KEGG pathways.",
       "claims": [
         {
-          "claim": "BRAF is a target of PLX-4720",
+          "claim": "BRAF appears in multiple KEGG pathways including MAPK and ErbB",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "ARAF is listed as an activating bypass gene in KEGG pathways hsa04012 and hsa04068",
+          "claim": "ARAF is a confirmed activating bypass gene in hsa04012 and hsa04068",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "bypass_check"
         },
         {
-          "claim": "pathways hsa04012, hsa04068, hsa05205, and hsa05161 show activity scores >= 0.25 in A375 cells",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The pathway activity score for hsa04012 is >= 0.25",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
         },
         {
-          "claim": "ARAF acts as an alternate RAF kinase isoform providing a parallel bypass route for MAPK signaling",
+          "claim": "The pathway activity score for hsa04068 is >= 0.25",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "The pathway activity score for hsa05205 is >= 0.25",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "The pathway activity score for hsa05161 is >= 0.25",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        }
+      ]
+    },
+    {
+      "cell_line": "MDA-MB-231",
+      "drug": "Olaparib",
+      "agent": "pharmacology_agent",
+      "verdict": "RESISTANT",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reported all numerical values from the retrieved evidence; the remaining text consists of logical analysis and subjective interpretations rather than additional factual assertions.",
+      "claims": [
+        {
+          "claim": "ln_ic50 for Olaparib in MDA-MB-231 is 4.388864",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "AUC for Olaparib in MDA-MB-231 is 0.966757",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "z_score for Olaparib in MDA-MB-231 is 0.12494",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        }
+      ]
+    },
+    {
+      "cell_line": "MDA-MB-231",
+      "drug": "Olaparib",
+      "agent": "pathway_agent",
+      "verdict": "SENSITIVE",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "summary": "The agent accurately extracted pathway memberships, activity scores, and bypass check results from the provided evidence.",
+      "claims": [
+        {
+          "claim": "PARP1 and PARP2 are identified as targets in Base Excision Repair (hsa03410).",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "PARP1 and PARP2 are identified as targets in Apoptosis (hsa04210).",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "The pathway activity score for Base Excision Repair (hsa03410) is 0.386.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "The pathway activity score for Apoptosis (hsa04210) is 0.379.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "No bypass routes were identified for PARP targets in MDA-MB-231.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
         }
       ]
     },
@@ -698,32 +1039,32 @@
       "drug": "Trametinib",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
       "n_claims": 4,
-      "n_supported": 2,
-      "n_unsupported": 2,
-      "summary": "The agent correctly cites the provided database values for essentiality and protein activation but hallucinates specific genomic status (wild-type/hemizygous deletion) not present in the retrieved evidence.",
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reflects the genetic and functional dependency data retrieved, correctly identifying the wild-type status, hemizygous CNV state, Chronos dependency score, and protein phosphorylation level.",
       "claims": [
         {
-          "claim": "MAP2K1/MAP2K2 are wild-type",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "MAP2K1/MAP2K2 have hemizygous deletions (CNV)",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "MAP2K1 has a strong essentiality score (Chronos: -1.3657)",
+          "claim": "MAP2K1 and MAP2K2 are wild-type in A375.",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "wild_type_genes"
         },
         {
-          "claim": "MEK1 (pS217_S221) has an activation score of 0.9866",
+          "claim": "MAP2K1 and MAP2K2 have hemizygous deletions in A375.",
           "type": "supported",
-          "evidence_ref": "[2]"
+          "evidence_ref": "cnv"
+        },
+        {
+          "claim": "The Chronos score for MAP2K1 in A375 is -1.3657.",
+          "type": "supported",
+          "evidence_ref": "depmap_scores"
+        },
+        {
+          "claim": "The pS217_S221 score for MEK1 in A375 is 0.9866.",
+          "type": "supported",
+          "evidence_ref": "rppa_expression"
         }
       ]
     },
@@ -732,37 +1073,32 @@
       "drug": "Trametinib",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.6,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 3,
-      "n_unsupported": 2,
-      "summary": "The agent correctly retrieved TPM values for MEK1/2 but hallucinated specific z-score values not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reported the transcriptomic expression levels for MEK1 and MEK2 in the A375 cell line based on the provided evidence.",
       "claims": [
         {
-          "claim": "Trametinib is a MEK1/2 inhibitor",
+          "claim": "MAP2K1 z-score is 0.25",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "target_expression"
         },
         {
-          "claim": "MAP2K1 (MEK1) TPM is 56.4",
+          "claim": "MAP2K1 TPM is 56.4",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "target_expression"
         },
         {
-          "claim": "MAP2K2 (MEK2) TPM is 66.6",
+          "claim": "MAP2K2 z-score is 0.05",
           "type": "supported",
-          "evidence_ref": "2"
+          "evidence_ref": "target_expression"
         },
         {
-          "claim": "MAP2K1 (MEK1) z-score is 0.25",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "MAP2K2 (MEK2) z-score is 0.05",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "MAP2K2 TPM is 66.6",
+          "type": "supported",
+          "evidence_ref": "target_expression"
         }
       ]
     },
@@ -771,37 +1107,27 @@
       "drug": "Trametinib",
       "agent": "pharmacology_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.0,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 0,
-      "n_unsupported": 5,
-      "summary": "The agent generated specific numerical metrics (IC50, z-score, AUC) that were not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent correctly extracted numerical metrics from the retrieved evidence and provided a logical assessment of sensitivity based on those values.",
       "claims": [
         {
-          "claim": "ln_ic50 = -4.870713",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "ln_ic50 for A375 with Trametinib is -4.870713",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "z_score = -2.254986",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "z_score for A375 with Trametinib is -2.254986",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "auc = 0.327398",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "The z_score is -2.25",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "The auc is 0.327",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "auc for A375 with Trametinib is 0.327398",
+          "type": "supported",
+          "evidence_ref": "ic50"
         }
       ]
     },
@@ -812,25 +1138,20 @@
       "verdict": "RESISTANT",
       "faithfulness_score": 0.5,
       "has_hallucination": true,
-      "n_claims": 6,
-      "n_supported": 3,
-      "n_unsupported": 3,
-      "summary": "The agent correctly identified pathway membership and bypass genes from the retrieved evidence but hallucinated specific pathway activity scores and expression z-scores that were not present in the evidence.",
+      "n_claims": 4,
+      "n_supported": 2,
+      "n_unsupported": 2,
+      "summary": "The agent correctly identified pathway membership and bypass genes, but hallucinated specific activity score values and expression level data not provided in the evidence.",
       "claims": [
         {
-          "claim": "MAP2K1/2 are members of the pathway 'Proteoglycans in cancer' (hsa05205).",
+          "claim": "MAP2K1 and MAP2K2 are members of the Proteoglycans in cancer pathway (hsa05205).",
           "type": "supported",
-          "evidence_ref": null
+          "evidence_ref": "bypass_check"
         },
         {
-          "claim": "IGF1R is an activating bypass gene for hsa05205.",
+          "claim": "IGF1R and ARAF are bypass genes for hsa05205:MAP2K1.",
           "type": "supported",
-          "evidence_ref": "[2]"
-        },
-        {
-          "claim": "ARAF is an activating bypass gene for hsa05205.",
-          "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "bypass_check"
         },
         {
           "claim": "Pathway hsa05205 has an activity score of 0.2647.",
@@ -838,335 +1159,9 @@
           "evidence_ref": null
         },
         {
-          "claim": "IGF1R is expressed at z>=1.0 in A375.",
+          "claim": "ARAF and IGF1R are expressed at z >= 1.0 in A375.",
           "type": "unsupported",
           "evidence_ref": null
-        },
-        {
-          "claim": "ARAF is expressed at z>=1.0 in A375.",
-          "type": "unsupported",
-          "evidence_ref": null
-        }
-      ]
-    },
-    {
-      "cell_line": "K-562",
-      "drug": "Dasatinib",
-      "agent": "pharmacology_agent",
-      "verdict": "SENSITIVE",
-      "faithfulness_score": 0.4,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 2,
-      "n_unsupported": 3,
-      "summary": "The agent hallucinates specific numerical data for IC50, z-score, and AUC that were not present in the provided evidence, though it correctly identifies BCR-ABL status and target interaction.",
-      "claims": [
-        {
-          "claim": "ln_ic50 is -5.70066",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "z_score is -3.010901",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "auc is 0.204693",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "BCR-ABL is the primary target for Dasatinib",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "K-562 is BCR-ABL positive",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        }
-      ]
-    },
-    {
-      "cell_line": "K-562",
-      "drug": "Dasatinib",
-      "agent": "pathway_agent",
-      "verdict": "RESISTANT",
-      "faithfulness_score": 1.0,
-      "has_hallucination": false,
-      "n_claims": 7,
-      "n_supported": 7,
-      "n_unsupported": 0,
-      "summary": "The agent accurately extracted pathway activity scores and bypass biomarkers from the evidence to support the resistance prediction.",
-      "claims": [
-        {
-          "claim": "SRC, PDGFRB, and KIT are identified in KEGG pathways hsa01521 and hsa05230",
-          "type": "supported",
-          "evidence_ref": "1, 2"
-        },
-        {
-          "claim": "EGFR tyrosine kinase inhibitor resistance (hsa01521) activity score is 0.2625",
-          "type": "supported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "Central carbon metabolism in cancer (hsa05230) activity score is 0.2676",
-          "type": "supported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "JAK2 is an activating bypass for SRC-mediated resistance",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "NTRK1 is an activating bypass for PDGFRB/KIT-mediated resistance",
-          "type": "supported",
-          "evidence_ref": "2"
-        },
-        {
-          "claim": "JAK2 is expressed in K-562",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "NTRK1 is expressed in K-562",
-          "type": "supported",
-          "evidence_ref": "2"
-        }
-      ]
-    },
-    {
-      "cell_line": "HCC1937",
-      "drug": "Olaparib",
-      "agent": "transcriptomics_agent",
-      "verdict": "SENSITIVE",
-      "faithfulness_score": 0.6,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 2,
-      "n_unsupported": 2,
-      "summary": "The agent correctly cites the transcriptomic expression levels provided in the evidence but hallucinates specific z-score values that were not present in the retrieved source.",
-      "claims": [
-        {
-          "claim": "PARP1 is 110.4 TPM",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "PARP1 z-score is 0.11",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "PARP2 is 61.1 TPM",
-          "type": "supported",
-          "evidence_ref": "[2]"
-        },
-        {
-          "claim": "PARP2 z-score is 0.87",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "HCC1937 is a BRCA1-mutant cell line",
-          "type": "inferred",
-          "evidence_ref": null
-        }
-      ]
-    },
-    {
-      "cell_line": "HCC1937",
-      "drug": "Olaparib",
-      "agent": "pharmacology_agent",
-      "verdict": "RESISTANT",
-      "faithfulness_score": 1.0,
-      "has_hallucination": false,
-      "n_claims": 3,
-      "n_supported": 3,
-      "n_unsupported": 0,
-      "summary": "The agent correctly extracted numerical values from the pharmacological database and performed valid interpretations of drug resistance metrics.",
-      "claims": [
-        {
-          "claim": "HCC1937 treated with Olaparib has a ln_ic50 of 5.936759",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "HCC1937 treated with Olaparib has an auc of 0.977789",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "HCC1937 treated with Olaparib has a z_score of 1.316562",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        }
-      ]
-    },
-    {
-      "cell_line": "HCC1937",
-      "drug": "Olaparib",
-      "agent": "pathway_agent",
-      "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 2,
-      "n_unsupported": 2,
-      "summary": "The agent correctly identified the pathway status of PARP1 but unsupported claims regarding PARP2 and specific numerical activity scores were introduced.",
-      "claims": [
-        {
-          "claim": "PARP1 is present in active pathways: Base excision repair, NF-kB signaling, Apoptosis, Necroptosis, Diabetic cardiomyopathy.",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "PARP2 is present in active pathways: Base excision repair, NF-kB signaling, Apoptosis, Necroptosis, Diabetic cardiomyopathy.",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "Pathway activity scores are above the 0.25 threshold.",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "No known activating bypass genes for PARP1 and PARP2 exist in the database.",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        }
-      ]
-    },
-    {
-      "cell_line": "MDA-MB-436",
-      "drug": "Olaparib",
-      "agent": "pharmacology_agent",
-      "verdict": "RESISTANT",
-      "faithfulness_score": 0.8,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 4,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified the z_score and AUC from the evidence but hallucinated an ln_ic50 value not present in the source material.",
-      "claims": [
-        {
-          "claim": "ln_ic50 is 5.292571",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "AUC is 0.969781",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "z_score is 0.820644",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "The z_score of 0.820644 classifies the cell line as resistant relative to the population",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "The AUC of 0.969781 indicates a weak absolute response",
-          "type": "supported",
-          "evidence_ref": "1"
-        }
-      ]
-    },
-    {
-      "cell_line": "MDA-MB-436",
-      "drug": "Olaparib",
-      "agent": "pathway_agent",
-      "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 2,
-      "n_unsupported": 2,
-      "summary": "The agent correctly identified the lack of bypass mechanisms from evidence but hallucinated specific pathway identifiers and activity threshold metrics not provided in the source material.",
-      "claims": [
-        {
-          "claim": "Drug targets PARP1 and PARP2 are present in multiple KEGG pathways (hsa03410, hsa04064, hsa04210, hsa04217, hsa05415).",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "Bypass check indicates no bypass routes exist in the database for these targets.",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "The pathways are measurably active (scores > 0.25).",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "PARP1 is present in active pathways.",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        }
-      ]
-    },
-    {
-      "cell_line": "MDA-MB-231",
-      "drug": "Olaparib",
-      "agent": "pharmacology_agent",
-      "verdict": "RESISTANT",
-      "faithfulness_score": 0.6666666666666666,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 2,
-      "n_unsupported": 1,
-      "summary": "The agent correctly retrieved the AUC and z_score from the evidence but hallucinated an ln_ic50 value.",
-      "claims": [
-        {
-          "claim": "ln_ic50 is 4.388864",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "AUC is 0.966757",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "z_score is 0.12494",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        }
-      ]
-    },
-    {
-      "cell_line": "MDA-MB-231",
-      "drug": "Olaparib",
-      "agent": "pathway_agent",
-      "verdict": "SENSITIVE",
-      "faithfulness_score": 1.0,
-      "has_hallucination": false,
-      "n_claims": 3,
-      "n_supported": 3,
-      "n_unsupported": 0,
-      "summary": "The agent accurately reported the pathway activity and target information derived from the provided evidence.",
-      "claims": [
-        {
-          "claim": "PARP1 and PARP2 are targets in Base Excision Repair (hsa03410) and Apoptosis (hsa04210)",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "Base Excision Repair (hsa03410) and Apoptosis (hsa04210) pathways are active in MDA-MB-231",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "No bypass routes were identified for PARP1 and PARP2 in the bypass_check data",
-          "type": "supported",
-          "evidence_ref": "1"
         }
       ]
     },
@@ -1175,26 +1170,36 @@
       "drug": "Palbociclib",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 1,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified the CDK4 essentiality score but hallucinated specific CNV values for CDK4 and CDK6 that were not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "summary": "The agent accurately identified the genetic status, copy number variations, and essentiality scores for CDK4/6 in the MCF7 cell line based on the provided evidence.",
       "claims": [
         {
-          "claim": "CDK4 and CDK6 have hemizygous deletions (1.38 CNV).",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "CDK4 has a Chronos essentiality score of -1.93.",
+          "claim": "MCF7 has wild-type status for CDK4 and CDK6",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "wild_type_genes"
         },
         {
-          "claim": "MCF7 is an ER-positive cell line.",
-          "type": "inferred",
+          "claim": "MCF7 has hemizygous deletions for CDK4 and CDK6 with CNV values of 1.38",
+          "type": "supported",
+          "evidence_ref": "cnv"
+        },
+        {
+          "claim": "DepMap score for CDK4 is -1.93",
+          "type": "supported",
+          "evidence_ref": "depmap_scores"
+        },
+        {
+          "claim": "DepMap score for CDK6 is -0.33",
+          "type": "supported",
+          "evidence_ref": "depmap_scores"
+        },
+        {
+          "claim": "MCF7 is a known ER-positive cell line",
+          "type": "supported",
           "evidence_ref": null
         }
       ]
@@ -1204,32 +1209,32 @@
       "drug": "Palbociclib",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
       "n_claims": 4,
-      "n_supported": 2,
-      "n_unsupported": 2,
-      "summary": "The agent correctly retrieved CDK4 and CDK6 expression values from evidence but hallucinated supplementary values for CDK4 z-score and CDK6 TPM that were not provided in the source.",
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately reported the TPM and z-score values for CDK4 and CDK6 as retrieved from the database evidence.",
       "claims": [
         {
-          "claim": "CDK4 shows a TPM of 202.77",
+          "claim": "CDK4 shows a TPM of 202.77 in MCF7.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "target_expression"
         },
         {
-          "claim": "CDK4 z-score is -0.16",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "CDK6 shows a z-score of -2.19",
+          "claim": "CDK4 z-score in MCF7 is -0.16.",
           "type": "supported",
-          "evidence_ref": "2"
+          "evidence_ref": "target_expression"
         },
         {
-          "claim": "CDK6 shows a TPM of 0.54",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "CDK6 z-score in MCF7 is -2.19.",
+          "type": "supported",
+          "evidence_ref": "target_expression"
+        },
+        {
+          "claim": "CDK6 shows a TPM of 0.54 in MCF7.",
+          "type": "supported",
+          "evidence_ref": "target_expression"
         }
       ]
     },
@@ -1240,34 +1245,29 @@
       "verdict": "RESISTANT",
       "faithfulness_score": 0.75,
       "has_hallucination": true,
-      "n_claims": 5,
+      "n_claims": 4,
       "n_supported": 3,
       "n_unsupported": 1,
-      "summary": "The agent accurately reported the ln_ic50 and AUC values, but hallucinated a z-score value not present in the provided evidence.",
+      "summary": "The agent correctly extracted the pharmacological metrics from the provided tool outputs but hallucinated the ER-positive status of the MCF7 cell line, which was not contained in the evidence.",
       "claims": [
         {
-          "claim": "ln_ic50 for Palbociclib in MCF7 is 4.008",
+          "claim": "The ln_ic50 for Palbociclib in MCF7 is 4.008",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "z_score for Palbociclib in MCF7 is 0.362",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The z_score for Palbociclib in MCF7 is 0.362",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "AUC for Palbociclib in MCF7 is 0.939",
+          "claim": "The AUC for Palbociclib in MCF7 is 0.939",
           "type": "supported",
-          "evidence_ref": "2"
-        },
-        {
-          "claim": "AUC of 0.939 indicates a poor absolute dose-response curve",
-          "type": "supported",
-          "evidence_ref": "2"
+          "evidence_ref": "ic50"
         },
         {
           "claim": "MCF7 is ER-positive",
-          "type": "inferred",
+          "type": "unsupported",
           "evidence_ref": null
         }
       ]
@@ -1277,30 +1277,40 @@
       "drug": "Palbociclib",
       "agent": "pathway_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.25,
+      "faithfulness_score": 0.833,
       "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent correctly identified the presence of target genes in KEGG pathways but hallucinated specific bypass and pathway activity numerical data not found in the retrieved evidence.",
+      "n_claims": 6,
+      "n_supported": 5,
+      "n_unsupported": 1,
+      "summary": "The agent correctly identified pathway memberships and activity scores, but hallucinated that CDK4/6 are explicitly linked to the 'Breast cancer' pathway in the provided database evidence.",
       "claims": [
         {
-          "claim": "CDK4/CDK6 are present in KEGG pathways: Cell cycle, Breast cancer, Endocrine resistance",
+          "claim": "CDK4 and CDK6 are present in the Cell cycle pathway.",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "pathway_membership hsa04110"
         },
         {
-          "claim": "No known activation bypass routes for CDK4/CDK6 in the database (bypass_exists=false)",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "No bypass routes exist for CDK4/6 in the database.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
         },
         {
-          "claim": "Endocrine resistance pathway activity score is 0.303",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "The activity score for Endocrine resistance (hsa01522) is 0.303.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
         },
         {
-          "claim": "Viral carcinogenesis pathway activity score is 0.293",
+          "claim": "The activity score for Viral carcinogenesis (hsa05203) is 0.293.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "Most pathways have activity scores less than 0.25.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "CDK4 and CDK6 are present in the Breast cancer pathway.",
           "type": "unsupported",
           "evidence_ref": null
         }
@@ -1311,37 +1321,32 @@
       "drug": "PLX-4720",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.33,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent hallucinates specific mutation and copy number data for the 8505C cell line that were not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately identified the BRAF p.V600E mutation, the hemizygous deletion, and the neutral RPPA expression scores, all of which are supported by the provided evidence.",
       "claims": [
         {
-          "claim": "8505C has a BRAF p.V600E mutation",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "8505C contains a BRAF p.V600E mutation",
+          "type": "supported",
+          "evidence_ref": "mutations"
         },
         {
           "claim": "8505C has a hemizygous deletion of BRAF",
-          "type": "unsupported",
-          "evidence_ref": null
+          "type": "supported",
+          "evidence_ref": "cnv"
         },
         {
           "claim": "CIViC identifies the BRAF V600E mutation as associated with sensitivity to PLX4720",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "PLX-4720 is a BRAF inhibitor",
-          "type": "inferred",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "RPPA scores for BRAF are near neutral",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "RPPA scores for BRAF in 8505C are near neutral",
+          "type": "supported",
+          "evidence_ref": "rppa_expression"
         }
       ]
     },
@@ -1352,25 +1357,35 @@
       "verdict": "RESISTANT",
       "faithfulness_score": 1.0,
       "has_hallucination": false,
-      "n_claims": 3,
-      "n_supported": 3,
+      "n_claims": 5,
+      "n_supported": 5,
       "n_unsupported": 0,
-      "summary": "The agent accurately reported the numerical values provided in the evidence, while interpreting their clinical significance as logical reasoning.",
+      "summary": "The agent accurately reported all numerical values and drug-target information provided in the evidence, with all claims classified as supported.",
       "claims": [
         {
-          "claim": "ln_ic50 is 4.607",
+          "claim": "ln_ic50 for 8505C and PLX-4720 is 4.607",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "z_score is 0.270",
+          "claim": "z_score for 8505C and PLX-4720 is 0.270",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
         },
         {
-          "claim": "AUC is 0.949",
+          "claim": "AUC for 8505C and PLX-4720 is 0.949",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "PLX-4720 targets BRAF",
+          "type": "supported",
+          "evidence_ref": "drug_info"
+        },
+        {
+          "claim": "PLX-4720 is in the ERK MAPK signaling pathway",
+          "type": "supported",
+          "evidence_ref": "drug_info"
         }
       ]
     },
@@ -1379,27 +1394,37 @@
       "drug": "PLX-4720",
       "agent": "pathway_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.5,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 1,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identifies the mechanism of bypass signaling via ARAF/RAF1 but hallucinates quantitative activity scores for specific pathways in 8505C cells.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "summary": "The agent correctly identified the presence of BRAF in signaling pathways, confirmed the existence of bypass genes, and accurately extracted pathway activity scores.",
       "claims": [
         {
-          "claim": "BRAF is the target of PLX-4720",
-          "type": "inferred",
-          "evidence_ref": null
-        },
-        {
-          "claim": "ARAF and RAF1 are activated",
+          "claim": "BRAF is present in the MAPK signaling pathway (hsa04010).",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "hsa05200 and hsa05205 pathways have activity scores >= 0.25 in 8505C cells",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "BRAF is present in the Pathways in cancer (hsa05200).",
+          "type": "supported",
+          "evidence_ref": "pathway_membership"
+        },
+        {
+          "claim": "Bypass mechanisms involving ARAF and RAF1 exist in various BRAF-related pathways.",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
+        },
+        {
+          "claim": "The activity score for hsa05200 (Pathways in cancer) is 0.313.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "The activity score for hsa05205 (Proteoglycans in cancer) is 0.392.",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
         }
       ]
     },
@@ -1408,27 +1433,32 @@
       "drug": "Dabrafenib",
       "agent": "genomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.6667,
-      "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 2,
-      "n_unsupported": 1,
-      "summary": "The agent correctly identified the BRAF V600E mutation and its sensitivity to dabrafenib from the provided evidence, but hallucinated the presence of a hemizygous deletion.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 4,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "summary": "The agent accurately identified the BRAF mutation and CNV status from the evidence and correctly interpreted the sensitivity profile associated with the BRAF V600E mutation.",
       "claims": [
         {
-          "claim": "The MCP data identified a BRAF V600E mutation.",
+          "claim": "A2058 cell line has a BRAF p.V600E mutation.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "A hemizygous deletion of BRAF was noted.",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "BRAF V600E is a driver mutation.",
+          "type": "supported",
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "The BRAF V600E mutation is a biomarker for sensitivity to dabrafenib.",
+          "claim": "A2058 cell line has a hemizygous deletion of BRAF.",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "cnv"
+        },
+        {
+          "claim": "BRAF V600E is a biomarker for sensitivity to dabrafenib in melanoma.",
+          "type": "supported",
+          "evidence_ref": "mutations"
         }
       ]
     },
@@ -1437,27 +1467,37 @@
       "drug": "Dabrafenib",
       "agent": "transcriptomics_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.66,
+      "faithfulness_score": 0.8,
       "has_hallucination": true,
-      "n_claims": 3,
-      "n_supported": 2,
+      "n_claims": 5,
+      "n_supported": 4,
       "n_unsupported": 1,
-      "summary": "The agent accurately retrieved BRAF expression data from the provided evidence but hallucinated the mutation status of the A2058 cell line which was not present in the retrieved evidence.",
+      "summary": "The agent correctly identified transcriptomic data points but relied on an external assumption about the A2058 cell line's mutation status not present in the provided evidence.",
       "claims": [
         {
-          "claim": "BRAF z-score is -0.46",
+          "claim": "BRAF TPM in A2058 is 7.45",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "target_expression"
         },
         {
-          "claim": "BRAF TPM is 7.45",
+          "claim": "BRAF z_score in A2058 is -0.46",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "target_expression"
         },
         {
           "claim": "A2058 carries the BRAF V600E mutation",
           "type": "unsupported",
           "evidence_ref": null
+        },
+        {
+          "claim": "PDK4 z_score is 2.33",
+          "type": "supported",
+          "evidence_ref": "high_expression_context"
+        },
+        {
+          "claim": "DHX33 z_score is 1.65",
+          "type": "supported",
+          "evidence_ref": "high_expression_context"
         }
       ]
     },
@@ -1466,32 +1506,27 @@
       "drug": "Dabrafenib",
       "agent": "pharmacology_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.25,
-      "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent introduced specific numerical values for ln_ic50, AUC, and z_score that were not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent correctly extracted the numerical pharmacological data provided in the evidence snippet.",
       "claims": [
         {
-          "claim": "ln_ic50 is 4.33728",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "AUC is 0.978765",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "z_score is 0.045501",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "A2058 has a high AUC",
+          "claim": "ln_ic50 for A2058 treated with Dabrafenib is 4.33728",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "AUC for A2058 treated with Dabrafenib is 0.978765",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "z_score for A2058 treated with Dabrafenib is 0.045501",
+          "type": "supported",
+          "evidence_ref": "ic50"
         }
       ]
     },
@@ -1500,12 +1535,12 @@
       "drug": "Dabrafenib",
       "agent": "pathway_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.6666666666666666,
+      "faithfulness_score": 0.8333333333333334,
       "has_hallucination": true,
-      "n_claims": 4,
-      "n_supported": 2,
+      "n_claims": 6,
+      "n_supported": 4,
       "n_unsupported": 1,
-      "summary": "The agent correctly identified the target's pathway associations and lack of bypass routes based on evidence, but hallucinated specific numerical pathway activity scores not found in the provided evidence.",
+      "summary": "The agent correctly identified pathway memberships and activity scores, but hallucinated that BRAF is in the 'Melanoma' pathway (hsa05218) as that data point was not in the retrieved evidence.",
       "claims": [
         {
           "claim": "BRAF is the target gene for Dabrafenib",
@@ -1513,19 +1548,29 @@
           "evidence_ref": null
         },
         {
-          "claim": "BRAF is found in 'Pathways in cancer' (hsa05200) and 'Melanoma' (hsa05218)",
+          "claim": "BRAF is in Pathways in cancer (hsa05200)",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_membership"
         },
         {
-          "claim": "The database 'bypass_check' shows no known activating bypass routes",
-          "type": "supported",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "Several pathways containing BRAF are active (e.g., hsa05200, hsa05218, hsa04150) with scores >= 0.25",
+          "claim": "BRAF is in Melanoma (hsa05218)",
           "type": "unsupported",
           "evidence_ref": null
+        },
+        {
+          "claim": "The database bypass_check shows no known activating bypass routes for these pathways",
+          "type": "supported",
+          "evidence_ref": "bypass_check"
+        },
+        {
+          "claim": "hsa05200 activity score is 0.266",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
+        },
+        {
+          "claim": "hsa04150 activity score is 0.291",
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
         }
       ]
     },
@@ -1534,42 +1579,42 @@
       "drug": "Nutlin-3a (-)",
       "agent": "genomics_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.6,
+      "faithfulness_score": 0.8333,
       "has_hallucination": true,
       "n_claims": 6,
-      "n_supported": 3,
-      "n_unsupported": 3,
-      "summary": "The agent correctly identified p53 status and MDM2 expression levels from provided evidence but included specific genomic metrics (mutation, CNV, and Chronos score) not present in the source data.",
+      "n_supported": 5,
+      "n_unsupported": 1,
+      "summary": "The agent correctly extracted genomic and expression data, but hallucinated the p53 status of the Saos-2 cell line which was not present in the provided evidence.",
       "claims": [
         {
-          "claim": "MDM2 p.S431N is a neutral/non-driver mutation",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "MDM2 p.S431N is a non-driver mutation",
+          "type": "supported",
+          "evidence_ref": "mutations"
         },
         {
-          "claim": "MDM2 CNV status is 1.56",
-          "type": "unsupported",
-          "evidence_ref": null
+          "claim": "MDM2 CNV status is neutral",
+          "type": "supported",
+          "evidence_ref": "cnv"
+        },
+        {
+          "claim": "MDM2 CNV value is 1.56",
+          "type": "supported",
+          "evidence_ref": "cnv"
         },
         {
           "claim": "MDM2 DepMap Chronos score is -0.42",
-          "type": "unsupported",
-          "evidence_ref": null
+          "type": "supported",
+          "evidence_ref": "depmap_scores"
         },
         {
-          "claim": "MDM2 protein expression/phosphorylation is -0.72",
+          "claim": "MDM2 protein expression is low (RPPA score -0.72)",
           "type": "supported",
-          "evidence_ref": "[2]"
+          "evidence_ref": "rppa_expression"
         },
         {
           "claim": "Saos-2 is a p53-null cell line",
-          "type": "supported",
-          "evidence_ref": "[1]"
-        },
-        {
-          "claim": "The p53-dependent apoptosis pathway is missing in Saos-2",
-          "type": "supported",
-          "evidence_ref": "[1]"
+          "type": "unsupported",
+          "evidence_ref": null
         }
       ]
     },
@@ -1578,37 +1623,37 @@
       "drug": "Nutlin-3a (-)",
       "agent": "pharmacology_agent",
       "verdict": "RESISTANT",
-      "faithfulness_score": 0.5,
+      "faithfulness_score": 0.8,
       "has_hallucination": true,
       "n_claims": 5,
-      "n_supported": 2,
-      "n_unsupported": 3,
-      "summary": "The agent provided quantitative metrics not present in the retrieved evidence, while correctly identifying the biological mechanism of resistance based on the provided p53 status.",
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "summary": "The agent accurately retrieved IC50, AUC, and z-score metrics, but hallucinated the p53 status of the Saos-2 cell line as it was not present in the provided evidence.",
       "claims": [
         {
-          "claim": "ln_ic50 is 4.83",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "AUC is 0.97",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "z_score is 0.23",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "Saos-2 is p53-null",
+          "claim": "ln_ic50 for Saos-2 + Nutlin-3a (-) is 4.83",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "AUC for Saos-2 + Nutlin-3a (-) is 0.97",
+          "type": "supported",
+          "evidence_ref": "ic50"
+        },
+        {
+          "claim": "z_score for Saos-2 + Nutlin-3a (-) is 0.23",
+          "type": "supported",
+          "evidence_ref": "ic50"
         },
         {
           "claim": "Nutlin-3a is a p53-MDM2 inhibitor",
           "type": "supported",
-          "evidence_ref": "[1]"
+          "evidence_ref": "drug_info"
+        },
+        {
+          "claim": "Saos-2 is p53-null",
+          "type": "unsupported",
+          "evidence_ref": null
         }
       ]
     },
@@ -1617,37 +1662,27 @@
       "drug": "Nutlin-3a (-)",
       "agent": "pathway_agent",
       "verdict": "SENSITIVE",
-      "faithfulness_score": 0.33,
-      "has_hallucination": true,
-      "n_claims": 5,
-      "n_supported": 1,
-      "n_unsupported": 3,
-      "summary": "The agent hallucinated specific numerical activity scores and bypass data that were not present in the provided evidence.",
+      "faithfulness_score": 1.0,
+      "has_hallucination": false,
+      "n_claims": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "summary": "The agent accurately extracted MDM2 pathway membership, bypass status, and pathway activity scores from the provided evidence.",
       "claims": [
         {
-          "claim": "Nutlin-3a targets MDM2",
-          "type": "inferred",
-          "evidence_ref": "1"
-        },
-        {
-          "claim": "MDM2 is found in the p53 signaling pathway (hsa04115)",
+          "claim": "MDM2 is present in the p53 signaling pathway (hsa04115)",
           "type": "supported",
-          "evidence_ref": "1"
+          "evidence_ref": "pathway_membership"
         },
         {
           "claim": "bypass_exists is false for MDM2",
-          "type": "unsupported",
-          "evidence_ref": null
+          "type": "supported",
+          "evidence_ref": "bypass_check"
         },
         {
           "claim": "The p53 signaling pathway activity score is 0.36",
-          "type": "unsupported",
-          "evidence_ref": null
-        },
-        {
-          "claim": "The p53 signaling pathway activity score 0.36 is greater than 0.25",
-          "type": "unsupported",
-          "evidence_ref": null
+          "type": "supported",
+          "evidence_ref": "pathway_activity_scores"
         }
       ]
     }
