@@ -28,7 +28,7 @@ from src.run_logger import RunLogger
 DATA   = Path("src/data/processed")
 RESULTS = Path("experiments/results")
 MODEL  = "vertex:gemini-3.1-flash-lite"
-N_PER_SET = 31
+N_PER_SET = 100
 
 SETS = [
     (1, Path("data/cases/cases_gold_standard.yaml")),
