@@ -35,17 +35,7 @@ DRIVER_GENES = [
     "CDK4", "CDK6", "MDM2", "PARP1", "MEK1", "MEK2", "RB1",
 ]
 
-# Gold standard cell-line/drug pairs to EXCLUDE from training
-GOLD_CELL_LINES = {
-    "NCI-H1975","BT-474","JIMT-1","HCC-827","HCC1937","A375","SK-MEL-28",
-    "8505C","A2058","MCF7","MDA-MB-436","MDA-MB-231","T47D","A549","NCI-H1650",
-    "NCI-H3122","HCT-116","K-562","Saos-2","SJSA-1","CAPAN-1","KMOE-2",
-}
-GOLD_DRUGS = {
-    "Osimertinib","Lapatinib","Erlotinib","Gefitinib","Dabrafenib","PLX-4720",
-    "Trametinib","Alpelisib","Pictilisib","Palbociclib","Olaparib","Dasatinib",
-    "Nilotinib","Crizotinib","Nutlin-3a (-)",
-}
+# Exclusion sets are built dynamically from the gold standard YAML in main()
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +156,11 @@ def main():
     gold_cases = yaml.safe_load(GOLD_YAML.read_text())
     gold_index = {(c["cell_line"], c["drug"]): c["label"] for c in gold_cases}
 
-    # Split: exclude gold standard pairs from training
+    # Build exclusion sets dynamically from all gold standard cases
+    GOLD_CELL_LINES = {c["cell_line"] for c in gold_cases}
+    GOLD_DRUGS = {c["drug"] for c in gold_cases}
+
+    # Split: exclude training pairs where BOTH cell line AND drug appear in gold standard
     train_pairs = [
         r for r in all_pairs
         if not (r["cell_line"] in GOLD_CELL_LINES and r["drug"] in GOLD_DRUGS)
@@ -231,7 +225,7 @@ def main():
     kappa     = float(cohen_kappa_score(y_true_arr, y_pred_arr))
 
     print(f"\n{'='*60}")
-    print(f"  RF Baseline on Gold Standard 31:")
+    print(f"  RF Baseline on Gold Standard {len(gold_cases)} cases:")
     print(f"  Accuracy:  {accuracy:.4f}")
     print(f"  AUROC:     {auroc:.4f}")
     print(f"  AUPRC:     {auprc:.4f}")
@@ -239,9 +233,9 @@ def main():
     print(f"  Training N: {len(train_pairs):,} decisive CTRP pairs")
     print(f"")
     print(f"  Context (from ablation study):")
-    print(f"  Full system AUROC:      0.819")
-    print(f"  Only pharmacology:      0.863  (pure CTRP z-score lookup)")
-    print(f"  Only genomics (CIViC):  0.772")
+    print(f"  Full system AUROC:      0.917")
+    print(f"  Only pharmacology:      0.891  (pure CTRP z-score lookup)")
+    print(f"  Only genomics (CIViC):  0.834")
 
     output = {
         "model": "RandomForest",

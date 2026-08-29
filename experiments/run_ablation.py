@@ -39,7 +39,7 @@ from src.protocols.debate_engine import ConsensusResult, DebateEngine
 from src.schemas.axiom_rules import AXIOM_HIERARCHY, EVIDENCE_TO_AXIOM_TIER
 from src.schemas.evidence_pack import EvidencePack, Verdict
 
-CASES_FILE = Path("data/cases/cases_held_out_v2.yaml")
+CASES_FILE = Path("data/cases/cases_gold_standard.yaml")
 RESULTS    = Path("experiments/results")
 OUT_PATH   = RESULTS / "ablation_results.json"
 CACHE      = Path("src/data/processed/llm_cache.db")

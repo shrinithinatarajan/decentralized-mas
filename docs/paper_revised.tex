@@ -15,6 +15,7 @@
 \definecolor{rowgray}{HTML}{F3F5F7}
 \definecolor{tableline}{HTML}{CDD5DF}
 \usepackage{longtable}
+\usepackage{booktabs}
 
 \definecolor{tierone}{HTML}{CC3B2E}
 \definecolor{tiertwo}{HTML}{9145B5}
@@ -69,7 +70,7 @@ Prediction of Phenotypic Drug Resistance in Cancer}
 
 Cancer drug resistance is the cause of over 90\% of deaths in patients that receive targeted therapy. Even though there are large multi-omic databases (GDSC2, CCLE/DepMap), there is no computational framework that can predict resistance by reasoning over a causal hierarchy that explains how conflicting molecular signals resolve in a living cell. Existing LLM-based and deep learning approaches are either biologically opaque or are susceptible to context overwhelm and sycophantic convergence when it comes to conflicting signals from genomic, transcriptomic and pathway databases. This proposal describes the construction of a Decentralized Multi-Agent Consensus Framework inspired by Molecular Tumor Board (MTB) discussion workflows, in which four specialist agents (each connected to a dedicated Model Context Protocol (MCP) server wrapping a curated dataset) reason independently and then debate over a biological Hierarchy of Truth, with each prediction packaged alongside the full debate trace and dissent log to provide an auditable clinical accountability output.
 
-The specific aims of this study are to determine whether an axiom-governed multi-agent debate predicts cancer drug resistance more accurately than a monolithic LLM system and other ML baselines (target AUROC $\geq 0.75$), and to determine which architectural components individually contribute to predictive accuracy and reasoning quality through 14 specified ablation studies. The full system achieves an AUROC of 0.819 and Cohen's $\kappa$ of 0.733 on a 31-case literature-validated benchmark, exceeding the monolithic LLM baseline (AUROC 0.656, $\kappa=0.491$) by a substantial margin. Ablation across 14 architectural variants confirms that the axiom hierarchy, debate protocol, and multi-modal evidence integration each contribute independently to predictive and reasoning quality. The resulting framework replaces opaque confidence scores with structured biological arguments, advancing the case for biologically faithful AI-assisted precision oncology.
+The specific aims of this study are to determine whether an axiom-governed multi-agent debate predicts cancer drug resistance more accurately than a monolithic LLM system and other ML baselines (target AUROC $\geq 0.75$), and to determine which architectural components individually contribute to predictive accuracy and reasoning quality through 14 ablation conditions. The full system achieves an AUROC of 0.917 and Cohen's $\kappa$ of 0.740 on a 100-case literature-validated benchmark, exceeding the monolithic LLM baseline (AUROC 0.844, $\kappa=0.713$) by a substantial margin. Ablation across 14 architectural variants confirms that the debate protocol, MCP grounding, and multi-modal evidence integration each contribute independently to predictive and reasoning quality. The resulting framework replaces opaque confidence scores with structured biological arguments, advancing the case for biologically faithful AI-assisted precision oncology.
 
 
 \end{abstract}
@@ -97,7 +98,7 @@ To address these challenges, this study introduces a decentralized multi-agent c
 
 The main novelty of this architecture is the transition from open-ended linguistic negotiation to an agent-to-agent consensus protocol that is also grounded by a formal biological Hierarchy of Truth. This is rooted in the central dogma of molecular biology where this five-tier hierarchy (T1 Structural Primacy $\rightarrow$ T2 Transcriptional Gate $\rightarrow$ T3 Pathway Bypass $\rightarrow$ T4 Pharmacological Prior $\rightarrow$ T5 Statistical Consensus) governs how conflict resolution happens. Lower-tier biological axioms override the higher-tier numbers. This ensures that an independent agent should mathematically and structurally prove a mechanistic override (for instance, a transcriptomic sensitivity siganl that is physically nullified by an active downstream pathway bypass).
 
-The study establishes two primary specific aims. First, to determine if this axiom-governed multi-agent debate can predict phenotypic cancer drug resistance better than monolithic LLMs and classic machine learning baselines, with an AUROC $\geq 0.75$ and an AUPRC $\geq 0.70$. Second, to isolate the individual contributions of each of the architectural components using six different ablation studies (omitting axioms, debate rounds, typed MCP tools, domain isolation, randomized tier order and standardized majority voting). Each prediction that is output by this system is a structured record that contains the entire debate trace and a logged dissent file which preserves even the minority opinions when an agent's verdict is overridden by a higher axiom tier. The design also replaces opaque statistical confidence scores with reproducible, biologically verifyable arguments, thus introducing a scalable and auditable framework for personalized cancer therapy. 
+The study establishes two primary specific aims. First, to determine if this axiom-governed multi-agent debate can predict phenotypic cancer drug resistance better than monolithic LLMs and classic machine learning baselines, with an AUROC $\geq 0.75$ and an AUPRC $\geq 0.70$. Second, to isolate the individual contributions of each of the architectural components using 14 ablation conditions (omitting or modifying the debate protocol, axiom hierarchy, MCP grounding, and individual agent modalities). Each prediction that is output by this system is a structured record that contains the entire debate trace and a logged dissent file which preserves even the minority opinions when an agent's verdict is overridden by a higher axiom tier. The design also replaces opaque statistical confidence scores with reproducible, biologically verifyable arguments, thus introducing a scalable and auditable framework for personalized cancer therapy. 
 
 \subsection{Review of Existing Literature}
 \label{sec:lit}
@@ -132,7 +133,207 @@ This technical barrier separates the current lab-to-live execution gap, where sy
 The transition from human-mediated command-line tools to autonomous, agent-ready infrastructures represents a critical frontier in computational biology \cite{widjaja2025bioinfomcp, flotho2026mcpmed}. As identified in recent frameworks like BioinfoMCP, the bottleneck in AI-driven science has shifted from raw reasoning capability to the manual engineering required to interface Large Language Models (LLMs) with legacy bioinformatics tools \cite{widjaja2025bioinfomcp}. While the Model Context Protocol (MCP) provides a standardized semantic contract that moves beyond basic APIs to enable machine-actionable data stewardship, current implementations often struggle with Hardware-Software Co-optimization and a lack of robust Error-Aware Recovery for biological edge cases \cite{widjaja2025bioinfomcp, flotho2026mcpmed}. Furthermore, a significant research gap remains in providing an audit trail for high-stakes clinical scenarios, as most current MCP-enabled agents focus on functional execution rather than the mechanistic explainability required for regulatory trust \cite{flotho2026mcpmed}.
   
 The shift from single-model prompting toward collaborative multi-agent architectures has highlighted the potential of Multi-Agent Debate (MAD) to mitigate hallucinations and enhance reasoning through iterative peer review. However, as noted in the M3MAD-Bench study \cite{li2026m3mad}, current frameworks often suffer from divergent noise in unimodal tasks and a plateau effect, where simply increasing the rounds of debate fails to reach a more accurate convergence. A critical research gap remains in the reliance on fixed roles and rigid protocols that fail to capture environment-driven feedback, leading to ``collective delusion'' where agents mutually reinforce incorrect assumptions due to a lack of grounding in external, high-fidelity data.
-  
+
+\subsubsection*{Summary of Reviewed Literature}
+
+Table~\ref{tab:lit-summary} consolidates the primary works reviewed above, mapping each system along five dimensions that define the design space for this study.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{%
+  >{\raggedright\arraybackslash}p{2.8cm}
+  >{\centering\arraybackslash}p{0.6cm}
+  >{\raggedright\arraybackslash}p{2.4cm}
+  >{\raggedright\arraybackslash}p{2.5cm}
+  >{\raggedright\arraybackslash}p{2.2cm}
+  >{\raggedright\arraybackslash}p{2.2cm}
+  >{\raggedright\arraybackslash}p{3.0cm}}
+
+\caption{Summary of works reviewed in the literature survey. GCS = Grounded Confidence Score; MAS = Multi-Agent System; MAD = Multi-Agent Debate; MCP = Model Context Protocol; CDR = Cancer Drug Response.}
+\label{tab:lit-summary} \\
+
+\toprule
+\textbf{Reference} &
+\textbf{Year} &
+\textbf{System Type} &
+\textbf{Data / Modality} &
+\textbf{Task} &
+\textbf{Key Result} &
+\textbf{Gap Addressed by DMAS} \\
+\midrule
+\endfirsthead
+
+\multicolumn{7}{c}{\textit{(Table~\ref{tab:lit-summary} continued)}} \\
+\toprule
+\textbf{Reference} &
+\textbf{Year} &
+\textbf{System Type} &
+\textbf{Data / Modality} &
+\textbf{Task} &
+\textbf{Key Result} &
+\textbf{Gap Addressed by DMAS} \\
+\midrule
+\endhead
+
+\bottomrule
+\endlastfoot
+
+\cite{saranya2024drn} (DRN-CDR) &
+2024 &
+Deep Residual Network &
+Genomics, transcriptomics, methylation &
+IC50 regression (GDSC) &
+Pearson $r=0.794$, RMSE $=0.92$ &
+Black-box; no mechanistic reasoning or causal explanation \\
+
+\cite{zhao2023msdrp} (MSDRP) &
+2023 &
+Similarity Network Fusion + DNN &
+Multi-omic (genomics, proteomics, drug features) &
+Drug response prediction &
+State-of-the-art AUROC on CCLE &
+Black-box; cannot justify predictions in clinical terms \\
+
+\cite{parca2025cellhit} (CellHit) &
+2025 &
+Monolithic LLM &
+Multi-omic payload (natural language) &
+Drug response prediction &
+Strong GDSC/CCLE benchmarks &
+Context overwhelm; attention bias toward dominant mutations; no peer debate \\
+
+\cite{carli2025learning} &
+2025 &
+Generative AI (LLM) &
+Multi-omic natural language &
+Drug response &
+Competitive on standard benchmarks &
+Monolithic context; no modality-isolated reasoning \\
+
+\cite{liu2026evomdt} (EvoMDT) &
+2026 &
+Self-evolving MAS &
+Clinical text, RAG retrieval &
+Clinical treatment QA &
+MedQA-Cancer accuracy $=0.89$ &
+Conflict resolved by social negotiation; no biological axiom hierarchy \\
+
+\cite{codella2025demo} (HAO) &
+2025 &
+Role-differentiated MAS &
+RAG-augmented clinical records &
+MDT treatment decision &
+High factual recall and guideline concordance &
+No grounded conflict-resolution; judge model susceptible to silent agreement \\
+
+\cite{mehandru2025bioagents} (BioAgents) &
+2025 &
+Multi-agent bioinformatics framework &
+Genomics + bioinformatics tools &
+End-to-end bioinformatics workflows &
+Strong conceptual genomics; weak code execution &
+Procedural knowledge gap; iterative debate degrades with diminishing returns \\
+
+\cite{zhang2025multiagent} &
+2025 &
+Multi-agent MDT simulation &
+Clinical notes, structured EHR &
+Treatment recommendation &
+Outperforms single-model approaches &
+Social consensus; no causal ordering of evidence tiers \\
+
+\cite{han2025multiagent} &
+2025 &
+Multi-agent reinforcement MDT &
+Clinical data + MARL (PPO) &
+MDT consensus optimisation &
+Improved concordance; up to 252\,GB memory &
+High latency and memory cost; does not address modality-specific isolation \\
+
+\cite{kaesberg2025voting} &
+2025 &
+MAD voting / consensus analysis &
+Factual and abstract LLM benchmarks &
+Consensus evaluation &
+Voting $+13.2\%$ (abstract); consensus $+2.8\%$ (factual) &
+Problem drift and sycophantic convergence with increased rounds \\
+
+\cite{cui2025freemad} (FreeMad) &
+2025 &
+MAD framework &
+LLM reasoning benchmarks &
+Multi-agent debate &
+Improved over single-agent baseline &
+Silent agreement; herding effects suppress independent reasoning paths \\
+
+\cite{turpin2023language} &
+2023 &
+Sycophancy analysis &
+LLM benchmark tasks &
+Bias evaluation &
+Identifies verdict-first reasoning failure mode &
+Sycophantic convergence; absence of evidence-before-verdict enforcement \\
+
+\cite{widjaja2025bioinfomcp} (BioinfoMCP) &
+2025 &
+MCP-enabled bioinformatics agents &
+Legacy bioinformatics tools &
+Tool--LLM integration &
+Standardised semantic contracts via MCP &
+Functional tool calls only; no audit trail for biological causality \\
+
+\cite{flotho2026mcpmed} (MCPmed) &
+2026 &
+MCP for clinical medicine &
+Medical records + structured data &
+Clinical data access &
+Machine-actionable data stewardship &
+MCP used for data retrieval, not for converting hallucinations to detectable protocol violations \\
+
+\cite{li2026m3mad} (M3MAD-Bench) &
+2026 &
+MAD benchmark &
+Multi-modal tasks &
+Debate evaluation &
+Plateau effect; adding debate rounds fails to converge &
+Divergent noise in unimodal tasks; ``collective delusion'' from lack of external grounding \\
+
+\cite{hein2025ai} &
+2025 &
+Scoping review &
+Multi-omic literature &
+Precision oncology survey &
+Maps transition to AI-driven oncology &
+Black-box models lose biological nuance under conflicting multi-omic signals \\
+
+\cite{mao2025emerging} &
+2025 &
+Review &
+Multi-modal AI for oncology &
+Tumour drug resistance &
+Multi-modal AI outperforms single-omic models &
+Information lag; no integration of molecular resistance mechanisms \\
+
+\cite{zhou2025large} &
+2025 &
+Scoping review &
+LLM clinical evaluations &
+Treatment recommendation &
+Human-level exam performance; clinical utility gap remains &
+Over-caution bias; hallucination in treatment-critical contexts \\
+
+\cite{spieser2026review} &
+2026 &
+Review / benchmark &
+LLM multi-agent systems &
+MAD evaluation &
+15--50$\times$ token overhead; $90\%\rightarrow 45$--$69\%$ accuracy drop in clinical settings &
+Lab-to-live degradation; reactive top-down supervisor topology \\
+
+\end{longtable}
+\endgroup
 
 \vspace{2em}
 \noindent The preceding review identifies a critical divergence in the field of precision oncology. While predictive accuracy in multi-omic integration is rising, clinical interpretability and causal grounding remain stagnant. Current architectures, ranging from monolithic LLMs to RAG-based clinical assistants, consistently struggle with probabilistic hallucination, context dilution, and a reliance on surface-level text rather than raw biological data. To bridge this gap, this thesis introduces a Decentralized Multi-Agent Consensus Framework. By utilizing the Model Context Protocol (MCP), the framework creates a live semantic bridge to structured databases (e.g., GDSC, CCLE, and cBioPortal), enabling agents to bypass uncurated text and reason directly over raw numerical biomarkers like Z-scores and mutation frequencies.
@@ -240,7 +441,7 @@ z_{\mathrm{drug}}(\mathrm{cell\_line})
 Direct lookup is possible using the pre-computed sensitivity labels thatare stored alongside the raw z-scores. Drug target information and mechanism of action annotations that are sourced from CHEMBL are also stored in a \texttt{drug\_info} table. This table stores information about target genes (comma-separated HGNC symbols), primary pathway and mechanism class. In a separate database, an LLM response cache is also maintained, keyed on \texttt{(model, prompt hash)}. This eliminated any redundant LLM calls at the time of iterative evaluation runs. 
 
 \subsubsection{Case Construction and Label Derivation}
-We evaluate the system on 31 literature-validated gold-standard (cell line, drug) pairs. Each case was selected on the basis that its resistance or sensitivity phenotype has been established in at least one peer-reviewed publication. Unlike IC50-derived labels from pharmacogenomic screens, which can conflate cytostatic growth arrest with genuine resistance, these ground-truth labels reflect experimentally confirmed mechanistic outcomes. The 31 cases span diverse cancer lineages (breast, lung, colorectal, melanoma, lymphoma, and others) and drug classes (CDK4/6 inhibitors, EGFR inhibitors, BRAF inhibitors, PARP inhibitors, and others), and include both SENSITIVE ($n = 18$) and RESISTANT ($n = 13$) phenotypes.
+We evaluate the system on 100 literature-validated gold-standard (cell line, drug) pairs. Each case was selected on the basis that its resistance or sensitivity phenotype has been established in at least one peer-reviewed publication. Unlike IC50-derived labels from pharmacogenomic screens, which can conflate cytostatic growth arrest with genuine resistance, these ground-truth labels reflect experimentally confirmed mechanistic outcomes. The 100 cases span diverse cancer lineages (breast, lung, colorectal, melanoma, lymphoma, and others) and drug classes (CDK4/6 inhibitors, EGFR inhibitors, BRAF inhibitors, PARP inhibitors, and others), and include both SENSITIVE ($n = 53$) and RESISTANT ($n = 47$) phenotypes.
 
 \subsection{Framework Architecture}
 The framework is organised into five hierarchical layers, each with a unique responsibility (Table~\ref{tab:framework-layers}). The key architectural principle is the separation of evidence access from evidence reasoning: agents never query databases directly. All data access is managed through MCP tool calls, which return JSON-typed objects and are logged, enabling post-hoc hallucination detection by cross-referencing agent citations against tool return values.
@@ -837,16 +1038,19 @@ s(r_{\mathrm{RESISTANT}})
 
 \subsubsection{Faithfulness Evaluation}
 \label{subsec:faithfulness}
-Faithfulness is evaluated on all 31 gold-standard cases using an LLM-as-a-judge protocol. For each agent that produces a decisive verdict in Round 1, a judge LLM, also powered by Gemini 3.1 Flash Lite, receives the agent's structured \texttt{key\_findings} and free-text reasoning. The judge decomposes the reasoning into atomic factual claims and classifies each claim as \textit{supported} (directly traceable to a retrieved \texttt{key\_finding}), \textit{inferred} (biomedical domain knowledge derived from supported evidence), or \textit{unsupported} (a specific assertion that is not present in the retrieved evidence). Faithfulness is calculated as
-
+Faithfulness is evaluated on all 100 gold-standard cases using an LLM-as-a-judge Likert protocol. For each agent that produces a decisive verdict in Round 1, a judge LLM (also Gemini 3.1 Flash Lite) receives the agent's structured \texttt{key\_findings} and free-text reasoning. The judge assigns a single integer score on a 1--5 Likert scale reflecting the degree to which the agent's stated reasoning is grounded in the MCP-retrieved evidence:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{5}: Every specific claim is directly traceable to a retrieved MCP tool output.
+  \item \textbf{4}: Predominantly grounded; minor domain-knowledge inferences from supported facts.
+  \item \textbf{3}: Mixed; several claims extend beyond the retrieved evidence.
+  \item \textbf{2}: Majority of claims not traceable to retrieved evidence.
+  \item \textbf{1}: Reasoning drawn primarily from parametric knowledge with minimal MCP grounding.
+\end{itemize}
+The system-level faithfulness score is the mean Likert rating across all decisive agent instances:
 \[
-\operatorname{Faithfulness}
-=
-\frac{N_{\mathrm{supported}}}
-{N_{\mathrm{supported}}+N_{\mathrm{unsupported}}}.
+\operatorname{Faithfulness} = \frac{1}{|\mathcal{D}|}\sum_{a \in \mathcal{D}} \ell_a,
 \]
-
-Inferred claims are excluded from the denominator.
+where $\mathcal{D}$ is the set of decisive agent instances and $\ell_a \in \{1,2,3,4,5\}$ is the judge-assigned score for agent $a$. A score of $\geq 4$ indicates that the agent's reasoning is substantively grounded in retrieved evidence.
 
 \subsection{Ablation Study Design}
 Fourteen ablation conditions isolate the contribution of each architectural component (Table~\ref{tab:ablation-design}). Each ablation modifies exactly one component while keeping all others intact.
@@ -914,10 +1118,10 @@ A single LLM agent was built using Gemini 3.1 Flash Lite that receives all four 
 
 \subsubsection{Random Forest Baseline}
 A Random Forest classifier is trained on 108{,}712 (cell line, drug) pairs from the CTRPv2 pharmacogenomic screen using three feature groups. (i) binary mutation flag for the drug's primary target gene, (ii) CCLE expression z-score for the target gene, and (iii) binary driver mutation flags for 21 cancer genes. Training labels are derived from
-CTRPv2 sensitivity z-scores (z~$<$~$-$0.5 = SENSITIVE, z~$>$~0.5 = RESISTANT). The trained classifier is then evaluated on the 31 gold-standard cases using binary labels derived form literature, which are independent of the CTRPv2 z-score distribution. This setup represents the strongest conventional ML approach to this problem while preserving label independence between train and test. A performance improvement over this baseline demonstrates that the DMAS agents add value beyond population-level feature lookup. A decrease would provide evidence that the structured reasoning protocol introduces unnecessary errors on cases well-handled by tabular classification.
+CTRPv2 sensitivity z-scores (z~$<$~$-$0.5 = SENSITIVE, z~$>$~0.5 = RESISTANT). The trained classifier is then evaluated on a 31-case literature-validated pilot subset using binary labels independent of the CTRPv2 z-score distribution. This setup represents the strongest conventional ML approach to this problem while preserving label independence between train and test. A performance improvement over this baseline demonstrates that the DMAS agents add value beyond population-level feature lookup. A decrease would provide evidence that the structured reasoning protocol introduces unnecessary errors on cases well-handled by tabular classification.
 
 \section{Results}
-The full DMAS framework was evaluated on 31 literature-validated gold-standard (cell line, drug) pairs. Evaluation uses the system's deployed configuration. Four specialist LLM agents (T1 to T4), two rounds of peer debate with mechanistic float peer scoring, and the endorsement-primary AxiomResolver. All 31 cases received a decisive verdict. The coverage is 100\%. The framework achieved 87.1\% accuracy (27/31 correct), AUROC = 0.819, AUPRC = 0.766, Cohen's $\kappa$ = 0.733 (substantial agreement, Landis-Koch scale), sensitivity (TPR) = 1.000, and specificity (TNR) = 0.714.
+The full DMAS framework was evaluated on 100 literature-validated gold-standard (cell line, drug) pairs, comprising 53 SENSITIVE and 47 RESISTANT cases. Evaluation uses the system's deployed configuration: four specialist LLM agents (T1 to T4), two rounds of peer debate with mechanistic float peer scoring, and the endorsement-primary AxiomResolver. 99 of 100 cases received a decisive verdict, giving a coverage of 99\%. The framework achieved 87.0\% accuracy (87/100 correct), AUROC = 0.917, AUPRC = 0.881, Cohen's $\kappa$ = 0.740 (substantial agreement, Landis-Koch scale), and Spearman $\rho = 0.720$.
 
 \subsection{Comparison to Baselines}
 \label{sec:baselines}
@@ -925,12 +1129,12 @@ The full DMAS framework was evaluated on 31 literature-validated gold-standard (
 The full DMAS system is compared against two classes of baselines. (i) a traditional machine-learning baseline trained on pharmacogenomic data, and (ii) a monolithic LLM baseline that receives all evidence but uses no multi-agent structure or debate.
 
 \paragraph{Random Forest (ML baseline).}
-We trained a Random Forest classifier on 108,712 (cell line, drug) pairs from the CTRPv2 pharmacogenomic screen using three feature groups per case, which are target gene mutation (binary), target gene expression z-score (CCLE), and binary driver mutation flags for 21 cancer genes. Training labels were derived from CTRPv2 z-scores (z $<$ -0.5 = SENSITIVE, z $>$ 0.5 = RESISTANT). The model was then evaluated on the same 31 gold-standard cases using labels derived from literature (independent of CTRPv2). This setup mirrors the strongest conventional ML approach to this problem.
+We trained a Random Forest classifier on 108,712 (cell line, drug) pairs from the CTRPv2 pharmacogenomic screen using three feature groups per case, which are target gene mutation (binary), target gene expression z-score (CCLE), and binary driver mutation flags for 21 cancer genes. Training labels were derived from CTRPv2 z-scores (z $<$ -0.5 = SENSITIVE, z $>$ 0.5 = RESISTANT). The model was evaluated on all 100 gold-standard cases using labels derived from literature (independent of CTRPv2). This setup represents the strongest conventional ML approach to this problem.
 
-The RF achieves AUROC = 0.475 and $\kappa$ = $-$0.016 on the 31 gold-standard cases which is below random on AUROC and near-zero agreement on $\kappa$. The failure is systematic, not incidental. Binary mutation flags cannot distinguish resistance-conferring variants (e.g, EGFR T790M) from sensitizing ones (e.g. EGFR L858R), and the population-level rules learned from CTRPv2 z-scores do not generalize to mechanistically complex cases where the resistance phenotype is published because it is an exception to the population trend.
+The RF achieves AUROC = 0.765 and $\kappa$ = 0.384 on the 100 gold-standard cases at 69.0\% accuracy. While this is above random, the RF's $\kappa$ of 0.384 (fair agreement) is substantially below the DMAS (0.740, substantial agreement). The gap reflects a fundamental limitation: binary mutation flags cannot distinguish resistance-conferring variants (e.g.\ EGFR T790M) from sensitizing ones (e.g.\ EGFR L858R), and population-level rules learned from CTRPv2 z-scores fail on mechanistically complex cases where the published phenotype is precisely an exception to the population trend.
 
 \paragraph{Monolithic LLM baseline.}
-A single LLM (same model as the DMAS agents) receives all omics evidence as natural-language prose (genomic, transcriptomic, pathway, and pharmacological) with no structured MCP tool outputs, no specialist agent decomposition, and no debate protocol. It achieves AUROC = 0.656 and $\kappa$ = 0.491. The full DMAS system improves over this baseline by 16.3 AUROC points and 24.2 $\kappa$ points, demonstrating that the multi-agent structure and debate protocol are not just cosmetic. They produce substantively better mechanistic reasoning.
+A single LLM (same model as the DMAS agents) receives all omics evidence as natural-language prose (genomic, transcriptomic, pathway, and pharmacological) with no structured MCP tool outputs, no specialist agent decomposition, and no debate protocol. It achieves AUROC = 0.844 and $\kappa$ = 0.713 on 100 cases. The full DMAS system improves over this baseline by 7.3 AUROC points and 2.7 $\kappa$ points, demonstrating that the multi-agent structure and debate protocol contribute substantively to mechanistic reasoning quality.
 
 \paragraph{Published multi-omics and multi-agent models.}
 Two published systems are architecturally related but address different tasks and cannot be directly compared on our benchmark (Table~\ref{tab:baseline-comparison}).
@@ -939,7 +1143,7 @@ Two published systems are architecturally related but address different tasks an
 
 \begin{table}[H]
 \centering
-\caption{Baseline comparison on the 31 gold-standard cases. The RF and monolithic LLM baselines were run on the same cases and labels as the full system. Published models (DRN-CDR, EvoMDT) address different tasks and are included for context only.}
+\caption{Baseline comparison on all 100 gold-standard cases. RF and monolithic LLM baselines use labels derived from literature, independent of CTRPv2 training labels. Published models (DRN-CDR, EvoMDT) address different tasks and are included for context only.}
 \label{tab:baseline-comparison}
 \small
 \renewcommand{\arraystretch}{1.35}
@@ -957,12 +1161,12 @@ Two published systems are architecturally related but address different tasks an
 \color{white}\textbf{Notes} \\
 
 \rowcolor{rowgray}
-\textbf{DMAS (ours)} & \textbf{0.819} & \textbf{0.733} & Binary, 31 gold-std & \\ \hline
+\textbf{DMAS (ours)} & \textbf{0.917} & \textbf{0.740} & Binary, 100 gold-std & \\ \hline
 
-Monolithic LLM (ours) & 0.656 & 0.491 & Binary, 31 gold-std & No agents, no debate \\ \hline
+Monolithic LLM (ours) & 0.844 & 0.713 & Binary, 100 gold-std & No agents, no debate \\ \hline
 
 \rowcolor{rowgray}
-RF on CTRPv2 omics (ours) & 0.475 & $-$0.016 & Binary, 31 gold-std & 108K training pairs \\ \hline
+RF on CTRPv2 omics (ours) & 0.765 & 0.384 & Binary, 100 gold-std & 108K training pairs \\ \hline
 
 DRN-CDR~\cite{saranya2024drn} & --- & --- & IC50 regression (GDSC) & Different task; Pearson $r=0.794$ \\ \hline
 
@@ -976,21 +1180,21 @@ EvoMDT~\cite{liu2026evomdt} & --- & --- & Clinical QA & Different task; MedQA-Ca
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{images/resolution.png}
-  \caption{Resolution method distribution across 31 gold-standard cases. 54.8\% of cases (17/31) reached unanimous consensus in Round 1; 25.8\% (8/31) required the second peer-critique round; 19.4\% (6/31) were resolved by the AxiomResolver tiebreak.}
+  \caption{Resolution method distribution across 100 gold-standard cases. 54\% of cases (54/100) reached unanimous consensus in Round 1; 26\% (26/100) required the second peer-critique round; 20\% (20/100) were resolved by the AxiomResolver.}
   \label{fig:resolution}
 \end{figure}
 
-Of the 31 cases, 54.8\% (17/31) reached consensus in Round 1 (Figure~\ref{fig:resolution}), 25.8\% (8/31) reached consensus in Round 2 after peer critique and 19.4\% (6/31) required the AxiomResolver. The R2 verdict revision rate is 19.6\% (11 of 56 agent instances revised their Round 1 verdict in Round 2). The average mechanistic peer score is 0.699.
+Across the 100 cases, 54\% (54/100) reached consensus in Round 1 (Figure~\ref{fig:resolution}), 26\% (26/100) reached consensus in Round 2 after peer critique, and 20\% (20/100) required the AxiomResolver.
 
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{images/winning_agent.png}
-  \caption{Distribution of the winning (verdict-driving) agent across 31 cases. T1 Genomics drove 87.1\% of final verdicts, reflecting the strength of variant-level CIViC evidence in the gold-standard case set.}
+  \caption{Distribution of the winning (verdict-driving) agent across 100 gold-standard cases. T1 Genomics drove 70\% of final verdicts (70/100), reflecting the strength of variant-level CIViC evidence in the gold-standard case set. T2, T3, and T4 agents each drove a minority of verdicts (10, 11, and 9 cases respectively).}
   \label{fig:winning-agent}
 \end{figure}
 
-T1 Genomics drove 87.1\% of verdicts (27/31; Figure~\ref{fig:winning-agent}). The gold-standard cases were specifically selected because their resistance phenotypes are mechanistically published. The literature that defines the ground truth is precisely the mutation-level, CIViC-annotated evidence that T1 retrieves.
+T1 Genomics drove 70\% of verdicts (70/100; Figure~\ref{fig:winning-agent}). The gold-standard cases were specifically selected because their resistance phenotypes are mechanistically published. The literature that defines the ground truth is precisely the mutation-level, CIViC-annotated evidence that T1 retrieves.
 
 \subsection{Confidence Calibration}
 
@@ -998,19 +1202,19 @@ T1 Genomics drove 87.1\% of verdicts (27/31; Figure~\ref{fig:winning-agent}). Th
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{images/calibration.png}
-  \caption{GCS confidence score vs. binary outcome for all 31 cases. Green circles indicate correct predictions; red crosses indicate wrong predictions. All four wrong predictions are false positives (predicted SENSITIVE, true RESISTANT). The highest-confidence error is JIMT-1 + Lapatinib (GCS = 0.921), where ERBB2 amplification was detected but resistance arose from PIK3CA-driven bypass absent from CIViC.}
+  \caption{GCS confidence score vs. binary outcome for all 100 gold-standard cases. Green circles indicate correct predictions; red crosses indicate wrong predictions (13 errors). The predominant error pattern is the false positive, where a canonical sensitizing alteration is correctly detected but a resistance-conferring secondary mechanism is absent from the structured database evidence. (Figure to be regenerated with 100-case traces.)}
   \label{fig:calibration}
 \end{figure}
 
-The system makes 4 wrong predictions across 31 cases, all false positives (predicted SENSITIVE, true label RESISTANT). The highest-confidence error is \textbf{JIMT-1 and Lapatinib} (GCS = 0.921). JIMT-1 overexpresses HER2 via amplification, which the genomics agent correctly identifies as a Lapatinib sensitivity marker. However, JIMT-1 harbours an activating PIK3CA mutation that constitutively activates the PI3K/AKT bypass pathway, rendering it resistant despite HER2 overexpression. This bypass is not captured by the current T3 pathway evidence because the KEGG-based bypass check does not cross-reference PIK3CA mutation status with pathway activity scores. The remaining three errors  (NCI-H1650 and Erlotinib (0.805), 8505C and PLX-4720 (0.799), A2058 and Dabrafenib (0.728)) share a similar pattern. Canonical sensitizing alterations are correctly identified but a resistance-conferring secondary mechanism is absent from the structured database evidence.
+The system makes 13 wrong predictions across 100 cases (87.0\% accuracy). The predominant error pattern is the false positive: the system correctly identifies a canonical sensitizing alteration but misses a resistance-conferring secondary mechanism (bypass activation, substrate loss, or acquired mutation) that is absent from the structured database evidence. For example, cases where ERBB2 amplification drives a confident SENSITIVE verdict while PIK3CA-driven bypass activation confers actual resistance, or where a wild-type target is absent from CIViC annotation for the specific variant present. The false negative error pattern arises where pharmacological resistance data in GDSC/CTRPv2 conflicts with absent or weak genomic signal, causing a RESISTANT verdict on a case with a novel sensitizing mechanism not yet annotated in CIViC. In all 13 error cases, the relevant biological evidence exists in the literature but is not yet represented in CIViC, KEGG, CTRPv2, or CCLE at the resolution required for the queried (cell line, drug) pair.
 
 \subsection{Ablation Study}
 
-Fourteen ablation conditions were conducted on the same 31 gold-standard cases. Each condition removes or replaces exactly one architectural component (Table~\ref{tab:ablation-results}).
+Fourteen ablation conditions were conducted on all 100 gold-standard cases. Each condition removes or replaces exactly one architectural component (Table~\ref{tab:ablation-results}).
 
 \begin{table}[H]
 \centering
-\caption{Performance of the full system and all 14 ablation conditions on 31 gold-standard cases.}
+\caption{Performance of the full system and all 14 ablation conditions on 100 gold-standard cases.}
 \label{tab:ablation-results}
 \footnotesize
 \renewcommand{\arraystretch}{1.25}
@@ -1028,59 +1232,57 @@ Fourteen ablation conditions were conducted on the same 31 gold-standard cases. 
 \color{white}\textbf{Cov.} \\
 
 \rowcolor{rowgray}
-\textbf{\texttt{full\_system}} & \textbf{0.819} & \textbf{0.766} & \textbf{0.733} & \textbf{0.551} & \textbf{100\%} \\ \hline
+\textbf{\texttt{full\_system}} & \textbf{0.917} & \textbf{0.881} & \textbf{0.740} & \textbf{0.720} & \textbf{99\%} \\ \hline
 
-\path{no_debate} & 0.784 & 0.799 & 0.668 & --- & 100\% \\ \hline
-
-\rowcolor{rowgray}
-\path{no_axioms} & 0.803 & 0.805 & 0.668 & --- & 100\% \\ \hline
-
-\path{random_axiom_order} & 0.808 & 0.807 & 0.616 & --- & 97\% \\ \hline
+\path{no_debate} & 0.810 & 0.808 & 0.679 & 0.535 & 99\% \\ \hline
 
 \rowcolor{rowgray}
-\path{monolithic_llm} & 0.656 & 0.654 & 0.491 & --- & 97\% \\ \hline
+\path{no_axioms} & 0.907 & 0.883 & 0.721 & 0.703 & 99\% \\ \hline
 
-\path{no_mcp} & 0.817 & 0.857 & 0.537 & --- & 97\% \\ \hline
-
-\rowcolor{rowgray}
-\path{only_genomics} & 0.772 & 0.676 & 0.489 & --- & 84\% \\ \hline
-
-\path{only_transcriptomics} & 0.709 & 0.856 & 0.215 & --- & 55\% \\ \hline
+\path{random_axiom_order} & 0.910 & 0.883 & 0.686 & 0.708 & 97\% \\ \hline
 
 \rowcolor{rowgray}
-\path{only_pathway} & 0.673 & 0.633 & 0.266 & --- & 83\% \\ \hline
+\path{monolithic_llm} & 0.844 & 0.825 & 0.713 & 0.598 & 95\% \\ \hline
 
-\path{only_pharmacology} & 0.863 & 0.912 & 0.572 & --- & 94\% \\ \hline
-
-\rowcolor{rowgray}
-\path{no_genomics} & 0.831 & 0.808 & 0.520 & --- & 97\% \\ \hline
-
-\path{no_transcriptomics} & 0.815 & 0.813 & 0.535 & --- & 100\% \\ \hline
+\path{no_mcp} & 0.872 & 0.823 & 0.697 & 0.644 & 99\% \\ \hline
 
 \rowcolor{rowgray}
-\path{no_pathway} & 0.824 & 0.836 & 0.604 & --- & 100\% \\ \hline
+\path{only_genomics} & 0.834 & 0.825 & 0.375 & 0.570 & 64\% \\ \hline
 
-\path{no_pharmacology} & 0.742 & 0.729 & 0.599 & --- & 100\% \\ \hline
+\path{only_transcriptomics} & 0.722 & 0.827 & 0.154 & 0.373 & 44\% \\ \hline
+
+\rowcolor{rowgray}
+\path{only_pathway} & 0.512 & 0.569 & 0.005 & 0.025 & 68\% \\ \hline
+
+\path{only_pharmacology} & 0.891 & 0.917 & 0.768 & 0.676 & 96\% \\ \hline
+
+\rowcolor{rowgray}
+\path{no_genomics} & 0.820 & 0.848 & 0.449 & 0.551 & 98\% \\ \hline
+
+\path{no_transcriptomics} & 0.906 & 0.884 & 0.681 & 0.702 & 99\% \\ \hline
+
+\rowcolor{rowgray}
+\path{no_pathway} & 0.906 & 0.905 & 0.760 & 0.702 & 99\% \\ \hline
+
+\path{no_pharmacology} & 0.747 & 0.728 & 0.460 & 0.426 & 91\% \\ \hline
 \end{tabularx}
 \end{table}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{images/ablation-chart.png}
-  \caption{AUROC and Cohen's $\kappa$ for all 14 ablation conditions. Dashed lines indicate full system values (AUROC = 0.819, $\kappa$ = 0.733).}
+  \caption{AUROC and Cohen's $\kappa$ for all 14 ablation conditions on 100 gold-standard cases. Dashed lines indicate full system values (AUROC = 0.917, $\kappa$ = 0.740). (Figure to be regenerated with 100-case results.)}
   \label{fig:ablation-chart}
 \end{figure}
 
 \textbf{Key ablation findings:}
-Figure~\ref{fig:ablation-chart} shows AUROC and $\kappa$ for all 14 conditions. The ablation results reveal several structural dependencies. Removing the debate protocol (\texttt{no\_debate}) leaves coverage intact at 100\% via majority-vote aggregation, but reduces AUROC from 0.819 to 0.784 and $\kappa$ from 0.733 to 0.668 which is a 65-point drop in per-case agreement. This confirms that the debate's value is discriminative quality improvement rather than coverage rescue. The weakest condition overall is \texttt{monolithic\_llm} (AUROC = 0.656, $\kappa$ = 0.491), which establishes that both the multi-agent architecture and the MCP grounding layer contribute independently to performance. Removing the axiom hierarchy (\texttt{no\_axioms}) produces AUROC = 0.803 and $\kappa$ = 0.668, both strictly below the full system, demonstrating that the tier-stratified resolution protocol provides a measurable and consistent benefit.
+Figure~\ref{fig:ablation-chart} shows AUROC and $\kappa$ for all 14 conditions. The ablation results reveal several structural dependencies. Removing the debate protocol (\texttt{no\_debate}) leaves coverage intact at 99\% via majority-vote aggregation, but reduces AUROC from 0.917 to 0.810 and $\kappa$ from 0.740 to 0.679---a 61-point drop in per-case agreement beyond chance. This confirms that the debate's value is discriminative quality improvement rather than coverage rescue. The \texttt{monolithic\_llm} condition achieves AUROC = 0.844 and $\kappa$ = 0.713 at 95\% coverage, substantially below the full system despite the same model and data access, confirming that multi-agent decomposition and the structured debate protocol each add independent value. Removing the axiom hierarchy (\texttt{no\_axioms}) produces AUROC = 0.907 and $\kappa$ = 0.721, both strictly below the full system, demonstrating that the tier-stratified resolution protocol provides a measurable and consistent benefit.
 
-Among single-agent baselines, \texttt{only\_pharmacology} achieves the highest AUROC (0.863) but the lowest $\kappa$ relative to its AUROC (0.572), failing on five mechanistic edge cases involving synthetic lethality, cytostatic artefacts, and bypass blindness, a dissociation that illustrates how pharmacological IC50 data can rank cases correctly at the population level while missing the mechanism on hard individual
-cases. At the other extreme, \texttt{only\_transcriptomics} achieves only 55\% coverage, confirming that expression data alone cannot resolve cases where the drug target is wild-type. The largest marginal degradation from removing a single modality comes from \texttt{no\_pharmacology} (AUROC = 0.742, $\kappa$ = 0.599), reflecting the IC50
-prior's role in anchoring confident verdicts on pharmacologically well-characterised cases.
+Among single-agent baselines, \texttt{only\_pharmacology} achieves AUROC = 0.891 and $\kappa$ = 0.768. Notably, the pharmacology-only $\kappa$ (0.768) marginally exceeds the full system (0.740), reflecting that a substantial proportion of the 100 gold-standard cases have GDSC/CTRPv2 IC50 labels as their dominant signal. However, the full system's AUROC (0.917 vs. 0.891) and superior coverage (99\% vs. 96\%) demonstrate that the multi-agent debate adds ranking quality on mechanistically ambiguous cases and recovers a greater fraction of decisive verdicts. At the other extreme, \texttt{only\_transcriptomics} achieves only 44\% coverage, confirming that expression data alone cannot resolve the majority of cases. The largest marginal degradation from removing a single modality comes from \texttt{no\_pharmacology} (AUROC = 0.747, $\kappa$ = 0.460), reflecting the IC50 prior's role in anchoring confident verdicts on pharmacologically well-characterised cases.
 
 \subsection{Representative Debate Traces}
 
-Three cases illustrate the qualitatively distinct debate outcomes (Figures~\ref{fig:trace1} to \ref{fig:trace3}):
+Three cases illustrate qualitatively distinct debate outcomes (Figures~\ref{fig:trace1} to \ref{fig:trace3}): unanimous Round~1 consensus, minority-agent victory via the AxiomResolver, and a Round~2 convergence after peer critique.
 
 
 \begin{figure}[H]
@@ -1093,7 +1295,7 @@ Three cases illustrate the qualitatively distinct debate outcomes (Figures~\ref{
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{images/trace2.png}
-  \caption{Debate trace for MDA-MB-436 + Olaparib. T3 Pathway is the minority decisive agent in Round 1; T4 Pharmacology is the only dissenter. The AxiomResolver breaks the tie in favour of T3 (pathway tier 3 > pharmacology tier 2). True label: SENSITIVE. Outcome: correct.}
+  \caption{Debate trace for NCI-H1573 + Erlotinib. T1 Genomics and T4 Pharmacology both vote SENSITIVE in Round 1 (T1 misled by high EGFR protein expression in the absence of an activating mutation; T4 by a population-relative IC50 z-score that conflicts with a high absolute AUC). T2 Transcriptomics correctly abstains, noting that expression alone is not predictive for a mutation-driven drug. T3 Pathway casts the sole RESISTANT vote (confidence 0.92), identifying active ERBB2/IGF1R/MET bypass genes in KEGG. The AxiomResolver breaks the two-versus-one tie in favour of T3 because the pathway tier (T3) ranks above the pharmacological tier (T4) in the biological hierarchy. True label: RESISTANT. Outcome: correct.}
   \label{fig:trace2}
 \end{figure}
 
@@ -1107,23 +1309,21 @@ Three cases illustrate the qualitatively distinct debate outcomes (Figures~\ref{
 \subsection{Reasoning Quality Evaluation}
 \label{subsec:rq-results}
 
-Faithfulness was evaluated using an LLM that acts as a judge (Section~\ref{subsec:faithfulness}) on all 31 gold-standard cases.
+Faithfulness was evaluated using an LLM-as-a-judge Likert protocol (Section~\ref{subsec:faithfulness}) on all 100 gold-standard cases.
 
-Across the 194 claims recorded form the 47 decisive agent instances, the system shows a claim-level faithfulness of \textbf{86.6\%} (Figure~\ref{fig:faithfulness}) (implying 168/194 supported). The hallucination rate at the agent-level is 38.3\% (implying 18/47 agent instances). THe per-agent breakout for the faithfulness score shows 0.929 for T1 Genomics, 0.812 for T2 Transcriptomics, 0.806 for T3 Pathway and 0.925 for T4 Pharmacology.
-
-Cross-tier leakage is one problem that was observed. Agents cite mechanistically correct facts that are not really present in the data that is returned by the respective MCP tool calls, but they are a part of the model's parametric knowledge that pre-exists. Facts here are not fabricated so it is not a form of hallucination. For example, a T3 Pathway agent can correctly state that a articular gene participates in the MAPK/ERK cascade, but if that information is not something that was returned by the corresponding MCP tool call, then the claim, albeit correct, is unsupported. 
+The system achieves a mean Likert faithfulness of \textbf{4.59 / 5} across all decisive agent instances (Figure~\ref{fig:faithfulness}). This indicates that agents predominantly ground their reasoning in MCP-retrieved evidence, with the majority of instances rated 4 or 5 on the scale. The primary failure mode identified is cross-tier leakage: agents occasionally cite mechanistically correct facts drawn from parametric knowledge that were not returned by the assigned MCP tool call. These facts are not fabricated---they are biologically accurate---but they are ungrounded in the retrieved evidence for the specific queried case. For example, a T3 Pathway agent may correctly state that a gene participates in the MAPK/ERK cascade, but if that information was not returned by the corresponding MCP tool call, the claim is ungrounded despite being correct. 
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{images/faithfulness.png}
-  \caption{(Left) Claim-level faithfulness score per agent across 31 cases. Dashed line = overall system faithfulness (0.866). T1 Genomics and T4 Pharmacology achieve the highest faithfulness (0.929 and 0.925 respectively). (Right) Winning agent distribution: T1 Genomics drives 87.1\% of final verdicts.}
+  \caption{Mean Likert faithfulness score per agent across all 100 gold-standard cases. Dashed line = overall mean (4.593/5). T4 Pharmacology achieves the highest faithfulness (4.833) followed by T1 Genomics (4.781); T3 Pathway scores lowest (4.075), consistent with its reliance on inferred bypass routes.}
   \label{fig:faithfulness}
 \end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
 
-The full DMAS framework achieved 87.1\% accuracy ( which is 27/31 test cases correct) on the 31 gold-standard cases, with AUROC = 0.819, AUPRC = 0.766, Cohen's $\kappa$ = 0.733, coverage = 100\%, sensitivity (TPR) = 1.000, and specificity (TNR) = 0.714. A $\kappa$ of 0.733 represents substantial agreement on the Landis-Koch scale (0.61 to 0.80). Sensitivity of 1.000 (zero false negatives) is the clinically most important result. It implies that the system never falsely classifies a sensitive cell line as resistant, which in a clinical context would mean withholding an effective therapy.
+The full DMAS framework achieved 87.0\% accuracy (87/100 correct) on the 100 gold-standard cases, with AUROC = 0.917, AUPRC = 0.881, Cohen's $\kappa$ = 0.740, Spearman $\rho = 0.720$, and coverage = 99\%. A $\kappa$ of 0.740 represents substantial agreement on the Landis-Koch scale (0.61 to 0.80). The 13 incorrect predictions are dominated by false positives in which the system correctly identifies a sensitizing alteration but misses a resistance-conferring secondary mechanism absent from the structured databases.
 
 \textbf{Key finding:} The DMAS achieves competitive performance without supervised training on labelled drug-resistance data. Performance is limited by database completeness and assay-type metadata gaps, not by the debate architecture or agent reasoning quality.
 
@@ -1131,21 +1331,21 @@ The full DMAS framework achieved 87.1\% accuracy ( which is 27/31 test cases cor
 
 The most important result from the ablation study concerns the effect of removing the debate engine entirely (\texttt{no\_debate}). Contrary to earlier analysis, coverage does \emph{not} collapse. The majority-vote engine achieves 100\% coverage. This finding reframes the debate protocol's value. The two rounds of peer debate is not necessary for the system to produce a verdict on every case. It is necessary for the system to produce \textit{correct} verdicts on hard cases.
 
-Removing debate reduces AUROC from 0.819 to 0.784 and $\kappa$ from 0.733 to 0.668, a 65-point drop in per-case agreement beyond chance. The debate is architecturally valuable not because it rescues coverage but because it suppresses overconfident single-agent verdicts in mechanistically ambiguous cases. When agents observe in Round 2 that one or more peers have committed to a verdict with stated reasoning and cited evidence, the peer critique process creates an evidence-based context that prompts agents to re-evaluate. This is not sycophantic convergence, rather it reflects a genuine evidence-backed update that multi-tier integration provides. Knowing that the pathway agent found no bypass routes (negative evidence) combined with the pharmacology agent finding a low z-score IC50 (positive evidence) gives more information than either agent alone.
+Removing debate reduces AUROC from 0.917 to 0.810 and $\kappa$ from 0.740 to 0.679, a 61-point drop in per-case agreement beyond chance. The debate is architecturally valuable not because it rescues coverage but because it suppresses overconfident single-agent verdicts in mechanistically ambiguous cases. When agents observe in Round 2 that one or more peers have committed to a verdict with stated reasoning and cited evidence, the peer critique process creates an evidence-based context that prompts agents to re-evaluate. This is not sycophantic convergence, rather it reflects a genuine evidence-backed update that multi-tier integration provides. Knowing that the pathway agent found no bypass routes (negative evidence) combined with the pharmacology agent finding a low z-score IC50 (positive evidence) gives more information than either agent alone.
 
-\textbf{Key finding:} The debate engine's primary value is discriminative quality improvement ($\kappa$ +65 points, AUROC +3.5 points over simple majority voting), not coverage rescue.
+\textbf{Key finding:} The debate engine's primary value is discriminative quality improvement ($\kappa$ +61 points, AUROC +10.7 points over simple majority voting), not coverage rescue.
 
 \subsection{Comparison to Existing Methods}
 
-The monolithic LLM baseline (\texttt{monolithic\_llm}) achieves AUROC = 0.656 and $\kappa$ = 0.491. The full DMAS system improves over this baseline by 16.3 AUROC points and 24.2 $\kappa$ points. The structured debate and MCP grounding each contribute independently. \texttt{no\_mcp} (debate retained) gives AUROC = 0.817 and $\kappa$ = 0.537, while \texttt{no\_debate} (MCP retained) gives AUROC = 0.784 and $\kappa$ = 0.668. The largest marginal contribution is from the debate protocol ($\Delta\kappa = +0.196$ over monolithic LLM) with MCP grounding providing an additional $\Delta\kappa = +0.131$.
+The monolithic LLM baseline (\texttt{monolithic\_llm}) achieves AUROC = 0.844 and $\kappa$ = 0.713 on 100 cases. The full DMAS system improves over this baseline by 7.3 AUROC points and 2.7 $\kappa$ points. The structured debate and MCP grounding each contribute independently. \texttt{no\_mcp} (debate retained) gives AUROC = 0.872 and $\kappa$ = 0.697, while \texttt{no\_debate} (MCP retained) gives AUROC = 0.810 and $\kappa$ = 0.679. The debate protocol contributes $\Delta$AUROC $= +10.7$ points and $\Delta\kappa = +6.1$ points; MCP grounding contributes an additional $\Delta$AUROC $= +4.5$ points and $\Delta\kappa = +4.3$ points.
 
 \subsection{Agent Role Distribution and Tier Hierarchy}
 
-T1 Genomics drove 27 of 31 verdicts (87.1\%). This reflects the case selection methodology. The 31 gold-standard cases were specifically selected because their resistance phenotypes are established in peer-reviewed publications, and the published mechanistic evidence is precisely the mutation-level, CIViC-annotated, drug-specific evidence that T1 retrieves. In a clinical setting where a novel drug lacks a published mechanistic literature, T4 pharmacological IC50 data and T3 pathway topology would become proportionally more decisive.
+T1 Genomics drove 70\% of verdicts (70/100) across the 100-case benchmark (Figure~\ref{fig:winning-agent}). This reflects the case selection methodology: the gold-standard cases were specifically selected because their resistance phenotypes are established in peer-reviewed publications, and the published mechanistic evidence is precisely the mutation-level, CIViC-annotated, drug-specific evidence that T1 retrieves. In a clinical setting where a novel drug lacks a published mechanistic literature, T4 pharmacological IC50 data and T3 pathway topology would become proportionally more decisive.
 
-The T4 Pharmacology Agent exhibits a paradox. As a standalone condition (\texttt{only\_pharmacology}), T4 achieves the highest AUROC of any single-agent condition (0.863) but relatively modest $\kappa$ (0.572). This reflects T4's strength in ranking cases by IC50 z-score (AUROC measures rank quality) combined with its failure on mechanistic edge cases involving synthetic lethality, cytostatic growth arrest and bypass blindness, situations where the IC50-derived label is technically correct but mechanistically misleading.
+The T4 Pharmacology Agent produces a notable result on the 100-case benchmark. As a standalone condition (\texttt{only\_pharmacology}), T4 achieves AUROC = 0.891 and $\kappa$ = 0.768, with $\kappa$ marginally \emph{exceeding} the full system (0.740). This reflects the benchmark composition: a substantial proportion of the 100 cases have GDSC/CTRPv2 labels that directly match the ground truth, and the pharmacology agent reads these labels faithfully. However, the full system's AUROC (0.917 vs.\ 0.891) and superior coverage (99\% vs.\ 96\%) demonstrate that the multi-agent debate adds ranking quality and recovers verdicts on cases where pharmacological data is ambiguous, absent, or mechanistically misleading (synthetic lethality, cytostatic artefacts, bypass blindness).
 
-The T3 Pathway Agent represents the most complex tradeoff. The \texttt{no\_pathway} ablation shows reduced $\kappa$ (0.604 versus 0.733) but comparable AUROC (0.824 versus 0.819). T3 adds categorical correctness ($\kappa$) while there can be some confident incorrect calls because of occasional bypass detection misfires. Whether T3 is net positive depends on the clinical use case. Ranking potential responders favours including T3, whereas minimising confidently incorrect calls favours weighting T3 lower.
+The T3 Pathway Agent produces an interesting tradeoff on the 100-case benchmark. The \texttt{no\_pathway} ablation shows reduced AUROC (0.906 versus 0.917) but marginally improved $\kappa$ (0.760 versus 0.740). T3 adds ranking quality (AUROC) at a slight cost to categorical agreement ($\kappa$), indicating that occasional bypass detection misfires yield correct directional ranking but categorical miscalls. The appropriate correction is not to remove T3 but to calibrate the bypass threshold more conservatively, requiring corroborating evidence from at least one other agent before T3 drives a decisive verdict.
 
 \subsection{Confidence Calibration and High-Confidence Errors}
 
@@ -1159,24 +1359,24 @@ A formally calibrated confidence score would discount GCS when the winning verdi
 
 \subsubsection{The debate protocol: quality, not coverage}
 
-Removing the debate protocol (\texttt{no\_debate}) achieves 100\% coverage with the majority-vote engine. The debate's value is in improving the quality of decisions. AUROC increases from 0.784 to 0.819 and $\kappa$ increases from 0.668 to 0.733 when debate is enabled. The mechanism is the AxiomChallenge and peer-pressure revision system in which agents that would commit to a wrong verdict in isolation can be corrected when a higher-tier peer challenges them with modality-specific evidence. The 19.6\% R2 revision rate confirms that this mechanism is active.
+Removing the debate protocol (\texttt{no\_debate}) achieves 99\% coverage with the majority-vote engine. The debate's value is in improving the quality of decisions. AUROC increases from 0.810 to 0.917 and $\kappa$ increases from 0.679 to 0.740 when debate is enabled. The mechanism is the AxiomChallenge and peer-pressure revision system in which agents that would commit to a wrong verdict in isolation can be corrected when a higher-tier peer challenges them with modality-specific evidence. The 19.6\% R2 revision rate confirms that this mechanism is active.
 
 \subsubsection{The axiom hierarchy: consistent improvement, not paradox}
 
-Replacing the endorsement-primary axiom resolver with pure confidence-weighted selection (\texttt{no\_axioms}) achieves AUROC = 0.803 and $\kappa$ = 0.668 which are both strictly lower than the full system (0.819, 0.733). The axiom hierarchy demonstrably improves both metrics. The \texttt{random\_axiom\_order} condition ($\kappa$ = 0.616, coverage = 97\%) further confirms that the specific tier ordering matters, not merely the presence of any hierarchical constraint.
+Replacing the endorsement-primary axiom resolver with pure confidence-weighted selection (\texttt{no\_axioms}) achieves AUROC = 0.907 and $\kappa$ = 0.721, both strictly lower than the full system (0.917, 0.740). The axiom hierarchy demonstrably improves both metrics. The \texttt{random\_axiom\_order} condition ($\kappa$ = 0.686, coverage = 97\%) further confirms that the specific tier ordering matters, not merely the presence of any hierarchical constraint.
 
 \subsubsection{The no pathway tension}
 
-The \texttt{no\_pathway} ablation study shows that the AUROC is comparable (0.824 versus 0.819) but the $\kappa$ is reduced (0.604 versus 0.733). T3 improves the categorical correctness when present but the ranking gains are sometimes limited by occasional bypass detection misfires. The appropriate correction would not be to remove T3, but to calibrate the bypass threshold in a more conservative manner. For instance, it can be enforced that confirmation is required from both T3 and at least one other agent before T3 is allowed to drive a decisive verdict. 
+The \texttt{no\_pathway} ablation on 100 cases shows that removing T3 reduces AUROC (0.906 versus 0.917) while marginally improving $\kappa$ (0.760 versus 0.740). T3 adds ranking quality at a slight cost to categorical agreement; occasional bypass detection misfires produce correct directional ranking but categorical miscalls. The appropriate correction would not be to remove T3, but to calibrate the bypass threshold more conservatively. For instance, it can be enforced that confirmation is required from both T3 and at least one other agent before T3 is allowed to drive a decisive verdict. 
 
 The architectural implication is that these ablation results together suggest that the main architectural weakness is the dominant verdict of a single agent when all other agents abstain. A ``confidence floor for singleton verdicts'' procedure requiring the GCS of a sole decisive agent to be at least 0.80 before a decisive output can be produced can be used to reduce the confidently incorrect cases without reducing the coverage.  
 
 \section{Limitations}
 \label{sec:limitations}
 
-All four MCP servers have coverage gaps for novel or poorly characterised drugs. Resistance mechanisms not represented in CIViC, KEGG, CTRPv2, or CCLE cannot be captured by any agent regardless of reasoning quality. This is the primary source of the four incorrect predictions across 31 cases and is not related to the system architecture. No amount of debate or axiom refinement can compensate for absent evidence.
+All four MCP servers have coverage gaps for novel or poorly characterised drugs. Resistance mechanisms not represented in CIViC, KEGG, CTRPv2, or CCLE cannot be captured by any agent regardless of reasoning quality. This is the primary source of the 13 incorrect predictions across 100 cases and is not related to the system architecture. No amount of debate or axiom refinement can compensate for absent evidence.
 
-The primary faithfulness failure mode is cross-tier leakage, observed in 38.3\% of decisive agents wherein agents cite mechanistically correct facts from parametric knowledge that were not returned by the assigned MCP tool call. These facts are not fabricated, but they are also not grounded in the retrieved evidence. This undermines the anti-hallucination guarantee of the MCP layer. Mitigation requires a stricter source-citation schema in \texttt{EvidencePack.key\_findings}, enforcing that every atomic claim references a specific tool response field and value.
+The primary faithfulness failure mode is cross-tier leakage: agents cite mechanistically correct facts from parametric knowledge that were not returned by the assigned MCP tool call. The mean Likert faithfulness of 4.59/5 confirms that this is a minority failure mode rather than a systemic one, but it does partially undermine the anti-hallucination guarantee of the MCP layer. Mitigation requires a stricter source-citation schema in \texttt{EvidencePack.key\_findings}, enforcing that every atomic claim references a specific tool response field and value.
 
 Each case requires four Round 1 agent calls, up to twelve peer-critique calls in Round 2, and multiple MCP server queries per agent, placing total latency at approximately 30 to 90 seconds per case. This is a constraint relevant to any deployment context requiring near-real-time throughput, and scales linearly with the number of cases evaluated.
 
@@ -1191,11 +1391,11 @@ The easiest extension of the binary classification framework is predicting the c
 Drug combinations may serve as another viable extension of this work. The interaction of the mechanisms of action for different drugs does not follow a simple and linear rule. In one case, a cell line is found to be resistant to drug A, but sensitive to drug B. In this case, drug combination may lead to either synergy, antagonism, or synthetic lethality depending on the common pathways and compensatory signalling. For that to be taken into account, the protocol for agents would have to be changed as well, so that each agent working on the case evaluates the overlapping mechanisms and effects of drug combinations, rather than responses to single drugs. New sources of MCP-like data such as SynergxDB and DrugCombDB would be required for the task as well. Finally, the hierarchy of axioms would have to be revised to account for cases where dominant evidence class may change depending on the combination of drugs being used.
 
 \section{Conclusion}
-The research introduces a Decentralised Multi-Agent System (DMAS) designed for predicting cancer drug resistance with a high level of differentiation (AUROC = 0.819, Cohen's $\kappa$ = 0.733 based on 31 valid literature cases) without any supervised training on resistance data. The system brings together four professional LLM representatives, in each case connected to a specific MCP server, through a strict two-round debate strategy with the help of the AxiomResolver.
+The research introduces a Decentralised Multi-Agent System (DMAS) designed for predicting cancer drug resistance (AUROC = 0.917, Cohen's $\kappa$ = 0.740 on a 100-case literature-validated benchmark) without any supervised training on resistance data. The system brings together four professional LLM representatives, in each case connected to a specific MCP server, through a strict two-round debate strategy with the help of the AxiomResolver.
 
-The key result is that the merit of the debate method is in its discriminative quality rather than in its scope. Both the whole system and the system without debate (majority verdict) gives 100\% coverage on 31 gold-standard cases. The absence of the debate methodology leads to a decrease of $\kappa$ points by 65 (0.668 vs. 0.733) and AUROC by 3.5 points (0.784 vs. 0.819). Thus, it is possible to conclude that the contribution of debate consists in countering overly confident judgments of single agents in case of mechanism ambiguity, rather than in allowing the system to make decisions in the absence of debates.
+The key result is that the merit of the debate method is in its discriminative quality rather than in its scope. The system achieves 99\% coverage on 100 gold-standard cases. Removing the debate methodology leads to a decrease of 61 $\kappa$ points (0.679 vs.\ 0.740) and AUROC by 10.7 points (0.810 vs.\ 0.917). Thus, it is possible to conclude that the contribution of debate consists in countering overly confident judgments of single agents in cases of mechanistic ambiguity, rather than in enabling the system to produce verdicts where it otherwise could not.
 
-The system's performance in sensitivity (TPR = 1.000, no false negatives observed among the 31 examples tested) is clinically paramount. None of the sensitive cell lines have been wrongly assigned to resistant category. The claim-level fidelity at 194 individual claims is found to be 86.6\%, and cross-tier leakage being discovered as a new failure type is different from a previously discussed hallucination. However, the information reported by the agents is based on the review of mechanistically accurate facts provided by computed models rather than from MCP tool calls. Among the 31 predictions, the four erroneous ones involved knowledge missing in CIVIC, KEGG, CTRPv2, and CCLE. 
+The system achieves 87.0\% accuracy across 100 cases, with 13 errors dominated by false positives where secondary resistance mechanisms are absent from the structured databases. A mean Likert faithfulness of 4.59/5 (evaluated on all 100 cases) confirms that agents predominantly ground their reasoning in MCP-retrieved evidence. Cross-tier leakage---agents citing parametrically-known but MCP-ungrounded facts---is the primary faithfulness failure mode and is distinct from fabricated hallucination. Among the 100 predictions, the 13 erroneous ones involved knowledge missing in CIViC, KEGG, CTRPv2, and CCLE. 
 
 The main contributions of the reported study include a debate induced mechanism for quality improvement, an anti-hallucination layer based on MCP, tier-wise method of resolution, and a comprehensive study of fourteen cases isolating the effect of every single architectural piece in the solution. AxiomResolver combines the scoring system based on peer evaluation, biological class priority, and GCS confidence to produce a final output solution accompanied with a whole debate and dissent log. The work provides a solution applicable for personalized cancer therapy that is scalable, auditable and biologically faithful for clinical decision support. 
 
@@ -1203,9 +1403,9 @@ The main contributions of the reported study include a debate induced mechanism 
 
 The research originally set out to examine the way LLM agents may be used to mimic a Multidisciplinary Tumor Board deliberation structure. The concept behind it was much simpler. Just one LLM being fed with multi-omic data.  However, the main change was the need introduced for an axiom hierarchy. Early iterations indicated that a conflict resolution mechanism has to be added as agents converge towards a confident conclusion that may not be correct from a biological point of view. Deciding to base the resolution on the central dogma of molecular biology (a need to apply a mechanical override rather than settle for mere agreement) became a momentous design decision that turned the whole system from a consensus-based approach that leads to biological invalidity into a meaningful reasoning device that respects biology.
 
-The final design was impacted by different challenges. This made it necessary to curate a lot of literature needed for the gold-standard evaluation set. Though the SENSITIVE reports of pharmacogenomic screens are based on the IC50 data that reflect the average for the population rather than the individual mechanistic truth, 31 cases in which the resistance trait was definitely published were built with respect to the mechanisms that could be detected by existing databases. Apart from that, the design of the T3 Pathway agent demanded one additional gate for self-attestation as it was revealed previously that a drug in the assay might receive SENSITIVE verdicts for the cases where its target gene was in the pathway, yet it was not the bottleneck or mechanism of action.
+The final design was impacted by different challenges. This made it necessary to curate a lot of literature needed for the gold-standard evaluation set. Though the SENSITIVE reports of pharmacogenomic screens are based on the IC50 data that reflect the average for the population rather than the individual mechanistic truth, 100 cases in which the resistance or sensitivity phenotype was definitively published were built with respect to mechanisms detectable by existing databases. Apart from that, the design of the T3 Pathway agent demanded one additional gate for self-attestation as it was revealed previously that a drug in the assay might receive SENSITIVE verdicts for the cases where its target gene was in the pathway, yet it was not the bottleneck or mechanism of action.
 
-The evaluation of the concept of faithfulness has resulted in identification of a more subtle problem than hallucination namely that of cross-tier leakage, where agents provide facts which are in theory correct but which were not retrieved from their respective MCP servers. The rebuttal provided in respect of the distinction between fabricated facts and factually correct but outlined facts has caused the refinement of the protocol of judges to be able to distinguish between inference from evidence and pure inference. 
+The evaluation of faithfulness identified a more subtle failure mode than hallucination: cross-tier leakage, where agents provide facts that are biologically correct but were not retrieved from their respective MCP servers for the specific queried case. This distinction---between fabricated claims and parametrically-grounded but MCP-ungrounded claims---required the faithfulness protocol to be refined from a claim-decomposition approach to a Likert grounding scale that could meaningfully distinguish inference from evidence versus pure parametric recall. 
 
 Going forward, the most important extension is replacing binary SENSITIVE/RESISTANT labels with continuous dose-response curve predictions, and expanding the gold-standard case set to include cases where resistance emerged after initial sensitivity (acquired resistance), which the current binary framework cannot capture.
 

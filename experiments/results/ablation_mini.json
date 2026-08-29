@@ -1,128 +1,128 @@
 {
   "full_system": {
-    "auroc": 0.819327731092437,
-    "auprc": 0.766396713881234,
-    "cohens_kappa": 0.7327586206896552,
-    "spearman_rho": 0.550782483869826,
-    "n_total": 31,
-    "n_decisive": 31,
-    "coverage": 1.0
+    "auroc": 0.9165299425758818,
+    "auprc": 0.8808905718837515,
+    "cohens_kappa": 0.7396354896855597,
+    "spearman_rho": 0.7197109672652453,
+    "n_total": 100,
+    "n_decisive": 99,
+    "coverage": 0.99
   },
   "no_debate": {
-    "auroc": 0.7836134453781513,
-    "auprc": 0.7987034690253594,
-    "cohens_kappa": 0.6680942184154176,
-    "spearman_rho": 0.4892311314721551,
-    "n_total": 31,
-    "n_decisive": 31,
-    "coverage": 1.0
+    "auroc": 0.8098851517637408,
+    "auprc": 0.8080700242259611,
+    "cohens_kappa": 0.6791658311610187,
+    "spearman_rho": 0.5354555273043055,
+    "n_total": 100,
+    "n_decisive": 99,
+    "coverage": 0.99
   },
   "no_axioms": {
-    "auroc": 0.8025210084033613,
-    "auprc": 0.8054344591041003,
-    "cohens_kappa": 0.6680942184154176,
-    "spearman_rho": 0.5217939320872036,
-    "n_total": 31,
-    "n_decisive": 31,
-    "coverage": 1.0
+    "auroc": 0.9066858080393765,
+    "auprc": 0.8832715015739279,
+    "cohens_kappa": 0.7206146477748951,
+    "spearman_rho": 0.7026993769978344,
+    "n_total": 100,
+    "n_decisive": 99,
+    "coverage": 0.99
   },
   "random_axiom_order": {
-    "auroc": 0.8080357142857143,
-    "auprc": 0.8068789716332286,
-    "cohens_kappa": 0.615702479338843,
-    "spearman_rho": 0.5326425521418067,
-    "n_total": 31,
-    "n_decisive": 30,
-    "coverage": 0.967741935483871
+    "auroc": 0.9098290598290597,
+    "auprc": 0.8832518750693114,
+    "cohens_kappa": 0.686212982937831,
+    "spearman_rho": 0.7080572147298648,
+    "n_total": 100,
+    "n_decisive": 97,
+    "coverage": 0.97
   },
   "monolithic_llm": {
-    "auroc": 0.6561085972850679,
-    "auprc": 0.6540021276291299,
-    "cohens_kappa": 0.49075975359342916,
-    "spearman_rho": 0.26996082024994833,
-    "n_total": 31,
-    "n_decisive": 30,
-    "coverage": 0.967741935483871
+    "auroc": 0.8441413237924865,
+    "auprc": 0.8250702037497915,
+    "cohens_kappa": 0.7128087306145894,
+    "spearman_rho": 0.5982803614863632,
+    "n_total": 100,
+    "n_decisive": 95,
+    "coverage": 0.95
   },
   "no_mcp": {
-    "auroc": 0.8173076923076923,
-    "auprc": 0.8566041919466842,
-    "cohens_kappa": 0.5374449339207048,
-    "spearman_rho": 0.5469696739087315,
-    "n_total": 30,
-    "n_decisive": 29,
-    "coverage": 0.9666666666666667
+    "auroc": 0.8724916387959867,
+    "auprc": 0.8234527181164182,
+    "cohens_kappa": 0.6972477064220184,
+    "spearman_rho": 0.6440181689117221,
+    "n_total": 99,
+    "n_decisive": 98,
+    "coverage": 0.98989898989899
   },
   "only_genomics": {
-    "auroc": 0.772189349112426,
-    "auprc": 0.6764465926230632,
-    "cohens_kappa": 0.48901098901098905,
-    "spearman_rho": 0.4806684941140063,
-    "n_total": 31,
-    "n_decisive": 26,
-    "coverage": 0.8387096774193549
+    "auroc": 0.8338541666666667,
+    "auprc": 0.8246002920887583,
+    "cohens_kappa": 0.37462775461584275,
+    "spearman_rho": 0.5697744013468851,
+    "n_total": 100,
+    "n_decisive": 64,
+    "coverage": 0.64
   },
   "only_transcriptomics": {
-    "auroc": 0.7090909090909091,
-    "auprc": 0.8559263968354878,
-    "cohens_kappa": 0.21489001692047383,
-    "spearman_rho": 0.337379070040748,
-    "n_total": 29,
-    "n_decisive": 16,
-    "coverage": 0.5517241379310345
+    "auroc": 0.7222222222222222,
+    "auprc": 0.8273749651528747,
+    "cohens_kappa": 0.1538355026308501,
+    "spearman_rho": 0.373478989590277,
+    "n_total": 97,
+    "n_decisive": 43,
+    "coverage": 0.44329896907216493
   },
   "only_pathway": {
-    "auroc": 0.6730769230769231,
-    "auprc": 0.6328671328671328,
-    "cohens_kappa": 0.2655367231638418,
-    "spearman_rho": 0.34352145931075834,
-    "n_total": 30,
-    "n_decisive": 25,
-    "coverage": 0.8333333333333334
+    "auroc": 0.5117967332123412,
+    "auprc": 0.5691356954122075,
+    "cohens_kappa": 0.004722010662604692,
+    "spearman_rho": 0.024806056471236234,
+    "n_total": 99,
+    "n_decisive": 67,
+    "coverage": 0.6767676767676768
   },
   "only_pharmacology": {
-    "auroc": 0.8627450980392157,
-    "auprc": 0.9117641272523174,
-    "cohens_kappa": 0.571992110453649,
-    "spearman_rho": 0.620322728018864,
-    "n_total": 31,
-    "n_decisive": 29,
-    "coverage": 0.9354838709677419
+    "auroc": 0.8911713286713286,
+    "auprc": 0.9171094982981167,
+    "cohens_kappa": 0.768160741885626,
+    "spearman_rho": 0.67642318054516,
+    "n_total": 100,
+    "n_decisive": 96,
+    "coverage": 0.96
   },
   "no_genomics": {
-    "auroc": 0.8307291666666667,
-    "auprc": 0.8082639684661743,
-    "cohens_kappa": 0.5200945626477542,
-    "spearman_rho": 0.5674815418073769,
-    "n_total": 29,
-    "n_decisive": 28,
-    "coverage": 0.9655172413793104
+    "auroc": 0.8195438282647582,
+    "auprc": 0.8484583696236928,
+    "cohens_kappa": 0.44851547694251426,
+    "spearman_rho": 0.5511539798881319,
+    "n_total": 97,
+    "n_decisive": 95,
+    "coverage": 0.979381443298969
   },
   "no_transcriptomics": {
-    "auroc": 0.8151260504201681,
-    "auprc": 0.8127599251756963,
-    "cohens_kappa": 0.5353319057815846,
-    "spearman_rho": 0.5435901460801723,
-    "n_total": 31,
-    "n_decisive": 31,
-    "coverage": 1.0
+    "auroc": 0.906070549630845,
+    "auprc": 0.883922177827594,
+    "cohens_kappa": 0.6807024545998803,
+    "spearman_rho": 0.7016883708532342,
+    "n_total": 100,
+    "n_decisive": 99,
+    "coverage": 0.99
   },
   "no_pathway": {
-    "auroc": 0.8235294117647058,
-    "auprc": 0.8364689030406847,
-    "cohens_kappa": 0.6042553191489362,
-    "spearman_rho": 0.5580858833089768,
-    "n_total": 31,
-    "n_decisive": 31,
-    "coverage": 1.0
+    "auroc": 0.9062756357670221,
+    "auprc": 0.9054059802082142,
+    "cohens_kappa": 0.7599519903980796,
+    "spearman_rho": 0.7020319026607457,
+    "n_total": 100,
+    "n_decisive": 99,
+    "coverage": 0.99
   },
   "no_pharmacology": {
-    "auroc": 0.7415966386554622,
-    "auprc": 0.7287702220683462,
-    "cohens_kappa": 0.5991379310344828,
-    "spearman_rho": 0.4169627033735592,
-    "n_total": 31,
-    "n_decisive": 31,
-    "coverage": 1.0
+    "auroc": 0.7465853658536585,
+    "auprc": 0.7284888368520618,
+    "cohens_kappa": 0.4604651162790697,
+    "spearman_rho": 0.4255064237786878,
+    "n_total": 100,
+    "n_decisive": 91,
+    "coverage": 0.91
   }
 }
