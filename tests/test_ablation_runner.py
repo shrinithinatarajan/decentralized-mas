@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from collections import Counter
 
@@ -29,7 +30,7 @@ def _pack(agent_id, verdict, tier, confidence=0.8):
 
 def test_debate_engine_accepts_custom_resolver():
     class AlwaysFirstResolver:
-        def resolve(self, packs):
+        def resolve(self, packs, peer_endorsements=None):
             return ResolutionResult(
                 verdict=packs[0].verdict,
                 winning_agent=packs[0].agent_id,
@@ -42,7 +43,7 @@ def test_debate_engine_accepts_custom_resolver():
         _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL", confidence=0.5),
         _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL", confidence=0.9),
     ]
-    result = engine.run(packs)
+    result = asyncio.run(engine.run(packs))
     # T2 would normally win by axiom, but custom resolver always picks first agent
     assert result.final_verdict == Verdict.SENSITIVE
 
@@ -56,7 +57,7 @@ def test_no_debate_engine_returns_consensus_result():
         _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
         _pack("pharmacology_agent", "SENSITIVE", "T4_PHARMACOLOGICAL"),
     ]
-    result = engine.run(packs)
+    result = asyncio.run(engine.run(packs))
     assert isinstance(result, ConsensusResult)
 
 
@@ -67,7 +68,7 @@ def test_no_debate_engine_majority_sensitive():
         _pack("transcriptomics_agent", "SENSITIVE", "T2_TRANSCRIPTIONAL"),
         _pack("pharmacology_agent", "RESISTANT", "T4_PHARMACOLOGICAL"),
     ]
-    result = engine.run(packs)
+    result = asyncio.run(engine.run(packs))
     assert result.final_verdict == Verdict.SENSITIVE
 
 
@@ -78,7 +79,7 @@ def test_no_debate_engine_majority_resistant():
         _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
         _pack("pharmacology_agent", "RESISTANT", "T4_PHARMACOLOGICAL"),
     ]
-    result = engine.run(packs)
+    result = asyncio.run(engine.run(packs))
     assert result.final_verdict == Verdict.RESISTANT
 
 
@@ -88,9 +89,72 @@ def test_no_debate_engine_takes_zero_rounds():
         _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL"),
         _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
     ]
-    result = engine.run(packs)
+    result = asyncio.run(engine.run(packs))
     assert result.rounds_taken == 0
     assert result.forced is False
+
+
+def test_no_debate_engine_populates_r1_agents_with_reasoning_and_attestation():
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
+    ]
+    packs[0].reasoning = "BRAF V600E driver mutation present"
+    packs[0].data_status = "data_found"
+    packs[0].self_attestation = {"score": 4}
+    result = asyncio.run(engine.run(packs))
+    genomics_entry = next(a for a in result.r1_agents if a["agent_id"] == "genomics_agent")
+    assert genomics_entry["reasoning"] == "BRAF V600E driver mutation present"
+    assert genomics_entry["data_status"] == "data_found"
+    assert genomics_entry["self_attestation"] == {"score": 4}
+
+
+def test_no_debate_engine_ignores_uncertain_votes():
+    # 2 UNCERTAIN abstentions must not outvote the single decisive verdict
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent", "SENSITIVE", "T4_PHARMACOLOGICAL"),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.final_verdict == Verdict.SENSITIVE
+    assert result.winning_agent == "pharmacology_agent"
+
+
+def test_no_debate_engine_majority_among_decisive_only():
+    # 1 UNCERTAIN + 2 decisive RESISTANT: majority must be computed over the
+    # 2 decisive votes, not diluted by the abstention
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL"),
+        _pack("pharmacology_agent", "RESISTANT", "T4_PHARMACOLOGICAL"),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.final_verdict == Verdict.RESISTANT
+
+
+def test_no_debate_engine_all_uncertain_returns_uncertain():
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "UNCERTAIN", "T1_STRUCTURAL"),
+        _pack("transcriptomics_agent", "UNCERTAIN", "T2_TRANSCRIPTIONAL"),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.final_verdict == Verdict.UNCERTAIN
+
+
+def test_no_debate_engine_populates_contributing_agents():
+    engine = NoDebateEngine()
+    packs = [
+        _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL", confidence=0.55),
+        _pack("pharmacology_agent", "SENSITIVE", "T4_PHARMACOLOGICAL", confidence=0.92),
+    ]
+    result = asyncio.run(engine.run(packs))
+    assert result.contributing_agents[0] == "pharmacology_agent"
+    assert result.contributing_agents[1] == "genomics_agent"
 
 
 def test_no_debate_engine_tie_broken_by_confidence():
@@ -99,7 +163,7 @@ def test_no_debate_engine_tie_broken_by_confidence():
         _pack("genomics_agent", "SENSITIVE", "T1_STRUCTURAL", confidence=0.9),
         _pack("transcriptomics_agent", "RESISTANT", "T2_TRANSCRIPTIONAL", confidence=0.6),
     ]
-    result = engine.run(packs)
+    result = asyncio.run(engine.run(packs))
     # Tied 1-1; SENSITIVE has higher total confidence
     assert result.final_verdict == Verdict.SENSITIVE
 

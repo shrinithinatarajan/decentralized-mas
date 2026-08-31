@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMAS Paper Figures</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: #fff; color: #111; display: flex; min-height: 100vh; }
+
+  nav { width: 210px; flex-shrink: 0; background: #f8f8f8; border-right: 1px solid #ddd; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  nav h2 { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #555; margin-bottom: 14px; }
+  nav a { display: block; font-size: 12px; color: #1a56db; text-decoration: none; padding: 5px 0 5px 8px; line-height: 1.4; border-left: 2px solid transparent; margin-bottom: 2px; }
+  nav a:hover { border-left-color: #1a56db; background: #f0f4ff; }
+
+  main { flex: 1; padding: 48px 60px; max-width: 1000px; }
+  .fig-section { margin-bottom: 72px; padding-bottom: 48px; border-bottom: 1px solid #e8e8e8; }
+  .fig-section:last-child { border-bottom: none; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; color: #111; }
+  .fig-subtitle { font-size: 13px; color: #555; margin-bottom: 28px; font-style: normal; font-family: system-ui, sans-serif; }
+  canvas { display: block; }
+  figcaption { margin-top: 14px; font-size: 13px; color: #333; font-style: italic; line-height: 1.6; max-width: 740px; font-family: system-ui, sans-serif; }
+
+  /* ── Trace diagram ── */
+  .trace-wrap { font-family: system-ui, sans-serif; font-size: 13px; }
+  .trace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .trace-col-head { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 12px; }
+
+  .acard { border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; border: 1.5px solid #e0e0e0; background: #fff; }
+  .acard.t1 { border-left: 4px solid #2563EB; }
+  .acard.t2 { border-left: 4px solid #7C3AED; }
+  .acard.t3 { border-left: 4px solid #065f46; }
+  .acard.t4 { border-left: 4px solid #991b1b; }
+  .acard.winner { box-shadow: 0 0 0 2px #16A34A66; }
+
+  .acard-top { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+  .apill { font-size: 10.5px; font-weight: 800; padding: 3px 10px; border-radius: 4px; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .apill.t1 { background: #1e3a8a; }
+  .apill.t2 { background: #5b21b6; }
+  .apill.t3 { background: #065f46; }
+  .apill.t4 { background: #991b1b; }
+
+  .vpill { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 12px; border: 1.5px solid; background: transparent; white-space: nowrap; }
+  .vpill.S { color: #16A34A; border-color: #16A34A; }
+  .vpill.R { color: #DC2626; border-color: #DC2626; }
+  .vpill.U { color: #6B7280; border-color: #6B7280; }
+  .revised-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; color: #1d4ed8; border: 1.5px solid #1d4ed8; white-space: nowrap; }
+
+  .acard-gcs { margin-left: auto; font-size: 13px; font-weight: 700; color: #111; white-space: nowrap; }
+  .acard-data { font-size: 10.5px; color: #888; margin-left: 4px; text-align: right; white-space: nowrap; }
+  .acard-reasoning { font-size: 12px; color: #444; line-height: 1.5; font-style: italic; }
+
+  .conflict-banner { background: #fff7ed; border: 1.5px solid #f97316; border-radius: 6px; padding: 9px 13px; margin-top: 4px; font-size: 12px; color: #c2410c; font-weight: 600; line-height: 1.4; }
+
+  .fbox { border-radius: 8px; padding: 14px 16px; margin-top: 4px; }
+  .fbox.correct { background: #f0fdf4; border: 1.5px solid #16A34A; }
+  .fbox.wrong   { background: #fef2f2; border: 1.5px solid #DC2626; }
+  .fbox-title { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+  .fbox-title.correct { color: #15803d; }
+  .fbox-title.wrong   { color: #b91c1c; }
+  .fbox-line { font-size: 12px; color: #333; line-height: 1.6; }
+  .fbox-conf { font-size: 18px; font-weight: 800; color: #111; margin: 4px 0; }
+  .fbox-insight { margin-top: 8px; padding-top: 8px; border-top: 1px solid #d1fae5; }
+  .fbox-insight.wrong { border-top-color: #fecaca; }
+  .fbox-insight-head { font-size: 11.5px; font-weight: 800; color: #166534; margin-bottom: 3px; }
+  .fbox-insight-head.wrong { color: #991b1b; }
+  .fbox-insight-text { font-size: 12px; color: #333; line-height: 1.5; font-style: italic; }
+</style>
+</head>
+<body>
+
+<nav>
+  <h2>Paper Figures</h2>
+  <a href="#fig5">Fig 5 — Resolution Breakdown</a>
+  <a href="#fig6">Fig 6 — Winning Agent Distribution</a>
+  <a href="#fig7">Fig 7 — Confidence vs Outcome</a>
+  <a href="#figcm">Fig CM — Confusion Matrix</a>
+  <a href="#fig8">Fig 8 — Ablation Results</a>
+  <a href="#fig9">Fig 9 — Clean R1 Consensus</a>
+  <a href="#fig10">Fig 10 — Minority Agent Wins</a>
+  <a href="#fig11">Fig 11 — T4 as Sole Decisive Agent</a>
+  <a href="#fig12">Fig 12 — Faithfulness &amp; Winning Agent</a>
+</nav>
+
+<main>
+
+<!-- ===== FIG 5 ===== -->
+<section class="fig-section" id="fig5">
+  <h1>Figure 5</h1>
+  <p class="fig-subtitle">Resolution Breakdown — 31 Gold-Standard Cases</p>
+  <canvas id="c5" style="width:560px;height:230px"></canvas>
+  <figcaption><strong>Figure 5.</strong> Resolution method distribution across 31 gold-standard cases. 54.8% of cases (17/31) reached unanimous consensus in Round 1; 25.8% (8/31) required the second peer-critique round; 19.4% (6/31) were resolved by the AxiomResolver tiebreak.</figcaption>
+</section>
+
+<!-- ===== FIG 6 ===== -->
+<section class="fig-section" id="fig6">
+  <h1>Figure 6</h1>
+  <p class="fig-subtitle">Winning Agent Distribution — 31 Gold-Standard Cases</p>
+  <canvas id="c6" style="width:560px;height:320px"></canvas>
+  <figcaption><strong>Figure 6.</strong> Distribution of the winning (verdict-driving) agent across 31 cases. T1 Genomics drove 87.1% of final verdicts, reflecting the strength of variant-level CIViC evidence in the gold-standard case set.</figcaption>
+</section>
+
+<!-- ===== FIG 7 ===== -->
+<section class="fig-section" id="fig7">
+  <h1>Figure 7</h1>
+  <p class="fig-subtitle">GCS Confidence vs Outcome — 31 Gold-Standard Cases</p>
+  <canvas id="c7" style="width:740px;height:280px"></canvas>
+  <figcaption><strong>Figure 7.</strong> GCS confidence score vs. binary outcome for all 31 cases. Green circles indicate correct predictions; red crosses indicate wrong predictions. All four wrong predictions are false positives (predicted SENSITIVE, true RESISTANT). The highest-confidence error is JIMT-1 + Lapatinib (GCS = 0.921), where ERBB2 amplification was detected but resistance arose from PIK3CA-driven bypass absent from CIViC.</figcaption>
+</section>
+
+<!-- ===== CONFUSION MATRIX ===== -->
+<section class="fig-section" id="figcm">
+  <h1>Confusion Matrix</h1>
+  <p class="fig-subtitle">Binary Classification Results — 31 Gold-Standard Cases</p>
+  <canvas id="ccm" style="width:560px;height:340px"></canvas>
+  <figcaption><strong>Confusion Matrix.</strong> Full-system predictions on 31 gold-standard cases. The system achieves zero false negatives (FN = 0, sensitivity = 1.000): no sensitive cell line was incorrectly classified as resistant. The four errors are all false positives — sensitive predictions on resistant cases — arising from database gaps in bypass and assay-type metadata.</figcaption>
+</section>
+
+<!-- ===== FIG 8 ===== -->
+<section class="fig-section" id="fig8">
+  <h1>Figure 8</h1>
+  <p class="fig-subtitle">Ablation Study — AUROC and Cohen's κ for All 14 Conditions</p>
+  <div style="display:flex;flex-direction:column;gap:0;">
+    <p style="font-family:system-ui,sans-serif;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:4px;">A — System Variants</p>
+    <canvas id="c8a" style="width:800px;height:250px"></canvas>
+    <p style="font-family:system-ui,sans-serif;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-top:18px;margin-bottom:4px;">B — Leave-One-Out</p>
+    <canvas id="c8b" style="width:800px;height:185px"></canvas>
+    <p style="font-family:system-ui,sans-serif;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-top:18px;margin-bottom:4px;">C — Single Agent Only</p>
+    <canvas id="c8c" style="width:800px;height:185px"></canvas>
+  </div>
+  <figcaption><strong>Figure 8.</strong> Ablation results across 14 conditions on 31 gold-standard cases, split into three panels for legibility. <strong>(A)</strong> System variants: debate mechanism, axiom ordering, MCP access, and monolithic baseline. <strong>(B)</strong> Leave-one-out: removing one specialist agent at a time. <strong>(C)</strong> Single-agent: using only one specialist agent. Dashed lines indicate full-system reference (AUROC = 0.819, κ = 0.733). Red labels indicate coverage below 100%.</figcaption>
+</section>
+
+<!-- ===== FIG 9 ===== -->
+<section class="fig-section" id="fig9">
+  <h1>Figure 9</h1>
+  <p class="fig-subtitle">Clean R1 Consensus Trace — BT-474 + Lapatinib</p>
+  <div class="trace-wrap">
+    <div class="trace-grid">
+      <div>
+        <div class="trace-col-head">Round 1 — Independent</div>
+        <div class="acard t1">
+          <div class="acard-top">
+            <span class="apill t1">T1 Genomics</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">GCS 0.895</span>
+            <span class="acard-data">ERBB2 CNV=14.07 · RPPA=3.47</span>
+          </div>
+          <div class="acard-reasoning">ERBB2 amplification confirmed by CNV and RPPA protein data. CIViC documents HER2 amplification as a validated sensitivity marker for Lapatinib in breast cancer. Voting <strong>SENSITIVE</strong> on T1_STRUCTURAL axiom.</div>
+        </div>
+        <div class="acard t2">
+          <div class="acard-top">
+            <span class="apill t2">T2 Transcriptomics</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">GCS 0.960</span>
+            <span class="acard-data">ERBB2 z=3.097 · TPM=1419</span>
+          </div>
+          <div class="acard-reasoning">ERBB2 TPM=1419 — constitutively high expression of the primary drug target. Type A (overexpression-driven) protocol: &gt;50 TPM with z&gt;2 overrides neutral z-score. Voting <strong>SENSITIVE</strong>.</div>
+        </div>
+        <div class="acard t3">
+          <div class="acard-top">
+            <span class="apill t3">T3 Pathway</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">GCS 0.645</span>
+            <span class="acard-data">ErbB active · no bypass</span>
+          </div>
+          <div class="acard-reasoning">EGFR/ERBB2 present in active ErbB signalling and PI3K-Akt pathways. Bypass check: no activating bypass routes for ERBB2 targets in KEGG data. Active pathway + no escape mechanism → Voting <strong>SENSITIVE</strong>.</div>
+        </div>
+        <div class="acard t4">
+          <div class="acard-top">
+            <span class="apill t4">T4 Pharmacology</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">GCS 0.853</span>
+            <span class="acard-data">ln_ic50=0.108 · z=−1.967</span>
+          </div>
+          <div class="acard-reasoning">z-score = −1.967 (z &lt; −0.5 = SENSITIVE). AUC=0.636 confirms strong absolute dose-response. No contradictions in pharmacology data. Voting <strong>SENSITIVE</strong>.</div>
+        </div>
+      </div>
+      <div>
+        <div class="trace-col-head">Outcome</div>
+        <div class="fbox correct">
+          <div class="fbox-title correct">R1 CONSENSUS: SENSITIVE ✓</div>
+          <div class="fbox-line">All 4 agents agree in Round 1 · no debate required</div>
+          <div class="fbox-line">Winning agent: <strong>T2 Transcriptomics</strong> (highest GCS = 0.960)</div>
+          <div class="fbox-conf">0.960</div>
+          <div class="fbox-line">· Ground truth: SENSITIVE ✓</div>
+          <div class="fbox-insight">
+            <div class="fbox-insight-head">Key insight:</div>
+            <div class="fbox-insight-text">Concordant evidence across all four modalities — genomic amplification, transcriptional overexpression, pharmacological sensitivity, and active pathway — produces the highest-confidence correct prediction in the dataset. No resolver required.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption><strong>Figure 9.</strong> Debate trace for BT-474 + Lapatinib. All four specialist agents independently converge on SENSITIVE in Round 1 via concordant HER2 amplification, overexpression, pharmacological, and pathway evidence. No peer critique or resolver invocation required. True label: SENSITIVE.</figcaption>
+</section>
+
+<!-- ===== FIG 10 ===== -->
+<section class="fig-section" id="fig10">
+  <h1>Figure 10</h1>
+  <p class="fig-subtitle">Minority Agent Wins via Axiom Priority — MDA-MB-436 + Olaparib</p>
+  <div class="trace-wrap">
+    <div class="trace-grid">
+      <div>
+        <div class="trace-col-head">Round 1 — Independent</div>
+        <div class="acard t1">
+          <div class="acard-top">
+            <span class="apill t1">T1 Genomics</span>
+            <span class="vpill U">UNCERTAIN</span>
+            <span class="acard-gcs">GCS 0.50</span>
+          </div>
+          <div class="acard-reasoning">PARP1/PARP2 hemizygous deletion only — not homozygous. Cannot establish BRCA1/2 HRD status from genomic data alone. Abstaining.</div>
+        </div>
+        <div class="acard t2">
+          <div class="acard-top">
+            <span class="apill t2">T2 Transcriptomics</span>
+            <span class="vpill U">UNCERTAIN</span>
+            <span class="acard-gcs">GCS 0.50</span>
+          </div>
+          <div class="acard-reasoning">Olaparib is Type C (synthetic lethality). T2 gate abstains — efficacy depends on HRD status, not PARP expression level.</div>
+        </div>
+        <div class="acard t3 winner">
+          <div class="acard-top">
+            <span class="apill t3">T3 Pathway</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">GCS 0.645</span>
+            <span class="acard-data">BER active · no bypass</span>
+          </div>
+          <div class="acard-reasoning">PARP1/PARP2 in active Base Excision Repair and Apoptosis pathways (score &gt; 0.25). Bypass check: no bypass routes in KEGG. Active target pathway + no escape → Voting <strong>SENSITIVE</strong>.</div>
+        </div>
+        <div class="acard t4">
+          <div class="acard-top">
+            <span class="apill t4">T4 Pharmacology</span>
+            <span class="vpill R">RESISTANT</span>
+            <span class="acard-gcs">GCS 0.407</span>
+            <span class="acard-data">ln_ic50=5.293 · z=+0.82</span>
+          </div>
+          <div class="acard-reasoning">z-score = 0.821 (z &gt; 0.5 = RESISTANT). AUC=0.970 confirms weak absolute dose-response. Population-level IC50 data indicates resistance. Voting <strong>RESISTANT</strong>.</div>
+        </div>
+        <div class="conflict-banner">⚠ Conflict: T3 SENSITIVE vs T4 RESISTANT (T1+T2 UNCERTAIN) → AxiomChallenge triggered (T3 axiom:3 challenges T4 axiom:2)</div>
+      </div>
+      <div>
+        <div class="trace-col-head">Round 2 — Cross-Modal Critique</div>
+        <div class="acard t4">
+          <div class="acard-top">
+            <span class="apill t4">T4 Pharmacology</span>
+            <span class="vpill R">RESISTANT</span>
+            <span class="acard-gcs">0.410</span>
+            <span class="acard-data">Maintained — IC50 evidence cited</span>
+          </div>
+          <div class="acard-reasoning">T3 challenged my verdict. I rebut: z-score 0.821 and AUC 0.970 are modality-specific pharmacological evidence I can cite independently. Not conceding. Maintaining <strong>RESISTANT</strong>.</div>
+        </div>
+        <div class="acard t3 winner">
+          <div class="acard-top">
+            <span class="apill t3">T3 Pathway</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">0.650 ↑</span>
+            <span class="acard-data">Maintained — no bypass confirmed</span>
+          </div>
+          <div class="acard-reasoning">T4's IC50 signal is population-level and does not negate the mechanistic pathway argument. BER pathway active, no bypass routes. Maintaining <strong>SENSITIVE</strong>.</div>
+        </div>
+        <div class="fbox correct">
+          <div class="fbox-title correct">RESOLVER TIEBREAK: SENSITIVE ✓</div>
+          <div class="fbox-line">1 SENSITIVE (T3, axiom tier 3) vs 1 RESISTANT (T4, axiom tier 2)</div>
+          <div class="fbox-line">T3 wins on axiom priority · winning agent: <strong>T3 Pathway</strong></div>
+          <div class="fbox-conf">0.650</div>
+          <div class="fbox-line">· Ground truth: SENSITIVE ✓</div>
+          <div class="fbox-insight">
+            <div class="fbox-insight-head">Key insight:</div>
+            <div class="fbox-insight-text">T3 is the sole minority SENSITIVE agent in R1, opposed only by T4's IC50 signal. The axiom hierarchy resolves the tie in favour of pathway evidence (tier 3 &gt; tier 2), overriding population-level pharmacology with mechanistic pathway reasoning.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption><strong>Figure 10.</strong> Debate trace for MDA-MB-436 + Olaparib. T3 Pathway is the minority decisive agent in Round 1; T4 Pharmacology is the only dissenter. The AxiomResolver breaks the tie in favour of T3 (pathway tier 3 &gt; pharmacology tier 2). True label: SENSITIVE. Outcome: correct.</figcaption>
+</section>
+
+<!-- ===== FIG 11 ===== -->
+<section class="fig-section" id="fig11">
+  <h1>Figure 11</h1>
+  <p class="fig-subtitle">T4 Pharmacology as Sole Decisive Agent — MDA-MB-231 + Olaparib</p>
+  <div class="trace-wrap">
+    <div class="trace-grid">
+      <div>
+        <div class="trace-col-head">Round 1 — Independent</div>
+        <div class="acard t1">
+          <div class="acard-top">
+            <span class="apill t1">T1 Genomics</span>
+            <span class="vpill U">UNCERTAIN</span>
+            <span class="acard-gcs">GCS 0.50</span>
+          </div>
+          <div class="acard-reasoning">PARP1/PARP2 hemizygous deletion only. No homozygous deletion. BRCA1/2 HRD status cannot be established from genomic data alone.</div>
+        </div>
+        <div class="acard t2">
+          <div class="acard-top">
+            <span class="apill t2">T2 Transcriptomics</span>
+            <span class="vpill U">UNCERTAIN</span>
+            <span class="acard-gcs">GCS 0.50</span>
+          </div>
+          <div class="acard-reasoning">Type C drug (synthetic lethality). T2 gate abstains — PARP expression level is not the mechanistic driver of Olaparib sensitivity.</div>
+        </div>
+        <div class="acard t3">
+          <div class="acard-top">
+            <span class="apill t3">T3 Pathway</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="acard-gcs">GCS 0.645</span>
+            <span class="acard-data">BER active · no bypass</span>
+          </div>
+          <div class="acard-reasoning">PARP1/PARP2 in active Base Excision Repair pathway (score &gt; 0.25). No bypass routes detected in KEGG data. Voting <strong>SENSITIVE</strong>.</div>
+        </div>
+        <div class="acard t4 winner">
+          <div class="acard-top">
+            <span class="apill t4">T4 Pharmacology</span>
+            <span class="vpill R">RESISTANT</span>
+            <span class="acard-gcs">GCS 0.387</span>
+            <span class="acard-data">ln_ic50=4.389 · AUC=0.967</span>
+          </div>
+          <div class="acard-reasoning">AUC=0.967 indicates very weak absolute dose-response. z-score=0.125 borderline but AUC confirms weak response. Population evidence favours resistance. Voting <strong>RESISTANT</strong>.</div>
+        </div>
+      </div>
+      <div>
+        <div class="trace-col-head">Round 2 — Cross-Modal Critique</div>
+        <div class="acard t4 winner">
+          <div class="acard-top">
+            <span class="apill t4">T4 Pharmacology</span>
+            <span class="vpill R">RESISTANT</span>
+            <span class="acard-gcs">0.387</span>
+            <span class="acard-data">Maintained — AUC evidence stands</span>
+          </div>
+          <div class="acard-reasoning">AUC=0.967 is the strongest pharmacological signal available. No cross-modal evidence refutes it. Maintaining <strong>RESISTANT</strong>. Peer critique supports this position.</div>
+        </div>
+        <div class="acard t3">
+          <div class="acard-top">
+            <span class="apill t3">T3 Pathway</span>
+            <span class="vpill S">SENSITIVE</span>
+            <span class="revised-pill">confidence ↓</span>
+            <span class="acard-gcs">↓ lowered</span>
+          </div>
+          <div class="acard-reasoning">Peer critique highlights absence of confirmed HRD. Without BRCA1/2 status, the BER-pathway argument is weakened. Maintaining SENSITIVE but with reduced confidence — T4's AUC evidence is compelling.</div>
+        </div>
+        <div class="fbox correct">
+          <div class="fbox-title correct">R2 CONSENSUS: RESISTANT ✓</div>
+          <div class="fbox-line">T4 is the only consistently decisive agent across both rounds</div>
+          <div class="fbox-line">Winning agent: <strong>T4 Pharmacology</strong> · resolution: CONSENSUS_R2</div>
+          <div class="fbox-conf">0.387</div>
+          <div class="fbox-line">· Ground truth: RESISTANT ✓</div>
+          <div class="fbox-insight">
+            <div class="fbox-insight-head">Key insight:</div>
+            <div class="fbox-insight-text">T1 and T2 cannot establish HRD status and abstain. T3's pathway argument weakens under peer critique. T4's high AUC is the only consistent pharmacological evidence across both rounds, driving the consensus in R2.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption><strong>Figure 11.</strong> Debate trace for MDA-MB-231 + Olaparib. T4 Pharmacology is the sole consistently decisive agent. T1 and T2 abstain due to the HRD-dependent mechanism. T3 initially signals SENSITIVE from pathway activity but loses confidence after peer critique. Consensus forms around T4's IC50 evidence in Round 2. True label: RESISTANT. Outcome: correct.</figcaption>
+</section>
+
+<!-- ===== FIG 12 ===== -->
+<section class="fig-section" id="fig12">
+  <h1>Figure 12</h1>
+  <p class="fig-subtitle">Per-Agent Faithfulness and Winning Agent Distribution</p>
+  <canvas id="c12" style="width:720px;height:290px"></canvas>
+  <figcaption><strong>Figure 12.</strong> (Left) Claim-level faithfulness score per agent across 31 cases. Dashed line = overall system faithfulness (0.866). T1 Genomics and T4 Pharmacology achieve the highest faithfulness (0.929 and 0.925 respectively). (Right) Winning agent distribution: T1 Genomics drives 87.1% of final verdicts.</figcaption>
+</section>
+
+</main>
+
+<script>
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const W = parseInt(canvas.style.width);
+  const H = parseInt(canvas.style.height);
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, W, H };
+}
+
+// ── Figure 5: Resolution Breakdown ────────────────────────────────────────────
+(function(){
+  const { ctx, W, H } = setupCanvas(document.getElementById('c5'));
+  const data = [
+    { label: 'CONSENSUS_R1',    count: 17, pct: 54.8, color: '#0D9488' },
+    { label: 'CONSENSUS_R2',    count: 8,  pct: 25.8, color: '#2563EB' },
+    { label: 'RESOLVER_TIEBREAK', count: 6, pct: 19.4, color: '#D97706' },
+  ];
+  const ml = 180, mr = 140, mt = 36, mb = 20;
+  const bw = W - ml - mr;
+  const bh = 44;
+  const gap = 24;
+
+  ctx.font = 'bold 13px system-ui, sans-serif';
+  ctx.fillStyle = '#111';
+  ctx.textAlign = 'left';
+  ctx.fillText('Resolution Method Distribution (n = 31)', ml, mt - 14);
+
+  data.forEach((d, i) => {
+    const y = mt + i * (bh + gap);
+    const barW = bw * (d.pct / 100);
+
+    // Row label (left)
+    ctx.fillStyle = '#333';
+    ctx.font = '12px system-ui, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(d.label, ml - 10, y + bh / 2 + 4);
+
+    // Background track
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(ml, y, bw, bh);
+
+    // Coloured bar
+    ctx.fillStyle = d.color;
+    ctx.fillRect(ml, y, barW, bh);
+
+    // Label always OUTSIDE bar in black
+    ctx.fillStyle = '#111';
+    ctx.font = '12px system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${d.count} cases (${d.pct}%)`, ml + barW + 10, y + bh / 2 + 4);
+  });
+})();
+
+// ── Figure 6: Winning Agent Pie ───────────────────────────────────────────────
+(function(){
+  const { ctx, W, H } = setupCanvas(document.getElementById('c6'));
+  const data = [
+    { label: 'T1 Genomics',       pct: 87.1, count: 27, color: '#2563EB' },
+    { label: 'T3 Pathway',        pct: 6.5,  count: 2,  color: '#7C3AED' },
+    { label: 'T2 Transcriptomics',pct: 3.2,  count: 1,  color: '#0D9488' },
+    { label: 'T4 Pharmacology',   pct: 3.2,  count: 1,  color: '#D97706' },
+  ];
+
+  ctx.font = 'bold 13px system-ui, sans-serif';
+  ctx.fillStyle = '#111';
+  ctx.textAlign = 'left';
+  ctx.fillText('Winning Agent Distribution (n = 31)', 10, 24);
+
+  const cx = 160, cy = H / 2 + 16, r = 108;
+  let angle = -Math.PI / 2;
+
+  data.forEach(d => {
+    const sweep = (d.pct / 100) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angle, angle + sweep);
+    ctx.closePath();
+    ctx.fillStyle = d.color;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    if (d.pct > 5) {
+      const mid = angle + sweep / 2;
+      const lx = cx + Math.cos(mid) * r * 0.62;
+      const ly = cy + Math.sin(mid) * r * 0.62;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(d.pct + '%', lx, ly);
+    }
+    angle += sweep;
+  });
+
+  // Legend — right side with enough space
+  const lx = cx + r + 36;
+  data.forEach((d, i) => {
+    const ly = 56 + i * 56;
+    ctx.fillStyle = d.color;
+    ctx.fillRect(lx, ly, 14, 14);
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 13px system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(d.label, lx + 20, ly + 12);
+    ctx.fillStyle = '#555';
+    ctx.font = '12px system-ui, sans-serif';
+    ctx.fillText(`${d.count} case${d.count > 1 ? 's' : ''} (${d.pct}%)`, lx + 20, ly + 28);
+  });
+})();
+
+// ── Figure 7: Scatter ─────────────────────────────────────────────────────────
+(function(){
+  const { ctx, W, H } = setupCanvas(document.getElementById('c7'));
+  const cases = [
+    { label: '', conf: 0.842,  correct: true },
+    { label: '', conf: 0.5715, correct: true },
+    { label: '', conf: 0.8382, correct: true },
+    { label: 'JIMT-1 + Lapatinib',     conf: 0.9209, correct: false },
+    { label: '', conf: 0.7322, correct: true },
+    { label: '', conf: 0.9037, correct: true },
+    { label: '', conf: 0.9049, correct: true },
+    { label: '', conf: 0.8065, correct: true },
+    { label: '', conf: 0.77,   correct: true },
+    { label: '', conf: 0.8105, correct: true },
+    { label: '', conf: 0.8362, correct: true },
+    { label: '', conf: 0.65,   correct: true },
+    { label: '', conf: 0.81,   correct: true },
+    { label: '', conf: 0.7739, correct: true },
+    { label: '', conf: 0.8595, correct: true },
+    { label: 'NCI-H1650 + Erlotinib',  conf: 0.8045, correct: false },
+    { label: '', conf: 0.8245, correct: true },
+    { label: '', conf: 0.39,   correct: true },
+    { label: '', conf: 0.8233, correct: true },
+    { label: '', conf: 0.7909, correct: true },
+    { label: '', conf: 0.7,    correct: true },
+    { label: '', conf: 0.7759, correct: true },
+    { label: '', conf: 0.9119, correct: true },
+    { label: '', conf: 0.7407, correct: true },
+    { label: '', conf: 0.7622, correct: true },
+    { label: '8505C + PLX-4720',       conf: 0.799,  correct: false },
+    { label: 'A2058 + Dabrafenib',     conf: 0.7275, correct: false },
+    { label: '', conf: 1.0,    correct: true },
+    { label: '', conf: 0.8371, correct: true },
+    { label: '', conf: 0.7064, correct: true },
+    { label: '', conf: 0.45,   correct: true },
+  ];
+
+  const ml = 30, mr = 20, mt = 48, mb = 44;
+  const plotW = W - ml - mr;
+  const plotH = H - mt - mb;
+  const rowH = plotH / 2;
+  const yCorrect = mt + rowH * 0.38;
+  const yWrong   = mt + rowH + rowH * 0.5;
+
+  // Band backgrounds
+  ctx.fillStyle = '#f6fff8';
+  ctx.fillRect(ml, mt, plotW, rowH);
+  ctx.fillStyle = '#fff5f5';
+  ctx.fillRect(ml, mt + rowH, plotW, rowH);
+
+  // Grid lines
+  ctx.strokeStyle = '#e8e8e8';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ml, mt + rowH); ctx.lineTo(ml + plotW, mt + rowH);
+  ctx.stroke();
+
+  [0, 0.2, 0.4, 0.6, 0.8, 1.0].forEach(v => {
+    const x = ml + v * plotW;
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath();
+    ctx.moveTo(x, mt); ctx.lineTo(x, mt + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#666';
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(v.toFixed(1), x, mt + plotH + 18);
+  });
+
+  ctx.fillStyle = '#666';
+  ctx.font = '12px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('GCS Confidence Score', ml + plotW / 2, H - 4);
+
+  // Row labels
+  ctx.font = 'bold 11.5px system-ui, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#166534';
+  ctx.fillText('CORRECT (27)', ml + 6, mt + 15);
+  ctx.fillStyle = '#991b1b';
+  ctx.fillText('WRONG (4)', ml + 6, mt + rowH + 15);
+
+  const R = 6.5;
+  // Seed-based jitter for consistent layout
+  let seed = 42;
+  function seededRand() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+
+  cases.forEach(d => {
+    const x = ml + d.conf * plotW;
+    if (d.correct) {
+      const jy = yCorrect + (seededRand() - 0.5) * 30;
+      ctx.beginPath();
+      ctx.arc(x, jy, R, 0, 2 * Math.PI);
+      ctx.fillStyle = '#16A34A';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  });
+
+  // Wrong predictions — staggered labels
+  const wrongs = cases.filter(d => !d.correct);
+  const labelOffsets = [28, 48, 28, 48]; // alternating height offsets above X
+  wrongs.forEach((d, i) => {
+    const x = ml + d.conf * plotW;
+    ctx.strokeStyle = '#DC2626';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x - R, yWrong - R); ctx.lineTo(x + R, yWrong + R);
+    ctx.moveTo(x + R, yWrong - R); ctx.lineTo(x - R, yWrong + R);
+    ctx.stroke();
+
+    // Staggered label above X mark
+    const labelY = yWrong - labelOffsets[i];
+    ctx.fillStyle = '#DC2626';
+    ctx.font = '10px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.label, x, labelY);
+
+    // Connector line
+    ctx.strokeStyle = '#DC262688';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, yWrong - R - 1);
+    ctx.lineTo(x, labelY + 3);
+    ctx.stroke();
+  });
+})();
+
+// ── Confusion Matrix ──────────────────────────────────────────────────────────
+(function(){
+  const { ctx, W, H } = setupCanvas(document.getElementById('ccm'));
+
+  // Layout
+  const matL = 160, matT = 80, cellW = 140, cellH = 100;
+  const matW = cellW * 2, matH = cellH * 2;
+
+  // Cells: [row][col] = { label, value, bg, fg, note }
+  const cells = [
+    [{ v: 17, label: 'TP', bg: '#dcfce7', fg: '#15803d', note: 'True Positive' },
+     { v: 0,  label: 'FN', bg: '#f0fdf4', fg: '#166534', note: 'False Negative', highlight: true }],
+    [{ v: 4,  label: 'FP', bg: '#fef2f2', fg: '#b91c1c', note: 'False Positive' },
+     { v: 10, label: 'TN', bg: '#dcfce7', fg: '#15803d', note: 'True Negative' }],
+  ];
+
+  // Title
+  ctx.fillStyle = '#111';
+  ctx.font = 'bold 13px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Confusion Matrix — Full System on 31 Gold-Standard Cases', W / 2, 28);
+
+  // Column headers (Predicted)
+  ctx.fillStyle = '#555';
+  ctx.font = 'bold 11px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Predicted', matL + matW / 2, matT - 32);
+  ctx.font = '11px system-ui, sans-serif';
+  ctx.fillText('SENSITIVE', matL + cellW / 2, matT - 16);
+  ctx.fillText('RESISTANT', matL + cellW + cellW / 2, matT - 16);
+
+  // Row headers (Actual)
+  ctx.save();
+  ctx.translate(matL - 44, matT + matH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillStyle = '#555';
+  ctx.font = 'bold 11px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Actual', 0, 0);
+  ctx.restore();
+
+  ctx.fillStyle = '#555';
+  ctx.font = '11px system-ui, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('SENSITIVE', matL - 10, matT + cellH / 2 + 4);
+  ctx.fillText('RESISTANT', matL - 10, matT + cellH + cellH / 2 + 4);
+
+  // Draw cells
+  cells.forEach((row, ri) => {
+    row.forEach((cell, ci) => {
+      const x = matL + ci * cellW;
+      const y = matT + ri * cellH;
+
+      // Fill
+      ctx.fillStyle = cell.bg;
+      ctx.fillRect(x, y, cellW, cellH);
+
+      // Border
+      ctx.strokeStyle = '#ccc';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x, y, cellW, cellH);
+
+      // FN = 0 special highlight ring
+      if (cell.highlight) {
+        ctx.strokeStyle = '#16A34A';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x + 2, y + 2, cellW - 4, cellH - 4);
+      }
+
+      // Value
+      ctx.fillStyle = cell.fg;
+      ctx.font = 'bold 36px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(cell.v, x + cellW / 2, y + cellH / 2 + 2);
+
+      // Label
+      ctx.font = 'bold 11px system-ui, sans-serif';
+      ctx.fillText(cell.label, x + cellW / 2, y + 22);
+
+      // Note
+      ctx.fillStyle = '#888';
+      ctx.font = '10px system-ui, sans-serif';
+      ctx.fillText(cell.note, x + cellW / 2, y + cellH - (cell.highlight ? 22 : 10));
+
+      // FN zero badge (line below note)
+      if (cell.highlight) {
+        ctx.fillStyle = '#16A34A';
+        ctx.font = 'bold 10px system-ui, sans-serif';
+        ctx.fillText('★ zero FN', x + cellW / 2, y + cellH - 8);
+      }
+    });
+  });
+
+  // Outer border
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(matL, matT, matW, matH);
+
+  // Metrics row below matrix
+  const metrics = [
+    { label: 'Sensitivity', value: '1.000', color: '#15803d' },
+    { label: 'Specificity', value: '0.714', color: '#1d4ed8' },
+    { label: 'Accuracy',   value: '87.1%', color: '#111' },
+    { label: 'AUROC',      value: '0.819', color: '#111' },
+    { label: "Cohen's κ",  value: '0.733', color: '#111' },
+  ];
+  const my = matT + matH + 32;
+  const mw = W / metrics.length;
+  metrics.forEach((m, i) => {
+    const mx = i * mw + mw / 2;
+    ctx.fillStyle = m.color;
+    ctx.font = 'bold 14px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(m.value, mx, my);
+    ctx.fillStyle = '#888';
+    ctx.font = '10px system-ui, sans-serif';
+    ctx.fillText(m.label, mx, my + 16);
+  });
+})();
+
+// ── Figure 8: Ablation — 3 grouped panels ─────────────────────────────────────────
+(function(){
+  const ml = 178, mr = 82, maxVal = 1.0;
+  const AUROC_REF = 0.819, KAPPA_REF = 0.733;
+
+  function drawPanel(canvasId, rows, opts = {}) {
+    const { ctx, W, H } = setupCanvas(document.getElementById(canvasId));
+    const mt = opts.showLegend ? 34 : 10;
+    const mb = opts.showXTicks ? 22 : 6;
+    const plotW = W - ml - mr;
+    const nRows = rows.length;
+    const rowH = (H - mt - mb) / nRows;
+    const barH = rowH * 0.36;
+
+    // Background stripe for full_system
+    rows.forEach((d, i) => {
+      if (d.label === 'full_system') {
+        const y = mt + i * rowH;
+        ctx.fillStyle = '#f5f8ff';
+        ctx.fillRect(ml, y, plotW, rowH);
+      }
+    });
+
+    // Dashed reference lines
+    [[AUROC_REF, '#2563EB'], [KAPPA_REF, '#D97706']].forEach(([v, col]) => {
+      const x = ml + (v / maxVal) * plotW;
+      ctx.strokeStyle = col + '60';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, H - mb); ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // X ticks (bottom panel only)
+    if (opts.showXTicks) {
+      [0, 0.2, 0.4, 0.6, 0.8, 1.0].forEach(v => {
+        const x = ml + v * plotW;
+        ctx.fillStyle = '#999';
+        ctx.font = '10px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(v.toFixed(1), x, H - mb + 14);
+      });
+    }
+
+    // Legend (top panel only)
+    if (opts.showLegend) {
+      const lx = ml;
+      ctx.fillStyle = '#2563EB'; ctx.fillRect(lx, 4, 12, 10);
+      ctx.fillStyle = '#D97706'; ctx.fillRect(lx + 70, 4, 12, 10);
+      ctx.fillStyle = '#444'; ctx.font = '11px system-ui, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('AUROC', lx + 16, 13);
+      ctx.fillText("Cohen's κ", lx + 86, 13);
+      // Reference labels
+      const rxA = ml + AUROC_REF * plotW;
+      const rxK = ml + KAPPA_REF * plotW;
+      ctx.fillStyle = '#2563EB88'; ctx.font = '9px system-ui, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('ref', rxA, mt - 4);
+      ctx.fillStyle = '#D9770688'; ctx.fillText('ref', rxK, mt - 4);
+    }
+
+    // Bars
+    rows.forEach((d, i) => {
+      const y = mt + i * rowH;
+      const yA = y + rowH * 0.1;
+      const yK = yA + barH + 3;
+      const isFull = d.label === 'full_system';
+
+      ctx.fillStyle = isFull ? '#111' : '#444';
+      ctx.font = (isFull ? 'bold ' : '') + '11px system-ui, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(d.label, ml - 8, y + rowH / 2 + 4);
+
+      const wA = (d.auroc / maxVal) * plotW;
+      ctx.fillStyle = isFull ? '#1d4ed8' : '#3b82f6';
+      ctx.fillRect(ml, yA, wA, barH);
+      ctx.fillStyle = '#1d4ed8'; ctx.font = '10px system-ui, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(d.auroc.toFixed(3), ml + wA + 4, yA + barH - 1);
+
+      const wK = (d.kappa / maxVal) * plotW;
+      ctx.fillStyle = isFull ? '#b45309' : '#f59e0b';
+      ctx.fillRect(ml, yK, wK, barH);
+      ctx.fillStyle = '#b45309';
+      ctx.fillText(d.kappa.toFixed(3), ml + wK + 4, yK + barH - 1);
+
+      if (d.cov < 100) {
+        ctx.fillStyle = '#DC2626'; ctx.font = '10px system-ui, sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(`cov=${d.cov}%`, W - mr + 4, y + rowH / 2 + 4);
+      }
+    });
+  }
+
+  drawPanel('c8a', [
+    { label: 'full_system',        auroc: 0.819, kappa: 0.733, cov: 100 },
+    { label: 'no_debate',          auroc: 0.784, kappa: 0.668, cov: 100 },
+    { label: 'no_axioms',          auroc: 0.803, kappa: 0.668, cov: 100 },
+    { label: 'random_axiom_order', auroc: 0.808, kappa: 0.616, cov: 97  },
+    { label: 'no_mcp',             auroc: 0.817, kappa: 0.537, cov: 97  },
+    { label: 'monolithic_llm',     auroc: 0.656, kappa: 0.491, cov: 97  },
+  ], { showLegend: true, showXTicks: false });
+
+  drawPanel('c8b', [
+    { label: 'no_pathway',         auroc: 0.824, kappa: 0.604, cov: 100 },
+    { label: 'no_pharmacology',    auroc: 0.742, kappa: 0.599, cov: 100 },
+    { label: 'no_transcriptomics', auroc: 0.815, kappa: 0.535, cov: 100 },
+    { label: 'no_genomics',        auroc: 0.831, kappa: 0.520, cov: 97  },
+  ], { showLegend: false, showXTicks: false });
+
+  drawPanel('c8c', [
+    { label: 'only_pharmacology',    auroc: 0.863, kappa: 0.572, cov: 94 },
+    { label: 'only_genomics',        auroc: 0.772, kappa: 0.489, cov: 84 },
+    { label: 'only_pathway',         auroc: 0.673, kappa: 0.266, cov: 83 },
+    { label: 'only_transcriptomics', auroc: 0.709, kappa: 0.215, cov: 55 },
+  ], { showLegend: false, showXTicks: true });
+})();
+
+// ── Figure 12: Faithfulness + Winning Agent ────────────────────────────────────
+(function(){
+  const { ctx, W, H } = setupCanvas(document.getElementById('c12'));
+  const agents = [
+    { label: 'T1 Genomics',        color: '#2563EB', faith: 0.929, winPct: 87.1 },
+    { label: 'T2 Transcriptomics', color: '#0D9488', faith: 0.812, winPct: 3.2  },
+    { label: 'T3 Pathway',         color: '#7C3AED', faith: 0.806, winPct: 6.5  },
+    { label: 'T4 Pharmacology',    color: '#D97706', faith: 0.925, winPct: 3.2  },
+  ];
+
+  const half = W / 2 - 10;
+  const ml = 36, mr = 16, mt = 52, mb = 54;
+  const bw = 44, gap = 20;
+  const plotH = H - mt - mb;
+  const overall = 0.866;
+
+  // LEFT: Faithfulness
+  ctx.fillStyle = '#111';
+  ctx.font = 'bold 12.5px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Per-Agent Faithfulness Score', ml + (half - ml) / 2, mt - 28);
+
+  const leftW = half - ml - mr;
+  const colW = leftW / agents.length;
+
+  agents.forEach((a, i) => {
+    const bx = ml + mr + i * colW + (colW - bw) / 2;
+    const barH = plotH * a.faith;
+    const by = mt + plotH - barH;
+    ctx.fillStyle = a.color;
+    ctx.fillRect(bx, by, bw, barH);
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 11px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(a.faith.toFixed(3), bx + bw / 2, by - 5);
+    const words = a.label.split(' ');
+    ctx.font = '10.5px system-ui, sans-serif';
+    ctx.fillStyle = '#333';
+    words.forEach((w, j) => ctx.fillText(w, bx + bw / 2, mt + plotH + 16 + j * 13));
+  });
+
+  // Overall dashed line
+  const overallY = mt + plotH * (1 - overall);
+  ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(ml + mr, overallY); ctx.lineTo(half - mr, overallY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#555'; ctx.font = '10px system-ui, sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Overall 0.866', ml + mr + 4, overallY - 4);
+
+  [0, 0.25, 0.5, 0.75, 1.0].forEach(v => {
+    const y = mt + plotH * (1 - v);
+    ctx.fillStyle = '#aaa'; ctx.font = '10px system-ui, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(2), ml + mr - 4, y + 4);
+  });
+
+  // Divider
+  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(half + 10, mt - 36); ctx.lineTo(half + 10, H - 8); ctx.stroke();
+
+  // RIGHT: Winning agent %
+  const rStart = half + 28;
+  const rW = W - rStart - mr;
+  const rColW = rW / agents.length;
+
+  ctx.fillStyle = '#111'; ctx.font = 'bold 12.5px system-ui, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Winning Agent Distribution', rStart + rW / 2, mt - 28);
+
+  agents.forEach((a, i) => {
+    const bx = rStart + i * rColW + (rColW - bw) / 2;
+    const barH = plotH * (a.winPct / 100);
+    const by = mt + plotH - barH;
+    ctx.fillStyle = a.color;
+    ctx.fillRect(bx, by, bw, barH);
+    ctx.fillStyle = '#111'; ctx.font = 'bold 11px system-ui, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(a.winPct + '%', bx + bw / 2, by - 5);
+    const words = a.label.split(' ');
+    ctx.font = '10.5px system-ui, sans-serif'; ctx.fillStyle = '#333';
+    words.forEach((w, j) => ctx.fillText(w, bx + bw / 2, mt + plotH + 16 + j * 13));
+  });
+
+  [0, 25, 50, 75, 100].forEach(v => {
+    const y = mt + plotH * (1 - v / 100);
+    ctx.fillStyle = '#aaa'; ctx.font = '10px system-ui, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(v + '%', rStart - 6, y + 4);
+  });
+})();
+</script>
+</body>
+</html>

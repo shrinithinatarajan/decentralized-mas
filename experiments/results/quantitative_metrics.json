@@ -1,0 +1,30 @@
+{
+  "n_cases": 100,
+  "n_sensitive": 53,
+  "n_resistant": 47,
+  "n_uncertain": 1,
+  "accuracy": 0.87,
+  "balanced_accuracy": 0.8653,
+  "auroc": 0.9171,
+  "auprc": 0.9377,
+  "spearman_rho": 0.2658,
+  "spearman_p": 0.0075,
+  "cohen_kappa_all": 0.7368,
+  "cohen_kappa_decided": 0.7542,
+  "sensitive_precision": 0.8333,
+  "sensitive_recall": 0.9434,
+  "sensitive_f1": 0.885,
+  "resistant_precision": 0.925,
+  "resistant_recall": 0.7872,
+  "resistant_f1": 0.8506,
+  "confusion_matrix": [
+    [
+      50,
+      3
+    ],
+    [
+      10,
+      37
+    ]
+  ]
+}

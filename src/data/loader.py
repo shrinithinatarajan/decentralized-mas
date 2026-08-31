@@ -26,7 +26,7 @@ class Case:
 
 def load_cases(path: Path | None = None) -> list[Case]:
     if path is None:
-        path = Path(os.getenv("CASES_FILE", "cases.yaml"))
+        path = Path(os.getenv("CASES_FILE", "data/cases/cases.yaml"))
     with open(path) as f:
         data = yaml.safe_load(f)
     if "cases" not in data:
@@ -38,6 +38,13 @@ def load_cases(path: Path | None = None) -> list[Case]:
         except TypeError as e:
             raise TypeError(f"Entry {i} in {path} has unexpected fields: {e}") from e
     return cases
+
+
+def load_ctrp_cases(path: Path) -> list[Case]:
+    """Load flat-list CTRPv2 yaml (no 'cases:' wrapper)."""
+    with open(path) as f:
+        entries = yaml.safe_load(f)
+    return [Case(cell_line=e["cell_line"], drug=e["drug"], label=e["label"]) for e in entries]
 
 
 def get_db_connection(db_path: Path) -> sqlite3.Connection:

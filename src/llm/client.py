@@ -95,12 +95,45 @@ class LLMClient:
     def _is_anthropic(self) -> bool:
         return any(self.model.startswith(p) for p in _ANTHROPIC_PREFIXES)
 
-    async def complete(self, messages: list[dict], system: str = "") -> str:
+    async def complete(
+        self,
+        messages: list[dict],
+        system: str = "",
+        *,
+        run_logger=None,
+        agent_id: str | None = None,
+        case_id: str | None = None,
+    ) -> str:
         cached = self._cache.get(self.model, messages, system)
         if cached is not None:
+            if run_logger:
+                run_logger.log_llm_call(
+                    case_id=case_id, agent_id=agent_id, model=self.model,
+                    messages=messages, system=system, response=cached,
+                    cached=True, latency_s=0.0,
+                )
             return cached
 
-        response = await self._call_api(messages, system)
+        start = time.monotonic()
+        error: str | None = None
+        try:
+            response = await self._call_api(messages, system)
+        except Exception as e:
+            error = repr(e)
+            if run_logger:
+                run_logger.log_llm_call(
+                    case_id=case_id, agent_id=agent_id, model=self.model,
+                    messages=messages, system=system, response="",
+                    cached=False, latency_s=time.monotonic() - start, error=error,
+                )
+            raise
+        latency_s = time.monotonic() - start
+        if run_logger:
+            run_logger.log_llm_call(
+                case_id=case_id, agent_id=agent_id, model=self.model,
+                messages=messages, system=system, response=response,
+                cached=False, latency_s=latency_s,
+            )
         if response:  # don't cache empty responses (token limit fallback)
             self._cache.set(self.model, messages, response, system)
         return response
@@ -148,7 +181,6 @@ class LLMClient:
             client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
         kwargs: dict = {"model": self._api_model_name(), "messages": all_messages, "max_tokens": 1024}
-        provider = self._provider()
         # Only add json_object mode for providers/models known to support it.
         # Mixtral and some older models silently fail or return empty responses with this flag.
         model_name = self._api_model_name().lower()
@@ -188,22 +220,16 @@ class LLMClient:
         Requires: gcloud auth application-default login
         """
         import subprocess
-        import json as _json
-        try:
-            import aiohttp
-        except ImportError:
-            import subprocess as _sp
-            _sp.run(["pip", "install", "aiohttp", "-q"], check=True)
-            import aiohttp
+        import aiohttp
 
         project = os.getenv("VERTEX_PROJECT")
         model_id = self.model.split(":", 1)[1]  # strip "vertex:" prefix
 
-        # Get bearer token via gcloud
+        # Get bearer token via gcloud (shell=True needed on Windows: gcloud is a .cmd, not a PE binary)
         token = await asyncio.to_thread(
             lambda: subprocess.check_output(
-                ["gcloud", "auth", "application-default", "print-access-token"],
-                text=True
+                "gcloud auth application-default print-access-token",
+                text=True, shell=True,
             ).strip()
         )
 

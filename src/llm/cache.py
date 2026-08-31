@@ -4,10 +4,15 @@ import sqlite3
 from pathlib import Path
 
 
+import os
+
+
 class ResponseCache:
     def __init__(self, db_path: Path) -> None:
         self._db = db_path
-        self._init()
+        self._enabled = os.getenv("LLM_CACHE_DISABLED", "").lower() not in ("1", "true", "yes")
+        if self._enabled:
+            self._init()
 
     def _init(self) -> None:
         conn = sqlite3.connect(self._db)
@@ -25,6 +30,8 @@ class ResponseCache:
         return hashlib.sha256(payload.encode()).hexdigest()
 
     def get(self, model: str, messages: list[dict], system: str = "") -> str | None:
+        if not self._enabled:
+            return None
         conn = sqlite3.connect(self._db)
         row = conn.execute(
             "SELECT response FROM llm_cache WHERE cache_key = ?",
@@ -34,6 +41,8 @@ class ResponseCache:
         return row[0] if row else None
 
     def set(self, model: str, messages: list[dict], response: str, system: str = "") -> None:
+        if not self._enabled:
+            return
         conn = sqlite3.connect(self._db)
         conn.execute(
             "INSERT OR REPLACE INTO llm_cache (cache_key, response) VALUES (?, ?)",

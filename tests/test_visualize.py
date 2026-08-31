@@ -16,7 +16,10 @@ from src.evaluation.visualize import (
 
 
 def _metrics(auroc=0.8, auprc=0.7, rho=0.6, kappa=0.5, n=20):
-    return EvaluationMetrics(auroc=auroc, auprc=auprc, spearman_rho=rho, cohens_kappa=kappa, n_evaluated=n)
+    return EvaluationMetrics(
+        auroc=auroc, auprc=auprc, spearman_rho=rho, cohens_kappa=kappa,
+        n_total=n, n_decisive=n, coverage=1.0,
+    )
 
 
 def _result(verdict="SENSITIVE", rounds=1, forced=False, trace=None):
@@ -88,6 +91,7 @@ def test_plot_ablation_comparison_returns_figure():
 
 
 def test_plot_ablation_comparison_bar_count_matches_variants():
+    # one AUROC bar + one Cohen's kappa bar per variant
     data = {
         "Framework": _metrics(auroc=0.82),
         "No Debate": _metrics(auroc=0.71),
@@ -95,13 +99,13 @@ def test_plot_ablation_comparison_bar_count_matches_variants():
     }
     fig = plot_ablation_comparison(data)
     ax = fig.axes[0]
-    assert len(ax.patches) == 3
+    assert len(ax.patches) == 2 * len(data)
 
 
 def test_plot_ablation_comparison_ylabel_is_auroc():
     data = {"A": _metrics(), "B": _metrics()}
     fig = plot_ablation_comparison(data)
-    assert "AUROC" in fig.axes[0].get_ylabel()
+    assert "AUROC" in fig.axes[0].get_legend_handles_labels()[1]
 
 
 # --- plot_debate_convergence ---

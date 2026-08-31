@@ -1,6 +1,12 @@
 from dataclasses import dataclass
 
-from src.schemas.axiom_rules import AXIOM_HIERARCHY, CONFIDENCE_DECAY_PER_FLIP, EVIDENCE_TO_AXIOM_TIER
+from src.schemas.axiom_rules import (
+    AXIOM_HIERARCHY,
+    CONFIDENCE_DECAY_PER_FLIP,
+    EVIDENCE_TO_AXIOM_TIER,
+    T1_OVERRIDE_CONFIDENCE_THRESHOLD,
+)
+from src.schemas.drug_mechanism import is_targeted
 from src.schemas.evidence_pack import EvidencePack
 
 
@@ -13,27 +19,110 @@ class ResolutionResult:
 
 
 class AxiomResolver:
-    def resolve(self, packs: list[EvidencePack]) -> ResolutionResult:
-        from src.schemas.evidence_pack import Verdict
-        # An UNCERTAIN vote (no evidence) should not override a decisive verdict
-        # from a lower-tier agent — absence of DNA data ≠ DNA evidence of resistance
+    def resolve(
+        self,
+        packs: list[EvidencePack],
+        peer_endorsements: dict | None = None,
+        challenge_maintained_ids: set | None = None,
+        target_genes: list[str] | None = None,
+    ) -> ResolutionResult:
+        from src.schemas.evidence_pack import EvidenceTier, Verdict
+
         decisive = [p for p in packs if p.verdict != Verdict.UNCERTAIN and p.confidence > 0]
-        candidates = decisive if decisive else packs  # fall back if all are uncertain
-        winner = max(
-            candidates,
-            key=lambda p: (
-                AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]],
-                p.confidence,
-            ),
-        )
-        winning_axiom = EVIDENCE_TO_AXIOM_TIER[winner.evidence_tier]
+        candidates = decisive if decisive else packs
+
+        # T3 quality gates in resolver (mirrors _check_consensus):
+        #   RESISTANT: score >= 3; SENSITIVE: pathway_active = True
+        def _t3_passes(p: EvidencePack) -> bool:
+            if p.evidence_tier != EvidenceTier.T3_PATHWAY:
+                return True
+            sa = p.self_attestation or {}
+            if p.verdict == Verdict.RESISTANT:
+                return (sa.get("score") or 0) >= 3
+            if p.verdict == Verdict.SENSITIVE:
+                return bool(sa.get("pathway_active", False))
+            return True  # UNCERTAIN always passes
+        qualified = [p for p in candidates if _t3_passes(p)]
+        if qualified:
+            candidates = qualified
+
+        # A4: Sole-target deletion guard.
+        # Homozygous deletion is only valid RESISTANT evidence if ALL target genes are deleted.
+        # If a drug targets MAP2K1 and MAP2K2, deleting only MAP2K2 is not resistance —
+        # the remaining target may even become the dependency.
+        if target_genes and len(target_genes) > 1:
+            from src.schemas.evidence_pack import EvidenceTier, Verdict as _Verdict
+            def _is_partial_deletion_resistant(p: EvidencePack) -> bool:
+                if p.evidence_tier != EvidenceTier.T1_STRUCTURAL or p.verdict != _Verdict.RESISTANT:
+                    return False
+                deleted = {
+                    f.biomarker for f in p.key_findings
+                    if f.value and "homozygous" in str(f.value).lower()
+                }
+                return bool(deleted) and not all(g in deleted for g in target_genes)
+            # Exclude T1 packs whose RESISTANT verdict rests on a partial deletion
+            candidates = [
+                p for p in candidates if not _is_partial_deletion_resistant(p)
+            ] or candidates  # fall back to unfiltered if all T1 packs are excluded
+
+        # Check if T1 agent is decisive but below the confidence threshold for hard override
+        t1_packs = [p for p in candidates if p.evidence_tier == EvidenceTier.T1_STRUCTURAL]
+        lower_packs = [p for p in candidates if p.evidence_tier != EvidenceTier.T1_STRUCTURAL]
+
+        use_confidence_weighted = False
+        if t1_packs and lower_packs:
+            t1 = max(t1_packs, key=lambda p: p.confidence)
+            if t1.confidence < T1_OVERRIDE_CONFIDENCE_THRESHOLD:
+                # T1 evidence is weak — check if lower tiers unanimously disagree
+                lower_verdicts = {p.verdict for p in lower_packs}
+                if len(lower_verdicts) == 1 and t1.verdict not in lower_verdicts:
+                    # Unanimous lower-tier consensus contradicts weak T1 → use weighted vote
+                    use_confidence_weighted = True
+
+        # For non-targeted drugs (cytotoxics, broad epigenetics, metabolic), T1 structural
+        # mutation evidence is not mechanistically relevant. Demote T1 to T3 priority so
+        # T4 IC50 data can win tiebreaks on these drugs.
+        drug = packs[0].drug if packs else ""
+        maintained = challenge_maintained_ids or set()
+        def _effective_priority(p: EvidencePack) -> int:
+            from src.schemas.evidence_pack import EvidenceTier
+            base = AXIOM_HIERARCHY[EVIDENCE_TO_AXIOM_TIER[p.evidence_tier]]
+            if not is_targeted(drug) and p.evidence_tier == EvidenceTier.T1_STRUCTURAL:
+                return 1  # demote below T4 (priority 2); IC50 evidence wins on non-targeted drugs
+            # Rebuttal boost: agent that successfully defended against a challenge gets +1 priority
+            # so the challenger who failed to unseat them doesn't win on tier alone
+            if p.agent_id in maintained:
+                return base + 1
+            return base
+
+        if use_confidence_weighted:
+            # Confidence-weighted vote: max confidence per verdict, pick highest
+            from collections import defaultdict
+            scores: dict = defaultdict(float)
+            for p in candidates:
+                scores[p.verdict] = max(scores[p.verdict], p.confidence)
+            winning_verdict = max(scores, key=lambda v: scores[v])
+            winner = max(
+                [p for p in candidates if p.verdict == winning_verdict],
+                key=lambda p: p.confidence,
+            )
+            winning_axiom_str = "T5_STATISTICAL_CONSENSUS"  # consensus overrode weak T1
+        else:
+            winner = max(
+                candidates,
+                key=lambda p: (
+                    _effective_priority(p),
+                    (peer_endorsements or {}).get(p.agent_id, 0.0),
+                    p.confidence,
+                ),
+            )
+            winning_axiom_str = EVIDENCE_TO_AXIOM_TIER[winner.evidence_tier].value
 
         adjusted: list[EvidencePack] = []
         for p in packs:
             if p.agent_id == winner.agent_id:
                 adjusted.append(p)
             else:
-                # apply confidence decay to agents whose verdict differs from winner
                 new_conf = (
                     p.confidence * (1 - CONFIDENCE_DECAY_PER_FLIP)
                     if p.verdict != winner.verdict
@@ -44,6 +133,6 @@ class AxiomResolver:
         return ResolutionResult(
             verdict=winner.verdict,
             winning_agent=winner.agent_id,
-            axiom_applied=winning_axiom.value,
+            axiom_applied=winning_axiom_str,
             adjusted_packs=adjusted,
         )

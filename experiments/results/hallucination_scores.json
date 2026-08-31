@@ -1,0 +1,27 @@
+{
+  "total_agent_outputs": 183,
+  "hallucinated": 60,
+  "hallucination_rate": 0.3279,
+  "per_agent": {
+    "genomics_agent": {
+      "total": 46,
+      "hallucinated": 20,
+      "rate": 0.4348
+    },
+    "transcriptomics_agent": {
+      "total": 46,
+      "hallucinated": 3,
+      "rate": 0.0652
+    },
+    "pharmacology_agent": {
+      "total": 45,
+      "hallucinated": 27,
+      "rate": 0.6
+    },
+    "pathway_agent": {
+      "total": 46,
+      "hallucinated": 10,
+      "rate": 0.2174
+    }
+  }
+}

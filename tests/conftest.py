@@ -10,12 +10,13 @@ def genomics_db(tmp_path):
     conn.executescript("""
         CREATE TABLE mutations (
             cell_line TEXT, gene TEXT, mutation TEXT,
-            mutation_type TEXT, cosmic_id TEXT, is_driver INTEGER DEFAULT 0
+            mutation_type TEXT, cosmic_id TEXT, is_driver INTEGER DEFAULT 0,
+            civic_description TEXT
         );
         CREATE TABLE cnv (
             cell_line TEXT, gene TEXT, cnv_value REAL, status TEXT
         );
-        INSERT INTO mutations VALUES ('A375','BRAF','V600E','missense','COSM476',1);
+        INSERT INTO mutations VALUES ('A375','BRAF','V600E','missense','COSM476',1,NULL);
         INSERT INTO cnv VALUES ('A375','BRAF',2.0,'neutral');
     """)
     conn.commit()
@@ -81,6 +82,10 @@ def pathways_db(tmp_path):
         CREATE TABLE upstream_regulators (
             gene TEXT, regulator TEXT, relationship TEXT, pathway TEXT
         );
+        CREATE TABLE pathway_meta (
+            pathway_id TEXT, name TEXT, category TEXT
+        );
+        INSERT INTO pathway_meta VALUES ('hsa04010','MAPK signaling pathway','Signal transduction');
         INSERT INTO pathway_genes VALUES ('hsa04010','BRAF','kinase','mid');
         INSERT INTO bypass_routes VALUES ('hsa04010','BRAF','MEK2',1);
         INSERT INTO upstream_regulators VALUES ('BRAF','RAS','activates','hsa04010');

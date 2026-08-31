@@ -19,6 +19,7 @@ dependencies = [
     "plotly>=5.18",
     "chembl-webresource-client>=0.10",
     "requests>=2.31",
+    "aiohttp>=3.9",
     "pyyaml>=6.0",
     "python-dotenv>=1.0",
 ]

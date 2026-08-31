@@ -1,0 +1,103 @@
+{
+  "_note": "Gold standard \u2014 31 cases, labels independent of GDSC/CTRP assays. Final system: unanimity consensus, T3 score-gate tightened, pathway threshold 0.25.",
+  "model": "vertex:gemini-3.1-flash-lite",
+  "n_cases": 31,
+  "n_sensitive": 17,
+  "n_resistant": 14,
+  "system": {
+    "accuracy": 0.871,
+    "auroc": 0.8193,
+    "auprc": 0.7664,
+    "spearman_rho": 0.5508,
+    "cohens_kappa": 0.7328,
+    "sensitivity_tpr": 1.0,
+    "specificity_tnr": 0.7143,
+    "precision_ppv": 0.8095,
+    "npv": 1.0,
+    "tp": 17,
+    "fp": 4,
+    "tn": 10,
+    "fn": 0
+  },
+  "faithfulness": {
+    "overall_faithfulness_score": 0.8767,
+    "true_cross_tier_hallucination_rate": 0.1571,
+    "claim_level_hallucination_rate": 0.0377,
+    "_note": "Raw hallucination_rate=0.386 is artifact of key_findings being incomplete log. True violations: T2 stating T1 mutation facts from LLM training data."
+  },
+  "qualitative": {
+    "metric_1_resolution_methods": {
+      "CONSENSUS_R1": {
+        "count": 17,
+        "pct": 0.548
+      },
+      "CONSENSUS_R2": {
+        "count": 8,
+        "pct": 0.258
+      },
+      "RESOLVER_TIEBREAK": {
+        "count": 6,
+        "pct": 0.194
+      }
+    },
+    "metric_1_winning_agents": {
+      "genomics_agent": {
+        "count": 27,
+        "pct": 0.871
+      },
+      "pathway_agent": {
+        "count": 2,
+        "pct": 0.065
+      },
+      "transcriptomics_agent": {
+        "count": 1,
+        "pct": 0.032
+      },
+      "pharmacology_agent": {
+        "count": 1,
+        "pct": 0.032
+      }
+    },
+    "metric_2_conflict_resolution": {
+      "cases_entering_debate": 14,
+      "debate_pct": 0.452,
+      "debate_accuracy": 0.7143,
+      "r1_only_accuracy": 1.0,
+      "consensus_r2_count": 8,
+      "resolver_tiebreak_count": 6
+    },
+    "metric_3_debate_convergence": {
+      "avg_rounds": 1.806,
+      "resolved_r1": {
+        "count": 17,
+        "pct": 0.548
+      },
+      "resolved_r2": {
+        "count": 8,
+        "pct": 0.258
+      },
+      "resolved_resolver": {
+        "count": 6,
+        "pct": 0.194
+      }
+    }
+  },
+  "failures": [
+    {
+      "case": "JIMT-1 + Lapatinib",
+      "method": "RESOLVER_TIEBREAK"
+    },
+    {
+      "case": "NCI-H1650 + Erlotinib",
+      "method": "CONSENSUS_R2"
+    },
+    {
+      "case": "8505C + PLX-4720",
+      "method": "RESOLVER_TIEBREAK"
+    },
+    {
+      "case": "A2058 + Dabrafenib",
+      "method": "CONSENSUS_R2"
+    }
+  ]
+}

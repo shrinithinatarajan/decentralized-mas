@@ -24,7 +24,9 @@ def _pack(agent_id: str, verdict: str = "SENSITIVE", tier: str = "T1_STRUCTURAL"
 def _mock_agent(agent_id: str, verdict: str = "SENSITIVE", tier: str = "T1_STRUCTURAL"):
     agent = MagicMock()
     agent.agent_id = agent_id
-    agent.analyze = AsyncMock(return_value=_pack(agent_id, verdict, tier))
+    pack = _pack(agent_id, verdict, tier)
+    agent.analyze = AsyncMock(return_value=pack)
+    agent.critique = AsyncMock(return_value=pack)
     return agent
 
 

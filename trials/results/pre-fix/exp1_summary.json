@@ -1,0 +1,46 @@
+{
+  "genomics_agent": {
+    "n": 20,
+    "correct": 3,
+    "wrong": 2,
+    "uncertain": 15,
+    "accuracy_all": 0.15,
+    "accuracy_definitive": 0.6,
+    "uncertain_rate": 0.75,
+    "auroc": 0.6666666666666666,
+    "spearman_rho": 0.408248290463863
+  },
+  "transcriptomics_agent": {
+    "n": 20,
+    "correct": 7,
+    "wrong": 2,
+    "uncertain": 11,
+    "accuracy_all": 0.35,
+    "accuracy_definitive": 0.7777777777777778,
+    "uncertain_rate": 0.55,
+    "auroc": 0.95,
+    "spearman_rho": 0.8140806303599617
+  },
+  "pharmacology_agent": {
+    "n": 20,
+    "correct": 15,
+    "wrong": 4,
+    "uncertain": 1,
+    "accuracy_all": 0.75,
+    "accuracy_definitive": 0.7894736842105263,
+    "uncertain_rate": 0.05,
+    "auroc": 0.8666666666666667,
+    "spearman_rho": 0.6418778454338344
+  },
+  "pathway_agent": {
+    "n": 20,
+    "correct": 11,
+    "wrong": 8,
+    "uncertain": 1,
+    "accuracy_all": 0.55,
+    "accuracy_definitive": 0.5789473684210527,
+    "uncertain_rate": 0.05,
+    "auroc": 0.4444444444444444,
+    "spearman_rho": -0.09656446406652626
+  }
+}

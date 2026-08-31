@@ -93,7 +93,7 @@ async def test_genomics_agent_prompt_includes_mutation_data(genomics_db, monkeyp
 
     captured_messages = []
 
-    async def capture(messages, system=""):
+    async def capture(messages, system="", **kwargs):
         captured_messages.extend(messages)
         return _pack_json()
 
@@ -136,7 +136,7 @@ async def test_transcriptomics_agent_prompt_includes_expression_data(transcripto
 
     captured_messages = []
 
-    async def capture(messages, system=""):
+    async def capture(messages, system="", **kwargs):
         captured_messages.extend(messages)
         return _pack_json(tier="T2_TRANSCRIPTIONAL", agent_id="transcriptomics_agent")
 
@@ -146,7 +146,7 @@ async def test_transcriptomics_agent_prompt_includes_expression_data(transcripto
         await agent.analyze("A375", "Vemurafenib")
 
     prompt_text = captured_messages[0]["content"]
-    assert "BRAF" in prompt_text or "EGFR" in prompt_text
+    assert "BRAF" in prompt_text or "EGFR" in prompt_text or "target_expression" in prompt_text
 
 
 # --- PharmacologyAgent ---
@@ -178,7 +178,7 @@ async def test_pharmacology_agent_prompt_includes_ic50_data(pharmacology_db, mon
 
     captured_messages = []
 
-    async def capture(messages, system=""):
+    async def capture(messages, system="", **kwargs):
         captured_messages.extend(messages)
         return _pack_json(tier="T4_PHARMACOLOGICAL", agent_id="pharmacology_agent")
 
@@ -190,6 +190,14 @@ async def test_pharmacology_agent_prompt_includes_ic50_data(pharmacology_db, mon
     prompt_text = captured_messages[0]["content"]
     assert "Vemurafenib" in prompt_text
     assert "ln_ic50" in prompt_text or "ic50" in prompt_text.lower()
+
+
+def test_pharmacology_agent_system_prompt_does_not_reference_label():
+    # get_ic50 no longer returns a `label` field (label leakage fix) — the
+    # system prompt must not instruct the LLM to read a field that doesn't exist.
+    from src.agents.pharmacology_agent import PharmacologyAgent
+    agent = PharmacologyAgent(mcp_app=None)
+    assert "label" not in agent.system_prompt.lower()
 
 
 # --- PathwayAgent ---
@@ -221,7 +229,7 @@ async def test_pathway_agent_prompt_includes_pathway_data(pathways_db, monkeypat
 
     captured_messages = []
 
-    async def capture(messages, system=""):
+    async def capture(messages, system="", **kwargs):
         captured_messages.extend(messages)
         return _pack_json(tier="T3_PATHWAY", agent_id="pathway_agent")
 

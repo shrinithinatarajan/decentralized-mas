@@ -1,9 +1,0 @@
-{
-  "gemini-3.1-flash-lite": {
-    "auroc": 0.82,
-    "auprc": 0.8459623709623709,
-    "spearman_rho": 0.5551591261791388,
-    "cohens_kappa": 0.30000000000000004,
-    "n_evaluated": 20
-  }
-}
