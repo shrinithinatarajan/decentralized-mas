@@ -16,3 +16,10 @@ src/data/processed/
 
 # Run logs
 artifacts/
+
+# Docs and IDE/agent config
+docs/
+.claude/
+
+# macOS
+.DS_Store
