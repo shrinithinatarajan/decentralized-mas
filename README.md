@@ -4,7 +4,7 @@ A multi-agent debate framework that predicts cancer cell line drug sensitivity b
 
 This code accompanies the manuscript:
 > **A Decentralized Multi-Agent Debate Framework for Interpretable Cancer Drug Sensitivity Prediction**  
-> Shrinithi Natarajan, Elana J. Fertig — Johns Hopkins University
+> Shrinithi Natarajan, Bhaskarjyoti Das — Johns Hopkins University
 
 ---
 
@@ -193,7 +193,7 @@ If you use this code, please cite:
 @article{natarajan2026dmas,
   title   = {A Decentralized Multi-Agent Debate Framework for Interpretable
              Cancer Drug Sensitivity Prediction},
-  author  = {Natarajan, Shrinithi and Fertig, Elana J.},
+  author  = {Natarajan, Shrinithi and Das, Bhaskarjyoti},
   journal = {PLOS Computational Biology},
   year    = {2026},
   note    = {Under review}
