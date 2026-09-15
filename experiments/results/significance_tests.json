@@ -1,0 +1,108 @@
+{
+  "full_system_bootstrap": {
+    "n_cases": 100,
+    "n_bootstrap": 10000,
+    "auroc": {
+      "mean": 0.9167,
+      "ci_95": [
+        0.8479,
+        0.9722
+      ]
+    },
+    "cohens_kappa": {
+      "mean": 0.7516,
+      "ci_95": [
+        0.6167,
+        0.8763
+      ]
+    }
+  },
+  "full_system_vs_rf": {
+    "n_paired": 100,
+    "delong_auroc": {
+      "observed_delta": 0.1519,
+      "bootstrap_mean_delta": 0.1512,
+      "ci_95": [
+        0.0469,
+        0.2588
+      ],
+      "p_one_sided": 0.0027,
+      "significant_p05": true
+    },
+    "mcnemar_accuracy": {
+      "statistic": 9.0312,
+      "p_value": 0.0027,
+      "significant_p05": true,
+      "contingency": {
+        "both_right": 62,
+        "a_only": 25,
+        "b_only": 7,
+        "both_wrong": 6
+      }
+    }
+  },
+  "ablation_mcnemar": {
+    "full_system_vs_no_debate": {
+      "statistic": 0.5714,
+      "p_value": 0.4497,
+      "significant_p05": false,
+      "contingency": {
+        "both_right": 82,
+        "a_only": 5,
+        "b_only": 2,
+        "both_wrong": 11
+      }
+    },
+    "full_system_vs_no_axioms": {
+      "statistic": 0.0,
+      "p_value": 1.0,
+      "significant_p05": false,
+      "contingency": {
+        "both_right": 85,
+        "a_only": 2,
+        "b_only": 1,
+        "both_wrong": 12
+      }
+    },
+    "full_system_vs_random_axiom_order": {
+      "statistic": 0.4444,
+      "p_value": 0.505,
+      "significant_p05": false,
+      "contingency": {
+        "both_right": 81,
+        "a_only": 6,
+        "b_only": 3,
+        "both_wrong": 10
+      }
+    }
+  },
+  "ablation_delong": {
+    "full_system_vs_no_debate": {
+      "observed_delta_auroc": 0.1048,
+      "ci_95": [
+        0.0299,
+        0.1877
+      ],
+      "p_one_sided": 0.002,
+      "significant_p05": true
+    },
+    "full_system_vs_no_axioms": {
+      "observed_delta_auroc": 0.0108,
+      "ci_95": [
+        -0.0105,
+        0.0414
+      ],
+      "p_one_sided": 0.2238,
+      "significant_p05": false
+    },
+    "full_system_vs_random_axiom_order": {
+      "observed_delta_auroc": -0.0145,
+      "ci_95": [
+        -0.0674,
+        0.0257
+      ],
+      "p_one_sided": 0.7097,
+      "significant_p05": false
+    }
+  }
+}

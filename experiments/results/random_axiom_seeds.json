@@ -1,0 +1,90 @@
+{
+  "runs": [
+    {
+      "seed": 0,
+      "auroc": 0.9417777777777778,
+      "auprc": 0.9210428665475445,
+      "cohens_kappa": 0.6933103316082039,
+      "spearman_rho": 0.7641900934930185,
+      "n_total": 100,
+      "n_decisive": 95,
+      "coverage": 0.95
+    },
+    {
+      "seed": 1,
+      "auroc": 0.9356351236146633,
+      "auprc": 0.9164849503603097,
+      "cohens_kappa": 0.6865817825661116,
+      "spearman_rho": 0.7536063787846626,
+      "n_total": 100,
+      "n_decisive": 97,
+      "coverage": 0.97
+    },
+    {
+      "seed": 2,
+      "auroc": 0.9168181818181818,
+      "auprc": 0.8866121594277486,
+      "cohens_kappa": 0.6382330540746383,
+      "spearman_rho": 0.7205448692379587,
+      "n_total": 100,
+      "n_decisive": 94,
+      "coverage": 0.94
+    },
+    {
+      "seed": 3,
+      "auroc": 0.911297852474323,
+      "auprc": 0.8882873194110337,
+      "cohens_kappa": 0.5862328380665789,
+      "spearman_rho": 0.7091178183215484,
+      "n_total": 100,
+      "n_decisive": 93,
+      "coverage": 0.93
+    },
+    {
+      "seed": 4,
+      "auroc": 0.9170393559928444,
+      "auprc": 0.9093106767724848,
+      "cohens_kappa": 0.6557659208261618,
+      "spearman_rho": 0.7191571103637352,
+      "n_total": 100,
+      "n_decisive": 95,
+      "coverage": 0.95
+    },
+    {
+      "seed": 5,
+      "auroc": 0.8910806174957118,
+      "auprc": 0.8748862345862489,
+      "cohens_kappa": 0.6474045053868756,
+      "spearman_rho": 0.6745164142790535,
+      "n_total": 100,
+      "n_decisive": 97,
+      "coverage": 0.97
+    },
+    {
+      "seed": 6,
+      "auroc": 0.9254273504273505,
+      "auprc": 0.9131504891615057,
+      "cohens_kappa": 0.6685513745369468,
+      "spearman_rho": 0.7350086283978955,
+      "n_total": 100,
+      "n_decisive": 97,
+      "coverage": 0.97
+    }
+  ],
+  "auroc_mean": 0.9199,
+  "auroc_std": 0.0155,
+  "auroc_min": 0.8911,
+  "auroc_max": 0.9418,
+  "auprc_mean": 0.9014,
+  "auprc_std": 0.0165,
+  "auprc_min": 0.8749,
+  "auprc_max": 0.921,
+  "cohens_kappa_mean": 0.6537,
+  "cohens_kappa_std": 0.0332,
+  "cohens_kappa_min": 0.5862,
+  "cohens_kappa_max": 0.6933,
+  "spearman_rho_mean": 0.7252,
+  "spearman_rho_std": 0.0275,
+  "spearman_rho_min": 0.6745,
+  "spearman_rho_max": 0.7642
+}
