@@ -1,0 +1,888 @@
+{
+  "n_cases": 100,
+  "continuous_auroc": 0.8872,
+  "continuous_auprc": 0.9032,
+  "ece": 0.1143,
+  "sigmoid_k": 3.0,
+  "tier_weights": {
+    "T1_STRUCTURAL": 1.0,
+    "T2_TRANSCRIPTIONAL": 0.8,
+    "T3_PATHWAY": 0.6,
+    "T4_PHARMACOLOGICAL": 0.4,
+    "T5_STATISTICAL": 0.2
+  },
+  "calibration_bins": [
+    {
+      "bin_low": 0.0,
+      "bin_high": 0.1,
+      "n": 3,
+      "avg_conf": 0.0791,
+      "fraction_positive": 0.0
+    },
+    {
+      "bin_low": 0.1,
+      "bin_high": 0.2,
+      "n": 26,
+      "avg_conf": 0.1694,
+      "fraction_positive": 0.1538
+    },
+    {
+      "bin_low": 0.2,
+      "bin_high": 0.3,
+      "n": 18,
+      "avg_conf": 0.2627,
+      "fraction_positive": 0.1111
+    },
+    {
+      "bin_low": 0.3,
+      "bin_high": 0.4,
+      "n": 7,
+      "avg_conf": 0.3501,
+      "fraction_positive": 0.4286
+    },
+    {
+      "bin_low": 0.4,
+      "bin_high": 0.5,
+      "n": 11,
+      "avg_conf": 0.4479,
+      "fraction_positive": 0.6364
+    },
+    {
+      "bin_low": 0.5,
+      "bin_high": 0.6,
+      "n": 10,
+      "avg_conf": 0.5682,
+      "fraction_positive": 0.6
+    },
+    {
+      "bin_low": 0.6,
+      "bin_high": 0.7,
+      "n": 3,
+      "avg_conf": 0.6535,
+      "fraction_positive": 1.0
+    },
+    {
+      "bin_low": 0.7,
+      "bin_high": 0.8,
+      "n": 9,
+      "avg_conf": 0.738,
+      "fraction_positive": 1.0
+    },
+    {
+      "bin_low": 0.8,
+      "bin_high": 0.9,
+      "n": 11,
+      "avg_conf": 0.8562,
+      "fraction_positive": 1.0
+    },
+    {
+      "bin_low": 0.9,
+      "bin_high": 1.0,
+      "n": 2,
+      "avg_conf": 0.9316,
+      "fraction_positive": 1.0
+    }
+  ],
+  "cases": [
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Osimertinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1651,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "BT-474",
+      "drug": "Lapatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.0716,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "JIMT-1",
+      "drug": "Lapatinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.1793,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.9411,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8812,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8435,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8441,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "MCF7",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.9222,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "A549",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7927,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8289,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HCC-827",
+      "drug": "Erlotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1571,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1650",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.167,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "A375",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1666,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2684,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "SK-MEL-28",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1334,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "K-562",
+      "drug": "Nilotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2821,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "K-562",
+      "drug": "Dasatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.5953,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "CAPAN-1",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1037,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HCC1937",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2689,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MDA-MB-436",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.4402,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MDA-MB-231",
+      "drug": "Olaparib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.4381,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H3122",
+      "drug": "Crizotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1489,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "T47D",
+      "drug": "Alpelisib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1939,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MCF7",
+      "drug": "Palbociclib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1779,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.0939,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "8505C",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.4647,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "A2058",
+      "drug": "Dabrafenib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.1298,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Pictilisib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7449,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "SJSA-1",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.0718,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "Saos-2",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.6178,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "KMOE-2",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.3833,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "COLO-829",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1644,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MEL-HO",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1343,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "UACC-62",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1902,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HT-144",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2985,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "G-361",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1653,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MEL-HO",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1902,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "UACC-62",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1902,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "G-361",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.299,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HT-144",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2979,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MEL-HO",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.5953,
+      "final_verdict": "RESISTANT",
+      "correct": false
+    },
+    {
+      "cell_line": "UACC-62",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2204,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "G-361",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2412,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HT-144",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2576,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "COLO-829",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2715,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HT-29",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.1933,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "RKO",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.195,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "RKO",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2476,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "AU565",
+      "drug": "Lapatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1731,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "AU565",
+      "drug": "Afatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1991,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "HCC1419",
+      "drug": "Lapatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1762,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1648",
+      "drug": "Erlotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.3721,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1648",
+      "drug": "Afatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.4099,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H2228",
+      "drug": "Crizotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2122,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H2228",
+      "drug": "Dabrafenib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8408,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "MDA-MB-453",
+      "drug": "Alpelisib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1919,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MDA-MB-453",
+      "drug": "Olaparib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.4815,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "IGROV-1",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2355,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "PEO1",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.5455,
+      "final_verdict": "RESISTANT",
+      "correct": false
+    },
+    {
+      "cell_line": "HCC1395",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1752,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "CAL-51",
+      "drug": "Talazoparib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.174,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "SW1417",
+      "drug": "Olaparib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.4056,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "PC-3",
+      "drug": "Olaparib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.5437,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H1573",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.3754,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "NCI-H2009",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.5989,
+      "final_verdict": "RESISTANT",
+      "correct": false
+    },
+    {
+      "cell_line": "NCI-H1573",
+      "drug": "Crizotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.4958,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HCC-44",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.4097,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "KELLY",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7166,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "KCL-22",
+      "drug": "Nilotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2821,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "KCL-22",
+      "drug": "Dasatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.3019,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "LAMA-84",
+      "drug": "Nilotinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2821,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "LAMA-84",
+      "drug": "Dasatinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.2348,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MOLM-13",
+      "drug": "Lestaurtinib",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.1688,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "MOLM-13",
+      "drug": "Temsirolimus",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.3162,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "PC-3",
+      "drug": "Temsirolimus",
+      "true_label": "SENSITIVE",
+      "resistance_prob": 0.4117,
+      "final_verdict": "SENSITIVE",
+      "correct": true
+    },
+    {
+      "cell_line": "5637",
+      "drug": "Palbociclib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.2647,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "5637",
+      "drug": "Ribociclib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.2647,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Palbociclib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.3519,
+      "final_verdict": "SENSITIVE",
+      "correct": false
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Ribociclib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.3499,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.485,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HOP-62",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.4847,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "Calu-6",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7462,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8691,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8695,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "A427",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.5868,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "A427",
+      "drug": "Afatinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.5439,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HOP-62",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8303,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "COR-L32",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7217,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "DMS-79",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8731,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "DMS-79",
+      "drug": "Afatinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.6832,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7632,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Dabrafenib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8686,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HOP-62",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.6594,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7186,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "COR-L32",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.7182,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Lapatinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.5,
+      "final_verdict": "UNCERTAIN",
+      "correct": false
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Lapatinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.8686,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "DMS-79",
+      "drug": "Lapatinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.72,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Nilotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.5861,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    },
+    {
+      "cell_line": "HOP-62",
+      "drug": "Nilotinib",
+      "true_label": "RESISTANT",
+      "resistance_prob": 0.5863,
+      "final_verdict": "RESISTANT",
+      "correct": true
+    }
+  ]
+}

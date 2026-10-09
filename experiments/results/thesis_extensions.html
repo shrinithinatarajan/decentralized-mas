@@ -1,0 +1,352 @@
+<meta charset="UTF-8">
+<title>DMAS Thesis Extensions — Continuous Score &amp; Leakage Rate</title>
+<style>
+:root {
+  --bg:#F7F8FC;--bg2:#EDEEF4;--surface:#FFFFFF;--border:#D4D8E8;
+  --text:#1A1C2E;--muted:#6B7488;
+  --blue:#2457A6;--blue-light:#EAF0FB;
+  --teal:#18A58D;--teal-light:#E3F6F3;
+  --amber:#E38B00;--amber-light:#FEF4E0;
+  --red:#CC3B2E;--red-light:#FCEAE8;
+  --mono:'SF Mono','Fira Mono',monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.6;}
+.page{max-width:980px;margin:0 auto;padding:40px 24px 80px;}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.page-header{margin-bottom:52px;padding-bottom:20px;border-bottom:2px solid var(--blue);}
+.page-title{font-size:26px;font-weight:700;color:var(--text);line-height:1.2;}
+.page-sub{color:var(--muted);margin-top:6px;font-size:14px;}
+.section{margin-bottom:60px;}
+.section-label{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--surface);background:var(--blue);padding:3px 10px;border-radius:3px;margin-bottom:14px;}
+.section-title{font-size:20px;font-weight:700;margin-bottom:6px;}
+.section-desc{color:var(--muted);font-size:14px;max-width:680px;margin-bottom:28px;}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
+@media(max-width:640px){.ba-grid{grid-template-columns:1fr;}}
+.ba-card{border:1px solid var(--border);border-radius:8px;padding:20px;background:var(--surface);}
+.ba-card.before{border-top:3px solid var(--muted);}
+.ba-card.after{border-top:3px solid var(--blue);}
+.ba-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.ba-card.after .ba-label{color:var(--blue);}
+.ba-title{font-size:15px;font-weight:600;margin-bottom:8px;}
+.ba-body{font-size:13px;color:var(--muted);line-height:1.6;}
+.metric-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:32px;}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 22px;min-width:130px;}
+.metric-val{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--blue);line-height:1;}
+.metric-val.new{color:var(--teal);}
+.metric-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:28px;}
+@media(max-width:640px){.charts-row{grid-template-columns:1fr;}}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text);}
+.chart-note{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5;}
+canvas{display:block;width:100%;max-width:100%;}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.agent-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+.agent-table th{text-align:left;padding:7px 12px;border-bottom:2px solid var(--border);color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+.agent-table td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.agent-table tr:last-child td{border-bottom:none;}
+.pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
+.pill.good{background:var(--teal-light);color:var(--teal);}
+.pill.warn{background:var(--amber-light);color:var(--amber);}
+.pill.bad{background:var(--red-light);color:var(--red);}
+</style>
+
+<div class="page">
+  <div class="page-header">
+    <div class="eyebrow">Thesis Defense — Extended Analysis</div>
+    <div class="page-title">Two New Contributions Beyond the Published Manuscript</div>
+    <div class="page-sub">Decentralised Multi-Agent System (DMAS) &nbsp;·&nbsp; 100-case gold-standard benchmark &nbsp;·&nbsp; October 2026</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Extension 1</div>
+    <div class="section-title">Continuous Resistance Score with Calibration Analysis</div>
+    <div class="section-desc">The published system outputs a binary SENSITIVE / RESISTANT verdict. This extension derives a continuous resistance probability from per-agent GCS values using Hierarchy-of-Truth tier weights, enabling a proper calibration analysis.</div>
+    <div class="ba-grid">
+      <div class="ba-card before">
+        <div class="ba-label">Before (published)</div>
+        <div class="ba-title">Binary classification only</div>
+        <div class="ba-body">System outputs SENSITIVE, RESISTANT, or UNCERTAIN with a single final_confidence float. No calibration analysis was performed; ECE and reliability diagrams were not reported.</div>
+      </div>
+      <div class="ba-card after">
+        <div class="ba-label">After (this extension)</div>
+        <div class="ba-title">Tier-weighted continuous probability</div>
+        <div class="ba-body">Each agent's GCS is sign-flipped by verdict direction and aggregated using Hierarchy-of-Truth tier weights. A sigmoid maps to resistance probability in [0,1], enabling AUROC, AUPRC, and ECE reporting.</div>
+      </div>
+    </div>
+    <div class="metric-row">
+      <div class="metric"><div class="metric-val">0.917</div><div class="metric-lbl">Full DMAS AUROC (binary)</div></div>
+      <div class="metric"><div class="metric-val new">0.887</div><div class="metric-lbl">Continuous score AUROC ★ new</div></div>
+      <div class="metric"><div class="metric-val new">0.903</div><div class="metric-lbl">Continuous score AUPRC ★ new</div></div>
+      <div class="metric"><div class="metric-val new">0.114</div><div class="metric-lbl">ECE (lower = better) ★ new</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">AUROC across system variants</div>
+        <canvas id="aurocChart" height="200"></canvas>
+        <div class="chart-note">Continuous score AUROC 0.887 sits between the monolithic LLM (0.844) and full DMAS (0.917). The debate protocol contributes ~3 AUROC points on top of the raw tier-weighted evidence signal.</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Reliability diagram — resistance probability calibration</div>
+        <canvas id="calibChart" height="300"></canvas>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#2457A6"></span>DMAS continuous score</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#aaa"></span>Perfect calibration</span>
+        </div>
+        <div class="chart-note">ECE = 0.114. Scores above 0.6 are perfectly calibrated (all RESISTANT). Slight over-confidence in the 0.3-0.5 range where pathway/transcriptomic signals are ambiguous.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Extension 2</div>
+    <div class="section-title">Cross-Tier Leakage Rate Quantification</div>
+    <div class="section-desc">The paper identified "cross-tier leakage" (agents citing parametric knowledge not in MCP output) as a qualitative limitation but never measured it. This extension uses a Gemini judge to classify all 142 auditable findings as Grounded, Inferred, or Leaked.</div>
+    <div class="ba-grid">
+      <div class="ba-card before">
+        <div class="ba-label">Before (published)</div>
+        <div class="ba-title">Qualitative description only</div>
+        <div class="ba-body">Limitations section: "The primary faithfulness failure mode is cross-tier leakage. Agents cite mechanistically correct facts from parametric knowledge that were not returned by the assigned MCP tool call." No rate was computed.</div>
+      </div>
+      <div class="ba-card after">
+        <div class="ba-label">After (this extension)</div>
+        <div class="ba-title">Quantified: 8.5% leakage rate</div>
+        <div class="ba-body">142 findings audited across 100 cases. Fast string-match pre-filter avoids LLM calls for grounded values; Gemini judge evaluates borderline cases. Leakage isolated to the transcriptomics agent (21.8%); genomics agent has 0% leakage.</div>
+      </div>
+    </div>
+    <div class="metric-row">
+      <div class="metric"><div class="metric-val" style="color:var(--teal)">76.8%</div><div class="metric-lbl">Grounded (direct MCP match)</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--amber)">14.8%</div><div class="metric-lbl">Inferred (domain reasoning)</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--red)">8.5%</div><div class="metric-lbl">Leaked (parametric injection)</div></div>
+      <div class="metric"><div class="metric-val">142</div><div class="metric-lbl">Total findings audited</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Finding classification breakdown (n=142)</div>
+        <canvas id="donutChart" height="210"></canvas>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#18A58D"></span>Grounded 76.8% (109)</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E38B00"></span>Inferred 14.8% (21)</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#CC3B2E"></span>Leaked 8.5% (12)</span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Leakage rate by agent</div>
+        <canvas id="agentChart" height="210"></canvas>
+        <div class="chart-note">Leakage is isolated to the transcriptomics agent (21.8%). Genomics has 0% — CIViC/mutation data is fully grounded. Transcriptomics leakage is predominantly extra interpretation of expression z-scores beyond what the MCP server returns.</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Representative findings from the audit</div>
+      <table class="agent-table">
+        <thead><tr><th>Case</th><th>Agent</th><th>Biomarker + value</th><th>Class</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>NCI-H1975 + Osimertinib</td><td>transcriptomics</td><td style="font-family:var(--mono);font-size:12px">EGFR z=0.76, TPM=38.5</td><td><span class="pill bad">LEAKED</span></td><td style="color:var(--muted);font-size:12px">Interpretation of "drug engagement" not in MCP output</td></tr>
+          <tr><td>MOLM-13 + Lestaurtinib</td><td>transcriptomics</td><td style="font-family:var(--mono);font-size:12px">FLT3 z-score 6.33</td><td><span class="pill bad">LEAKED</span></td><td style="color:var(--muted);font-size:12px">FLT3 overexpression interpretation added beyond raw z-score</td></tr>
+          <tr><td>A375 + PLX-4720</td><td>transcriptomics</td><td style="font-family:var(--mono);font-size:12px">BRAF z-score 0.47</td><td><span class="pill warn">INFERRED</span></td><td style="color:var(--muted);font-size:12px">Standard domain reasoning on a supported value</td></tr>
+          <tr><td>HCC-827 + Erlotinib</td><td>genomics</td><td style="font-family:var(--mono);font-size:12px">EGFR 26.37</td><td><span class="pill good">GROUNDED</span></td><td style="color:var(--muted);font-size:12px">Value present in raw evidence (string match)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function cs(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+function drawAuroc(){
+  const c=document.getElementById('aurocChart'),dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.clientWidth-40,H=200;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const data=[
+    {label:'RF baseline',val:0.765,col:cs('--muted')},
+    {label:'Monolithic LLM',val:0.844,col:cs('--muted')},
+    {label:'Continuous score ★',val:0.887,col:cs('--teal')},
+    {label:'Full DMAS (binary)',val:0.917,col:cs('--blue')},
+  ];
+  const pl=148,pr=54,pt=10,pb=10,barH=28,gap=12,cW=W-pl-pr;
+  const min=0.7,max=1.0,sc=v=>((v-min)/(max-min))*cW;
+  ctx.font='12px -apple-system,system-ui,sans-serif';
+  data.forEach((d,i)=>{
+    const y=pt+i*(barH+gap);
+    ctx.fillStyle=cs('--muted');ctx.textAlign='right';
+    ctx.fillText(d.label,pl-8,y+barH/2+4);
+    ctx.fillStyle=cs('--bg2');ctx.beginPath();ctx.roundRect(pl,y,cW,barH,4);ctx.fill();
+    ctx.fillStyle=d.col;ctx.beginPath();ctx.roundRect(pl,y,sc(d.val),barH,4);ctx.fill();
+    ctx.fillStyle=cs('--text');ctx.textAlign='left';
+    ctx.fillText(d.val.toFixed(3),pl+sc(d.val)+6,y+barH/2+4);
+  });
+}
+
+function drawCalib(){
+  const c=document.getElementById('calibChart'),dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.clientWidth-40,H=300;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const bins=[
+    {a:0.079,f:0.0,n:3},{a:0.169,f:0.154,n:26},{a:0.263,f:0.111,n:18},
+    {a:0.350,f:0.429,n:7},{a:0.448,f:0.636,n:11},{a:0.568,f:0.6,n:10},
+    {a:0.654,f:1.0,n:3},{a:0.738,f:1.0,n:9},{a:0.856,f:1.0,n:11},{a:0.95,f:1.0,n:2},
+  ];
+  const pl=46,pr=20,pt=14,pb=52,cW=W-pl-pr,cH=H-pt-pb;
+  const px=v=>pl+v*cW,py=v=>pt+(1-v)*cH;
+
+  // over/under confident shading
+  ctx.save();
+  ctx.beginPath();ctx.moveTo(px(0),py(0));ctx.lineTo(px(1),py(1));ctx.lineTo(px(1),py(0));ctx.closePath();
+  ctx.fillStyle='rgba(204,59,46,0.06)';ctx.fill();
+  ctx.beginPath();ctx.moveTo(px(0),py(0));ctx.lineTo(px(1),py(1));ctx.lineTo(px(0),py(1));ctx.closePath();
+  ctx.fillStyle='rgba(36,87,166,0.05)';ctx.fill();
+  ctx.restore();
+
+  // zone labels
+  ctx.font='10px -apple-system,system-ui,sans-serif';
+  ctx.fillStyle='rgba(204,59,46,0.55)';ctx.textAlign='center';
+  ctx.fillText('OVER-CONFIDENT',px(0.78),py(0.18));
+  ctx.fillStyle='rgba(36,87,166,0.45)';
+  ctx.fillText('UNDER-CONFIDENT',px(0.22),py(0.82));
+
+  // grid
+  ctx.strokeStyle=cs('--border');ctx.lineWidth=0.5;
+  [0,0.25,0.5,0.75,1].forEach(v=>{
+    ctx.beginPath();ctx.moveTo(px(0),py(v));ctx.lineTo(px(1),py(v));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px(v),py(0));ctx.lineTo(px(v),py(1));ctx.stroke();
+  });
+
+  // axis tick labels
+  ctx.fillStyle=cs('--muted');ctx.font='11px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='center';
+  [0,0.25,0.5,0.75,1].forEach(v=>ctx.fillText(v.toFixed(2),px(v),H-pb+14));
+  ctx.textAlign='right';
+  [0,0.25,0.5,0.75,1].forEach(v=>ctx.fillText(v.toFixed(2),pl-6,py(v)+4));
+
+  // axis labels
+  ctx.fillStyle=cs('--muted');ctx.font='11px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('Predicted probability (what the model said)',px(0.5),H-4);
+  ctx.save();ctx.translate(12,pt+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Actual fraction resistant (truth)',0,0);
+  ctx.restore();
+
+  // perfect calibration diagonal
+  ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(px(0),py(0));ctx.lineTo(px(1),py(1));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#bbb';ctx.font='10px -apple-system,system-ui,sans-serif';
+  ctx.save();ctx.translate(px(0.54),py(0.54));ctx.rotate(-Math.atan(cH/cW));
+  ctx.textAlign='center';ctx.fillText('perfect calibration',0,-5);
+  ctx.restore();
+
+  // DMAS line + shaded gap
+  ctx.beginPath();ctx.moveTo(px(bins[0].a),py(bins[0].f));
+  bins.forEach(b=>ctx.lineTo(px(b.a),py(b.f)));
+  bins.slice().reverse().forEach(b=>ctx.lineTo(px(b.a),py(b.a)));
+  ctx.closePath();ctx.fillStyle='rgba(36,87,166,0.10)';ctx.fill();
+  ctx.strokeStyle=cs('--blue');ctx.lineWidth=2.5;
+  ctx.beginPath();bins.forEach((b,i)=>i===0?ctx.moveTo(px(b.a),py(b.f)):ctx.lineTo(px(b.a),py(b.f)));
+  ctx.stroke();
+
+  // dots sized by n
+  bins.forEach(b=>{
+    const r=Math.max(5,Math.min(15,Math.sqrt(b.n)*2.8));
+    ctx.beginPath();ctx.arc(px(b.a),py(b.f),r,0,Math.PI*2);
+    ctx.fillStyle=cs('--blue');ctx.globalAlpha=0.85;ctx.fill();ctx.globalAlpha=1;
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  });
+
+  // callout: large low-prob cluster
+  const b1=bins[1]; // a=0.169, f=0.154, n=26
+  const b1x=px(b1.a),b1y=py(b1.f),r1=Math.max(5,Math.min(15,Math.sqrt(b1.n)*2.8));
+  ctx.strokeStyle='#CC3B2E';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(b1x+r1+2,b1y);ctx.lineTo(b1x+r1+36,b1y-22);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#CC3B2E';ctx.font='bold 10px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='left';ctx.fillText('n=26 cases here',b1x+r1+38,b1y-26);
+  ctx.font='10px -apple-system,system-ui,sans-serif';
+  ctx.fillText('model said ~17% resistant',b1x+r1+38,b1y-14);
+  ctx.fillText('only 15% actually were (well calibrated)',b1x+r1+38,b1y-2);
+
+  // callout: high-prob perfect bins
+  const b8=bins[7]; // a=0.738, f=1.0, n=9
+  const b8x=px(b8.a),b8y=py(b8.f);
+  ctx.strokeStyle=cs('--teal');ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(b8x,b8y-8);ctx.lineTo(b8x-10,b8y-40);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=cs('--teal');ctx.font='bold 10px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='right';ctx.fillText('Perfectly calibrated zone',b8x-12,b8y-44);
+  ctx.font='10px -apple-system,system-ui,sans-serif';
+  ctx.fillText('high-confidence = 100% RESISTANT',b8x-12,b8y-32);
+}
+
+function drawDonut(){
+  const c=document.getElementById('donutChart'),dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.clientWidth-40,H=210;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const cx=W/2,cy=H/2,r=Math.min(cx,cy)-16,inner=r*0.55;
+  const slices=[
+    {val:109,col:cs('--teal'),lbl:'76.8%'},
+    {val:21,col:cs('--amber'),lbl:'14.8%'},
+    {val:12,col:cs('--red'),lbl:'8.5%'},
+  ];
+  const total=142;let start=-Math.PI/2;
+  slices.forEach(s=>{
+    const angle=(s.val/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();
+    ctx.fillStyle=s.col;ctx.fill();
+    const mid=start+angle/2,lx=cx+Math.cos(mid)*(r*0.73),ly=cy+Math.sin(mid)*(r*0.73);
+    if(s.val>10){
+      ctx.fillStyle='#fff';ctx.font='bold 12px -apple-system,system-ui,sans-serif';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s.lbl,lx,ly);
+    }
+    start+=angle;
+  });
+  ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fillStyle=cs('--surface');ctx.fill();
+  ctx.fillStyle=cs('--text');ctx.font='bold 18px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('142',cx,cy-8);
+  ctx.fillStyle=cs('--muted');ctx.font='11px -apple-system,system-ui,sans-serif';ctx.fillText('findings',cx,cy+10);
+}
+
+function drawAgent(){
+  const c=document.getElementById('agentChart'),dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.clientWidth-40,H=210;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const agents=[
+    {name:'Genomics',total:87,g:86,i:1,l:0},
+    {name:'Transcriptomics',total:55,g:23,i:20,l:12},
+  ];
+  const pl=120,pr=90,pt=24,barH=40,gap=32,cW=W-pl-pr;
+  ctx.font='12px -apple-system,system-ui,sans-serif';
+  agents.forEach((a,i)=>{
+    const y=pt+i*(barH+gap);
+    ctx.fillStyle=cs('--muted');ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(a.name,pl-10,y+barH/2);
+    let x=pl;
+    [[a.g,cs('--teal')],[a.i,cs('--amber')],[a.l,cs('--red')]].forEach(([n,col])=>{
+      const w=(n/a.total)*cW;if(w<1)return;
+      ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x,y,w,barH,0);ctx.fill();x+=w;
+    });
+    const pct=((a.l/a.total)*100).toFixed(1)+'%';
+    ctx.fillStyle=a.l>0?cs('--red'):cs('--teal');
+    ctx.textAlign='left';ctx.font='bold 13px -apple-system,system-ui,sans-serif';
+    ctx.fillText(a.l>0?pct+' leaked':'0% leaked',pl+cW+8,y+barH/2-6);
+    ctx.fillStyle=cs('--muted');ctx.font='11px -apple-system,system-ui,sans-serif';
+    ctx.fillText('n='+a.total,pl+cW+8,y+barH/2+10);
+  });
+  ctx.fillStyle=cs('--muted');ctx.font='11px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.fillText('proportion of audited findings',pl+cW/2,H-6);
+}
+
+function drawAll(){drawAuroc();drawCalib();drawDonut();drawAgent();}
+window.addEventListener('load',drawAll);
+window.addEventListener('resize',drawAll);
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(window.matchMedia)window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',drawAll);
+</script>

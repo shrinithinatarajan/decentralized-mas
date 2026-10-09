@@ -1,0 +1,1887 @@
+{
+  "model": "vertex:gemini-3.1-flash-lite",
+  "n_cases": 100,
+  "total_findings_audited": 142,
+  "grounded": 109,
+  "inferred": 21,
+  "leaked": 12,
+  "leakage_rate": 0.0845,
+  "grounded_rate": 0.7676,
+  "inferred_rate": 0.1479,
+  "per_agent": {
+    "genomics_agent": {
+      "total": 87,
+      "grounded": 86,
+      "inferred": 1,
+      "leaked": 0,
+      "leakage_rate": 0.0
+    },
+    "transcriptomics_agent": {
+      "total": 55,
+      "grounded": 23,
+      "inferred": 20,
+      "leaked": 12,
+      "leakage_rate": 0.2182
+    }
+  },
+  "per_case": [
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Osimertinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.T790M",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.L858R",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "z=0.76, TPM=38.5",
+          "classification": "LEAKED",
+          "reason": "While the EGFR expression data is grounded, the interpretation regarding 'drug engagement' and 'established activating mutations' is not present in the provided MCP tool output and represents external biomedical knowledge injection."
+        }
+      ]
+    },
+    {
+      "cell_line": "BT-474",
+      "drug": "Lapatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "amplification",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "3.4656",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ERBB2",
+          "value": "z-score 3.097, TPM 1419.05",
+          "classification": "GROUNDED",
+          "reason": "The TPM and z-score values for ERBB2 match the raw MCP tool output exactly, and the interpretation of high expression is a direct consequence of these values."
+        }
+      ]
+    },
+    {
+      "cell_line": "JIMT-1",
+      "drug": "Lapatinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "amplification",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ERBB2",
+          "value": "2.04 z-score, 344.5 TPM",
+          "classification": "GROUNDED",
+          "reason": "The specific ERBB2 TPM (344.5) and z-score (2.04) values are explicitly present in the raw MCP tool output."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.T790M",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.L858R",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "z-score 0.76, TPM 38.55",
+          "classification": "INFERRED",
+          "reason": "The transcriptomic values (z-score, TPM) are provided in the raw data, while the clinical interpretation regarding Type B inhibitors is a standard biomedical extrapolation based on the expression level provided."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1975",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.T790M",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.L858R",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "-1.1635",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "-1.1635",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "MCF7",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "-1.0159",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "tpm 0.199",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, and the interpretation that a very low TPM value (0.199) indicates functional absence at the transcriptional level is a standard biomedical inference."
+        }
+      ]
+    },
+    {
+      "cell_line": "A549",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.R309G",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "0.8055",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "-0.0126",
+          "classification": "GROUNDED",
+          "reason": "The DepMap Chronos score of -0.012577 is directly present in the raw data, and the interpretation that it is not essential for cell viability is accurately derived from the provided Chronos threshold notes."
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC-827",
+      "drug": "Erlotinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 4,
+      "n_leaked": 1,
+      "leakage_rate": 0.25,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.E746_A750del",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "26.37",
+          "classification": "GROUNDED",
+          "reason": "The CNV value (26.367...) and amplification status are present in the provided CNV tool output."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "3.5769",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "TPM 788.17, z-score 2.57",
+          "classification": "LEAKED",
+          "reason": "While the expression values for EGFR are grounded, the agent injected specific knowledge regarding the cell line's sensitization status to EGFR mutations which is not contained in the raw evidence."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1650",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 3,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "p.E746_A750del",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "0.5431",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "69.58 TPM / 1.11 z-score",
+          "classification": "LEAKED",
+          "reason": "The raw evidence provides expression values for EGFR, but does not state or confirm that the cell line is EGFR-mutant."
+        }
+      ]
+    },
+    {
+      "cell_line": "A375",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 1,
+      "leakage_rate": 1.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "BRAF",
+          "value": "z-score 0.47",
+          "classification": "LEAKED",
+          "reason": "While the BRAF gene and z-score are present in the evidence, the specific claim regarding BRAF V600E status of the A375 cell line is not contained within the provided tool output."
+        }
+      ]
+    },
+    {
+      "cell_line": "A375",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "Chronos -1.3657",
+          "classification": "GROUNDED",
+          "reason": "The specific Chronos score of -1.3657 for MAP2K1 and its interpretation as strong essentiality are explicitly contained in the provided raw DepMap tool output."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "TPM 56.39",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for MAP2K1 (56.3886...) matches the provided evidence when rounded to two decimal places."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K2",
+          "value": "TPM 66.58",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for MAP2K2 is explicitly provided in the target_expression array of the MCP tool output."
+        }
+      ]
+    },
+    {
+      "cell_line": "SK-MEL-28",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "CAPAN-1",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "PARP1",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "PARP2",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP1",
+          "value": "74.44 TPM",
+          "classification": "INFERRED",
+          "reason": "The PARP1 TPM value is directly supported by the raw data, while the clinical interpretation of 'sufficient target expression' is a standard biomedical extrapolation from that quantitative evidence."
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC1937",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP1",
+          "value": "110.4 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, but the agent's claim that this level is 'constitutively high' and supports drug availability is a subjective biological interpretation not explicitly stated in the source text."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP2",
+          "value": "61.1 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for PARP2 (61.08) is directly present in the provided MCP tool output, and the interpretation follows directly from the reported expression level."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H3122",
+      "drug": "Crizotinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ALK",
+          "value": "z-score 3.69",
+          "classification": "INFERRED",
+          "reason": "The z-score of 3.69 is present in the raw data, and the interpretation of high expression as a driver in this specific cell line is a standard biomedical inference derived from the provided quantitative data."
+        }
+      ]
+    },
+    {
+      "cell_line": "MCF7",
+      "drug": "Palbociclib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "CDK4",
+          "value": "Chronos -1.93",
+          "classification": "GROUNDED",
+          "reason": "The exact Chronos value (-1.93) and its categorization as strong essentiality are explicitly provided in the 'depmap_scores' and 'depmap_note' fields of the raw tool output."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK4",
+          "value": "202.77 TPM",
+          "classification": "LEAKED",
+          "reason": "While the TPM value is present, the interpretation that CDK4 expression is 'constitutively high' contradicts the provided z-score of -0.165, which indicates below-average expression."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK6",
+          "value": "z-score -2.19",
+          "classification": "GROUNDED",
+          "reason": "The z-score of -2.19 is directly provided in the tool output for CDK6, and the interpretation describes the low expression observed in the data."
+        }
+      ]
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "-1.54",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MDM2",
+          "value": "65.56 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for MDM2 is explicitly provided in the raw MCP output, and the interpretation follows directly from the retrieved value relative to the stated threshold."
+        }
+      ]
+    },
+    {
+      "cell_line": "8505C",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "A2058",
+      "drug": "Dabrafenib",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "BRAF",
+          "value": "z-score -0.46, TPM 7.45",
+          "classification": "GROUNDED",
+          "reason": "The TPM and z-score values for BRAF are explicitly present in the raw MCP tool output, and the interpretation follows directly from those values."
+        }
+      ]
+    },
+    {
+      "cell_line": "HCT-116",
+      "drug": "Pictilisib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "KRAS",
+          "value": "p.G13D",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "SJSA-1",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 4,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "29.903242010286583",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "-2.5725409942681963",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "1.4578",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MDM2",
+          "value": "z=4.20, TPM=839.69",
+          "classification": "GROUNDED",
+          "reason": "The specific TPM (839.69) and z-score (4.20) values for MDM2 are present in the raw MCP output, and the clinical interpretation is a standard inference drawn from that retrieved data."
+        }
+      ]
+    },
+    {
+      "cell_line": "Saos-2",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "rppa_score -0.7164",
+          "classification": "GROUNDED",
+          "reason": "The rppa_score of -0.7164 and the interpretation 'low expression' for MDM2 are explicitly present in the provided rppa_expression data."
+        }
+      ]
+    },
+    {
+      "cell_line": "COLO-829",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 1,
+      "leakage_rate": 0.5,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "RPPA score 1.1912",
+          "classification": "GROUNDED",
+          "reason": "The RPPA score of 1.1912 and the associated gene BRAF are present in the provided raw MCP tool output."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "BRAF",
+          "value": "1.17 z-score",
+          "classification": "LEAKED",
+          "reason": "The agent injected domain knowledge regarding BRAF mutation status and PLX-4720 sensitivity, which are not present in the provided tool output."
+        }
+      ]
+    },
+    {
+      "cell_line": "MEL-HO",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "UACC-62",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "HT-144",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "G-361",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 1,
+      "leakage_rate": 0.5,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "BRAF",
+          "value": "15.74 TPM",
+          "classification": "LEAKED",
+          "reason": "While the BRAF TPM value is grounded, the assertion regarding the presence of the V600E mutation is not supported by the raw MCP tool output, representing an external knowledge injection."
+        }
+      ]
+    },
+    {
+      "cell_line": "MEL-HO",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "UACC-62",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "G-361",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "HT-144",
+      "drug": "Dabrafenib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "UACC-62",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K2",
+          "value": "151.49 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for MAP2K2 is explicitly provided in the MCP tool output, and the interpretation follows directly from the high expression data."
+        }
+      ]
+    },
+    {
+      "cell_line": "G-361",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "pS217_S221=0.6824",
+          "classification": "GROUNDED",
+          "reason": "The specific RPPA antibody score for MEK1_pS217_S221 of 0.6824 is explicitly present in the provided raw MCP tool output."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "TPM 53.5",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, and the interpretation regarding drug accessibility is a standard pharmacological inference based on target expression levels."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K2",
+          "value": "TPM 84.5",
+          "classification": "LEAKED",
+          "reason": "The raw data confirms the gene and TPM value, but the interpretation that this specific TPM level 'ensures drug accessibility' is a clinical or mechanistic claim not present in the provided dataset."
+        }
+      ]
+    },
+    {
+      "cell_line": "HT-144",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 1,
+      "leakage_rate": 0.5,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K2",
+          "value": "z-score 1.87; TPM 131.9",
+          "classification": "GROUNDED",
+          "reason": "The TPM and z-score values for MAP2K2 are explicitly present in the provided MCP tool output, and the interpretation follows directly from those values."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "TPM 53.6",
+          "classification": "LEAKED",
+          "reason": "While the TPM value is grounded in the raw data, the interpretation that this expression level represents 'constitutively high expression' is not supported by the provided data, which shows a z-score of only 0.13, indicating near-average expression rather than high expression."
+        }
+      ]
+    },
+    {
+      "cell_line": "COLO-829",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K2",
+          "value": "100.88 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value for MAP2K2 is directly in the evidence, and its characterization as a MEK2 target eligible for inhibition is a standard biomedical inference based on the gene's known biological function."
+        }
+      ]
+    },
+    {
+      "cell_line": "HT-29",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "RKO",
+      "drug": "PLX-4720",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "p.V600E",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "RPPA score > 0.5",
+          "classification": "GROUNDED",
+          "reason": "The raw MCP output explicitly contains the BRAF RPPA score entry (1.1966), which supports the agent's interpretation that the score is greater than 0.5."
+        }
+      ]
+    },
+    {
+      "cell_line": "RKO",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "1.2557",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "AU565",
+      "drug": "Lapatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "amplification",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "-2.29",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ERBB2",
+          "value": "z-score 3.70, TPM 3210.6",
+          "classification": "GROUNDED",
+          "reason": "The TPM (3210.598) and z-score (3.704) provided by the agent match the raw MCP tool output for the ERBB2 gene exactly, and the interpretation is a standard biomedical conclusion based on the high expression values provided."
+        }
+      ]
+    },
+    {
+      "cell_line": "AU565",
+      "drug": "Afatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "amplification",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "-2.2927",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ERBB2",
+          "value": "z-score 3.70; TPM 3210.6",
+          "classification": "INFERRED",
+          "reason": "The TPM and z-score for ERBB2 are present in the raw data, while the biological interpretation of oncogenic addiction is a standard scientific inference based on the high expression level."
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC1419",
+      "drug": "Lapatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "Amplification (20.54)",
+          "classification": "GROUNDED",
+          "reason": "The ERBB2 amplification value and the interpretation of high protein overexpression are directly supported by the provided CNV data (20.539) and the RPPA expression score (5.1571)."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "Chronos -1.37",
+          "classification": "GROUNDED",
+          "reason": "The DepMap Chronos score of -1.369666056648038 is explicitly provided in the MCP output, and the interpretation aligns directly with the provided criteria that values <= -1.0 indicate strong essentiality."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ERBB2",
+          "value": "z=3.70, TPM=3195.42",
+          "classification": "INFERRED",
+          "reason": "The ERBB2 gene, z-score, and TPM values are present in the evidence; the conclusion regarding sensitivity to HER2-targeted therapy is a standard clinical interpretation of high ERBB2 expression."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1648",
+      "drug": "Erlotinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "RPPA: 0.8849",
+          "classification": "GROUNDED",
+          "reason": "The raw MCP tool output explicitly lists the RPPA score of 0.8849 for the EGFR antibody, which matches the agent's cited value and interpretation."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "Chronos: -0.692",
+          "classification": "GROUNDED",
+          "reason": "The DepMap Chronos score of -0.692 and its classification as borderline essentiality are explicitly provided in the raw MCP output."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1648",
+      "drug": "Afatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "high protein expression (0.8849)",
+          "classification": "GROUNDED",
+          "reason": "The RPPA expression score of 0.8849 and the interpretation of high expression are explicitly present in the provided rppa_expression data."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "high protein expression (0.5451)",
+          "classification": "GROUNDED",
+          "reason": "The ERBB2 rppa_score of 0.5451 and the classification of high protein expression are both explicitly present in the provided RPPA data section."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H2228",
+      "drug": "Crizotinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ALK",
+          "value": "z-score 2.97",
+          "classification": "INFERRED",
+          "reason": "The raw data confirms the ALK z-score of 2.97, and the interpretation of overexpression as an oncogenic driver in NSCLC is a standard biomedical inference derived from the gene and expression data."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ROS1",
+          "value": "z-score 2.39",
+          "classification": "GROUNDED",
+          "reason": "The ROS1 gene is present in the MCP tool output with a z-score of 2.385265464351774, which directly supports the cited value of 2.39."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H2228",
+      "drug": "Dabrafenib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "MDA-MB-453",
+      "drug": "Alpelisib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "PIK3CA",
+          "value": "p.H1047R",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "IGROV-1",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP1",
+          "value": "164.05 TPM",
+          "classification": "GROUNDED",
+          "reason": "The value 164.05 TPM is directly retrieved from the target_expression array in the raw MCP output, and the interpretation is a standard biomedical extrapolation based on the provided TPM value."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP2",
+          "value": "52.29 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the evidence, and the interpretation of 'constitutively high target expression' is a reasonable pharmacological inference derived from the provided quantitative data."
+        }
+      ]
+    },
+    {
+      "cell_line": "HCC1395",
+      "drug": "Olaparib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP1",
+          "value": "158.53 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, and the interpretation that the expression level supports drug engagement is a standard biomedical inference derived from the provided gene expression data."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP2",
+          "value": "1.59 z-score",
+          "classification": "GROUNDED",
+          "reason": "The PARP2 z-score of 1.59 is explicitly present in the provided MCP tool output, and the interpretation of overexpression is a direct characterization of this z-score value."
+        }
+      ]
+    },
+    {
+      "cell_line": "CAL-51",
+      "drug": "Talazoparib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP1",
+          "value": "139.08 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, while the interpretation 'constitutively highly expressed' is a qualitative summary derived from the quantitative TPM and z-score data."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP2",
+          "value": "68.33 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, and the interpretation as 'constitutively highly expressed' is a standard biomedical inference derived from the high TPM value and percentile provided in the source."
+        }
+      ]
+    },
+    {
+      "cell_line": "SW1417",
+      "drug": "Olaparib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "PARP1",
+          "value": "89.39 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for PARP1 in the raw data is 89.3862..., which the agent correctly rounded to 89.39 TPM, and the interpretation as a target protein is supported by the data context."
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1573",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "2.5205",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "NCI-H1573",
+      "drug": "Crizotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MET",
+          "value": "237.55 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for MET of 237.55 is explicitly provided in the raw MCP output, and characterizing a high percentile/z-score as high expression is a direct interpretation of that data."
+        }
+      ]
+    },
+    {
+      "cell_line": "KCL-22",
+      "drug": "Dasatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "SRC",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "LAMA-84",
+      "drug": "Dasatinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "KIT",
+          "value": "z=1.69",
+          "classification": "INFERRED",
+          "reason": "The KIT gene and its z-score of 1.689 are explicitly present in the raw data, and the agent's interpretation that this represents overexpression and potential therapeutic sensitivity is a standard biomedical inference derived from the provided statistical evidence."
+        }
+      ]
+    },
+    {
+      "cell_line": "MOLM-13",
+      "drug": "Lestaurtinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "FLT3",
+          "value": "p.E598_Y599insFDFREYE (ITD)",
+          "classification": "INFERRED",
+          "reason": "The mutation p.E598_Y599insFDFREYE is explicitly present in the MCP output, and the clinical interpretation that FLT3-ITD is an activating mutation associated with kinase inhibitor sensitivity is standard biomedical knowledge."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "FLT3",
+          "value": "-2.18",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "FLT3",
+          "value": "z-score 6.33",
+          "classification": "INFERRED",
+          "reason": "The z-score of 6.33 is present in the raw data, and the interpretation of high expression as a drug sensitivity marker is a standard clinical inference derived from that data."
+        }
+      ]
+    },
+    {
+      "cell_line": "MOLM-13",
+      "drug": "Temsirolimus",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MTOR",
+          "value": "Chronos -1.15",
+          "classification": "GROUNDED",
+          "reason": "The DepMap score of -1.15 and the interpretation of strong essentiality are explicitly present in the provided MCP tool output."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MTOR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "5637",
+      "drug": "Palbociclib",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK4",
+          "value": "340.8 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is directly supported by the raw data, while the interpretation regarding target accessibility is a standard biological inference based on the high expression level."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK6",
+          "value": "53.8 TPM / 1.18 z-score",
+          "classification": "GROUNDED",
+          "reason": "The TPM value of 53.84 and z-score of 1.1788 are explicitly present in the raw MCP output for gene CDK6."
+        }
+      ]
+    },
+    {
+      "cell_line": "5637",
+      "drug": "Ribociclib",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK4",
+          "value": "340.80 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for CDK4 is explicitly present in the raw MCP output, and the interpretation regarding expression levels is a standard biomedical inference based on the retrieved data."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK6",
+          "value": "53.84 TPM",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for CDK6 is explicitly present in the provided raw MCP tool output."
+        }
+      ]
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Palbociclib",
+      "true_label": "RESISTANT",
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 2,
+      "n_leaked": 1,
+      "leakage_rate": 0.5,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK4",
+          "value": "94.05 TPM",
+          "classification": "LEAKED",
+          "reason": "While the gene and TPM value (rounded) are in the evidence, the interpretation 'Constitutively expressed target present and druggable' is a qualitative biomedical claim not supported by the raw retrieved data."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK6",
+          "value": "1.56 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is directly supported by the MCP output, and the clinical implication regarding Palbociclib and CDK4/6 biological compensation is a standard biomedical interpretation based on the provided low expression levels."
+        }
+      ]
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Ribociclib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 1,
+      "leakage_rate": 1.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK4",
+          "value": "94.05 TPM",
+          "classification": "LEAKED",
+          "reason": "While the TPM value is present in the evidence, the interpretation regarding Ribociclib efficacy despite the low z-score is a specific clinical claim not supported by the provided MCP data."
+        }
+      ]
+    },
+    {
+      "cell_line": "Calu-6",
+      "drug": "Nutlin-3a (-)",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "MDM2",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "rppa_score = -1.3495",
+          "classification": "GROUNDED",
+          "reason": "The rppa_score of -1.3495 for EGFR and its interpretation as low expression are explicitly provided in the rppa_expression data within the tool output."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "Chronos = 0.001",
+          "classification": "GROUNDED",
+          "reason": "The DepMap score of 0.001 is provided in the MCP output, and the interpretation follows the logic that values above the essentiality threshold indicate a lack of essentiality."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "TPM 0.07, z-score -1.42",
+          "classification": "LEAKED",
+          "reason": "While the EGFR expression data is grounded, the interpretation regarding resistance in Type B drugs is a specific clinical claim not supported by the provided raw evidence."
+        }
+      ]
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 4,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "rppa_score = -1.3495",
+          "classification": "GROUNDED",
+          "reason": "The rppa_score and protein expression interpretation are explicitly stated within the rppa_expression data provided in the MCP tool output."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "wild-type",
+          "classification": "GROUNDED",
+          "reason": "The raw output explicitly states EGFR as a wild_type_gene and confirms the absence of somatic point mutations, which aligns with the agent's cited finding."
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "chronos = 0.001",
+          "classification": "GROUNDED",
+          "reason": "The DepMap score of 0.001 and the non-essential status are derived directly from the provided depmap_scores data and the accompanying note regarding chronos scores."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "TPM 0.07",
+          "classification": "INFERRED",
+          "reason": "The agent retrieved the expression value from the data and correctly inferred the resistance phenotype based on the provided negligible TPM value, which is a standard biomedical interpretation."
+        }
+      ]
+    },
+    {
+      "cell_line": "HOP-62",
+      "drug": "Gefitinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "wild_type",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "DMS-79",
+      "drug": "Erlotinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "EGFR",
+          "value": "-0.2972",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "BRAF",
+          "value": "z-score -2.25",
+          "classification": "GROUNDED",
+          "reason": "The BRAF z-score of -2.25 is explicitly present in the raw MCP tool output, and the interpretation follows directly from the provided numerical data."
+        }
+      ]
+    },
+    {
+      "cell_line": "DU-145",
+      "drug": "Dabrafenib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "0.014 (Chronos)",
+          "classification": "GROUNDED",
+          "reason": "The DepMap Chronos score of 0.014 is explicitly present in the tool output, and the interpretation is derived directly from the provided depmap_note threshold."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "BRAF",
+          "value": "z-score: -2.25, tpm: 2.90",
+          "classification": "INFERRED",
+          "reason": "The raw data provides the z-score and tpm values for BRAF, and the interpretation is a standard domain-specific conclusion derived from the provided expression data."
+        }
+      ]
+    },
+    {
+      "cell_line": "HOP-62",
+      "drug": "PLX-4720",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "genomics_agent",
+          "biomarker": "BRAF",
+          "value": "wild_type",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        }
+      ]
+    },
+    {
+      "cell_line": "SW620",
+      "drug": "Lapatinib",
+      "true_label": "RESISTANT",
+      "final_verdict": "RESISTANT",
+      "correct": true,
+      "n_findings_audited": 3,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "genomics_agent",
+          "biomarker": "ERBB2",
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "z = -1.417",
+          "classification": "GROUNDED",
+          "reason": "The z-score of -1.417 is explicitly provided in the raw MCP tool output for the gene EGFR."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "ERBB2",
+          "value": "z = -0.151, TPM = 17.08",
+          "classification": "GROUNDED",
+          "reason": "The ERBB2 TPM (17.08) and z-score (-0.151) are explicitly present in the provided MCP tool output, and the interpretation follows directly from the low z-score."
+        }
+      ]
+    }
+  ]
+}
