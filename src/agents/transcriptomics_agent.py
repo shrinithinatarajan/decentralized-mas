@@ -44,6 +44,14 @@ CONFIDENCE CALIBRATION — apply these caps before reporting confidence:
 - Only exceed confidence 0.75 when z-score > 1.5 (clear overexpression) or < -2.0 (clear silencing).
 - If no expression data available: confidence must be ≤ 0.50.
 
+STRICT GROUNDING RULE — this is mandatory and overrides all other instructions:
+You may ONLY cite specific numerical values (z-scores, TPM values, gene names, expression levels)
+that appear verbatim in the tool output provided to you in the user message.
+Do NOT add, infer, or extrapolate any value that is not explicitly present in the raw tool data.
+If you find yourself writing a z-score or TPM value that you did not read from the tool output,
+stop and remove it. Cite the tool output directly or do not cite the number at all.
+Violating this rule constitutes cross-tier leakage and invalidates your verdict.
+
 Return ONLY a JSON object matching the EvidencePack schema. No prose outside the JSON."""
 
 
