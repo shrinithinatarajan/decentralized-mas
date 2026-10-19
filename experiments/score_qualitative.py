@@ -14,7 +14,9 @@ import os
 import argparse
 from pathlib import Path
 
-os.environ.setdefault("VERTEX_PROJECT", "project-d3bf2d5b-3451-46fd-8f3")
+from dotenv import load_dotenv
+load_dotenv()
+os.environ.setdefault("VERTEX_PROJECT", "project-0de27b9a-ab4d-44a3-903")
 
 from src.llm.client import LLMClient, make_rate_limiter
 

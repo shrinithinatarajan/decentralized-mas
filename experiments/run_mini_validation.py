@@ -13,7 +13,9 @@ import os
 import sqlite3
 from pathlib import Path
 
-os.environ.setdefault("VERTEX_PROJECT", "project-d3bf2d5b-3451-46fd-8f3")
+from dotenv import load_dotenv
+load_dotenv()
+os.environ.setdefault("VERTEX_PROJECT", "project-0de27b9a-ab4d-44a3-903")
 
 from src.agents.genomics_agent import GenomicsAgent
 from src.agents.transcriptomics_agent import TranscriptomicsAgent

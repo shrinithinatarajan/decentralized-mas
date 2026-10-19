@@ -1,13 +1,13 @@
 {
   "model": "vertex:gemini-3.1-flash-lite",
   "n_cases": 100,
-  "total_findings_audited": 142,
-  "grounded": 109,
-  "inferred": 21,
-  "leaked": 12,
-  "leakage_rate": 0.0845,
-  "grounded_rate": 0.7676,
-  "inferred_rate": 0.1479,
+  "total_findings_audited": 125,
+  "grounded": 99,
+  "inferred": 16,
+  "leaked": 10,
+  "leakage_rate": 0.08,
+  "grounded_rate": 0.792,
+  "inferred_rate": 0.128,
   "per_agent": {
     "genomics_agent": {
       "total": 87,
@@ -17,11 +17,11 @@
       "leakage_rate": 0.0
     },
     "transcriptomics_agent": {
-      "total": 55,
-      "grounded": 23,
-      "inferred": 20,
-      "leaked": 12,
-      "leakage_rate": 0.2182
+      "total": 38,
+      "grounded": 13,
+      "inferred": 15,
+      "leaked": 10,
+      "leakage_rate": 0.2632
     }
   },
   "per_case": [
@@ -31,9 +31,9 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 3,
-      "n_leaked": 1,
-      "leakage_rate": 0.3333,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -48,13 +48,6 @@
           "value": "p.L858R",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "z=0.76, TPM=38.5",
-          "classification": "LEAKED",
-          "reason": "While the EGFR expression data is grounded, the interpretation regarding 'drug engagement' and 'established activating mutations' is not present in the provided MCP tool output and represents external biomedical knowledge injection."
         }
       ]
     },
@@ -85,9 +78,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ERBB2",
-          "value": "z-score 3.097, TPM 1419.05",
-          "classification": "GROUNDED",
-          "reason": "The TPM and z-score values for ERBB2 match the raw MCP tool output exactly, and the interpretation of high expression is a direct consequence of these values."
+          "value": "z_score: 3.097; tpm: 1419.05",
+          "classification": "INFERRED",
+          "reason": "The expression values are grounded in the raw evidence, while the connection to Lapatinib sensitivity is a standard biomedical inference based on high ERBB2 overexpression in BT-474 cell lines."
         }
       ]
     },
@@ -98,8 +91,8 @@
       "final_verdict": "SENSITIVE",
       "correct": false,
       "n_findings_audited": 2,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_leaked": 1,
+      "leakage_rate": 0.5,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -111,9 +104,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ERBB2",
-          "value": "2.04 z-score, 344.5 TPM",
-          "classification": "GROUNDED",
-          "reason": "The specific ERBB2 TPM (344.5) and z-score (2.04) values are explicitly present in the raw MCP tool output."
+          "value": "z-score 2.0449, TPM 344.51",
+          "classification": "LEAKED",
+          "reason": "Vertex API error 403: {'error': {'code': 403, 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.', 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'SERVICE_DISABLED', 'domain': 'googleapis.com', 'metadata': {'activationUrl': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903', 'containerInfo': 'project-0de27b9a-ab4d-44a3-903', 'serviceTitle': 'Agent Platform API', 'consumer': 'projects/project-0de27b9a-ab4d-44a3-903', 'service': 'aiplatform.googleapis.com'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.'}, {'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Google developers console API activation', 'url': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903'}]}]}}"
         }
       ]
     },
@@ -123,7 +116,7 @@
       "true_label": "RESISTANT",
       "final_verdict": "RESISTANT",
       "correct": true,
-      "n_findings_audited": 3,
+      "n_findings_audited": 2,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -140,13 +133,6 @@
           "value": "p.L858R",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "z-score 0.76, TPM 38.55",
-          "classification": "INFERRED",
-          "reason": "The transcriptomic values (z-score, TPM) are provided in the raw data, while the clinical interpretation regarding Type B inhibitors is a standard biomedical extrapolation based on the expression level provided."
         }
       ]
     },
@@ -234,7 +220,7 @@
       "true_label": "RESISTANT",
       "final_verdict": "RESISTANT",
       "correct": true,
-      "n_findings_audited": 3,
+      "n_findings_audited": 2,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -251,13 +237,6 @@
           "value": "-1.0159",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "tpm 0.199",
-          "classification": "INFERRED",
-          "reason": "The TPM value is present in the raw data, and the interpretation that a very low TPM value (0.199) indicates functional absence at the transcriptional level is a standard biomedical inference."
         }
       ]
     },
@@ -327,8 +306,8 @@
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 4,
-      "n_leaked": 1,
-      "leakage_rate": 0.25,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -354,9 +333,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "EGFR",
-          "value": "TPM 788.17, z-score 2.57",
-          "classification": "LEAKED",
-          "reason": "While the expression values for EGFR are grounded, the agent injected specific knowledge regarding the cell line's sensitization status to EGFR mutations which is not contained in the raw evidence."
+          "value": "z-score 2.57225039412746, TPM 788.1785862750477",
+          "classification": "INFERRED",
+          "reason": "The raw data confirms the EGFR z-score and TPM values, and the interpretation of high expression is a standard inference based on these provided quantitative metrics."
         }
       ]
     },
@@ -366,9 +345,9 @@
       "true_label": "RESISTANT",
       "final_verdict": "SENSITIVE",
       "correct": false,
-      "n_findings_audited": 3,
-      "n_leaked": 1,
-      "leakage_rate": 0.3333,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -383,32 +362,6 @@
           "value": "0.5431",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "69.58 TPM / 1.11 z-score",
-          "classification": "LEAKED",
-          "reason": "The raw evidence provides expression values for EGFR, but does not state or confirm that the cell line is EGFR-mutant."
-        }
-      ]
-    },
-    {
-      "cell_line": "A375",
-      "drug": "PLX-4720",
-      "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
-      "n_findings_audited": 1,
-      "n_leaked": 1,
-      "leakage_rate": 1.0,
-      "findings": [
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "BRAF",
-          "value": "z-score 0.47",
-          "classification": "LEAKED",
-          "reason": "While the BRAF gene and z-score are present in the evidence, the specific claim regarding BRAF V600E status of the A375 cell line is not contained within the provided tool output."
         }
       ]
     },
@@ -432,16 +385,16 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MAP2K1",
-          "value": "TPM 56.39",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for MAP2K1 (56.3886...) matches the provided evidence when rounded to two decimal places."
+          "value": "TPM 56.388",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, and the interpretation that constitutive expression enables target availability is a standard biological inference for a kinase in this context."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MAP2K2",
-          "value": "TPM 66.58",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for MAP2K2 is explicitly provided in the target_expression array of the MCP tool output."
+          "value": "TPM 66.581",
+          "classification": "INFERRED",
+          "reason": "The TPM value is present in the raw data, and the interpretation regarding constitutive expression is a standard biomedical inference derived from the provided expression value."
         }
       ]
     },
@@ -470,56 +423,23 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 3,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
-      "findings": [
-        {
-          "agent": "genomics_agent",
-          "biomarker": "PARP1",
-          "value": "hemizygous_deletion",
-          "classification": "GROUNDED",
-          "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "genomics_agent",
-          "biomarker": "PARP2",
-          "value": "hemizygous_deletion",
-          "classification": "GROUNDED",
-          "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "PARP1",
-          "value": "74.44 TPM",
-          "classification": "INFERRED",
-          "reason": "The PARP1 TPM value is directly supported by the raw data, while the clinical interpretation of 'sufficient target expression' is a standard biomedical extrapolation from that quantitative evidence."
-        }
-      ]
-    },
-    {
-      "cell_line": "HCC1937",
-      "drug": "Olaparib",
-      "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
       "n_findings_audited": 2,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
         {
-          "agent": "transcriptomics_agent",
+          "agent": "genomics_agent",
           "biomarker": "PARP1",
-          "value": "110.4 TPM",
-          "classification": "INFERRED",
-          "reason": "The TPM value is present in the raw data, but the agent's claim that this level is 'constitutively high' and supports drug availability is a subjective biological interpretation not explicitly stated in the source text."
+          "value": "hemizygous_deletion",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
         },
         {
-          "agent": "transcriptomics_agent",
+          "agent": "genomics_agent",
           "biomarker": "PARP2",
-          "value": "61.1 TPM",
+          "value": "hemizygous_deletion",
           "classification": "GROUNDED",
-          "reason": "The TPM value for PARP2 (61.08) is directly present in the provided MCP tool output, and the interpretation follows directly from the reported expression level."
+          "reason": "Value present in raw evidence (string match)"
         }
       ]
     },
@@ -529,16 +449,23 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 1,
+      "n_findings_audited": 2,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ALK",
-          "value": "z-score 3.69",
+          "value": "z_score: 3.687, tpm: 12.98",
+          "classification": "GROUNDED",
+          "reason": "The TPM and z-score values for ALK are explicitly provided in the target_expression list of the raw tool output."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MET",
+          "value": "z_score: 0.833, tpm: 88.27",
           "classification": "INFERRED",
-          "reason": "The z-score of 3.69 is present in the raw data, and the interpretation of high expression as a driver in this specific cell line is a standard biomedical inference derived from the provided quantitative data."
+          "reason": "The raw data confirms the numerical values (tpm and z_score) for MET, while the interpretation that this level of expression suggests target engagement is a standard pharmacological inference based on the provided evidence."
         }
       ]
     },
@@ -549,8 +476,8 @@
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 3,
-      "n_leaked": 1,
-      "leakage_rate": 0.3333,
+      "n_leaked": 2,
+      "leakage_rate": 0.6667,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -562,16 +489,16 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK4",
-          "value": "202.77 TPM",
+          "value": "202.76898921316 TPM",
           "classification": "LEAKED",
-          "reason": "While the TPM value is present, the interpretation that CDK4 expression is 'constitutively high' contradicts the provided z-score of -0.165, which indicates below-average expression."
+          "reason": "While the TPM value for CDK4 is present in the evidence, the interpretation that it is 'constitutively expressed' and 'sufficient for drug activity' is a subjective biomedical claim not derived from the raw expression data provided."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK6",
-          "value": "z-score -2.19",
-          "classification": "GROUNDED",
-          "reason": "The z-score of -2.19 is directly provided in the tool output for CDK6, and the interpretation describes the low expression observed in the data."
+          "value": "-2.1990015687358833 z-score",
+          "classification": "LEAKED",
+          "reason": "While the z-score is present in the raw data, the specific classification 'Functionally absent per T2_TRANSCRIPTIONAL_GATE' is not supported by the retrieved evidence and represents external knowledge."
         }
       ]
     },
@@ -582,8 +509,8 @@
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 3,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -602,9 +529,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MDM2",
-          "value": "65.56 TPM",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for MDM2 is explicitly provided in the raw MCP output, and the interpretation follows directly from the retrieved value relative to the stated threshold."
+          "value": "TPM 65.56",
+          "classification": "LEAKED",
+          "reason": "While the gene and TPM value were retrieved, the interpretation that MDM2 is a 'constitutively expressed target gene supporting drug mechanism' is an external assertion not found in the raw tool data."
         }
       ]
     },
@@ -633,7 +560,7 @@
       "true_label": "RESISTANT",
       "final_verdict": "SENSITIVE",
       "correct": false,
-      "n_findings_audited": 2,
+      "n_findings_audited": 1,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -643,13 +570,6 @@
           "value": "p.V600E",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "BRAF",
-          "value": "z-score -0.46, TPM 7.45",
-          "classification": "GROUNDED",
-          "reason": "The TPM and z-score values for BRAF are explicitly present in the raw MCP tool output, and the interpretation follows directly from those values."
         }
       ]
     },
@@ -679,8 +599,8 @@
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 4,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_leaked": 1,
+      "leakage_rate": 0.25,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -706,9 +626,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MDM2",
-          "value": "z=4.20, TPM=839.69",
-          "classification": "GROUNDED",
-          "reason": "The specific TPM (839.69) and z-score (4.20) values for MDM2 are present in the raw MCP output, and the clinical interpretation is a standard inference drawn from that retrieved data."
+          "value": "z-score 4.203825683343766, TPM 839.687026880381",
+          "classification": "LEAKED",
+          "reason": "Vertex API error 403: {'error': {'code': 403, 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.', 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'SERVICE_DISABLED', 'domain': 'googleapis.com', 'metadata': {'service': 'aiplatform.googleapis.com', 'containerInfo': 'project-0de27b9a-ab4d-44a3-903', 'consumer': 'projects/project-0de27b9a-ab4d-44a3-903', 'serviceTitle': 'Agent Platform API', 'activationUrl': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.'}, {'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Google developers console API activation', 'url': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903'}]}]}}"
         }
       ]
     },
@@ -738,8 +658,8 @@
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 2,
-      "n_leaked": 1,
-      "leakage_rate": 0.5,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -751,9 +671,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "BRAF",
-          "value": "1.17 z-score",
-          "classification": "LEAKED",
-          "reason": "The agent injected domain knowledge regarding BRAF mutation status and PLX-4720 sensitivity, which are not present in the provided tool output."
+          "value": "16.107 TPM",
+          "classification": "INFERRED",
+          "reason": "The TPM value is directly supported by the data, and the classification of BRAF as an oncogenic driver is general biomedical knowledge applied to the retrieved expression data."
         }
       ]
     },
@@ -820,9 +740,9 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 2,
-      "n_leaked": 1,
-      "leakage_rate": 0.5,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -830,13 +750,6 @@
           "value": "p.V600E",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "BRAF",
-          "value": "15.74 TPM",
-          "classification": "LEAKED",
-          "reason": "While the BRAF TPM value is grounded, the assertion regarding the presence of the V600E mutation is not supported by the raw MCP tool output, representing an external knowledge injection."
         }
       ]
     },
@@ -929,9 +842,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MAP2K2",
-          "value": "151.49 TPM",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for MAP2K2 is explicitly provided in the MCP tool output, and the interpretation follows directly from the high expression data."
+          "value": "z-score 2.237724927472771, TPM 151.48700598572304",
+          "classification": "INFERRED",
+          "reason": "The expression data is directly present in the evidence, while the biological interpretation regarding target overexpression and sensitivity to inhibitors is a standard pharmacological inference based on high expression z-scores."
         }
       ]
     },
@@ -942,8 +855,8 @@
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 3,
-      "n_leaked": 1,
-      "leakage_rate": 0.3333,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -955,42 +868,16 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MAP2K1",
-          "value": "TPM 53.5",
+          "value": "TPM 53.51351340075998",
           "classification": "INFERRED",
-          "reason": "The TPM value is present in the raw data, and the interpretation regarding drug accessibility is a standard pharmacological inference based on target expression levels."
+          "reason": "The TPM value is directly supported by the raw data, and the interpretation 'constitutively expressed' is a standard biomedical inference derived from the provided expression level."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MAP2K2",
-          "value": "TPM 84.5",
-          "classification": "LEAKED",
-          "reason": "The raw data confirms the gene and TPM value, but the interpretation that this specific TPM level 'ensures drug accessibility' is a clinical or mechanistic claim not present in the provided dataset."
-        }
-      ]
-    },
-    {
-      "cell_line": "HT-144",
-      "drug": "Trametinib",
-      "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
-      "n_findings_audited": 2,
-      "n_leaked": 1,
-      "leakage_rate": 0.5,
-      "findings": [
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "MAP2K2",
-          "value": "z-score 1.87; TPM 131.9",
+          "value": "TPM 84.47211991290622",
           "classification": "GROUNDED",
-          "reason": "The TPM and z-score values for MAP2K2 are explicitly present in the provided MCP tool output, and the interpretation follows directly from those values."
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "MAP2K1",
-          "value": "TPM 53.6",
-          "classification": "LEAKED",
-          "reason": "While the TPM value is grounded in the raw data, the interpretation that this expression level represents 'constitutively high expression' is not supported by the provided data, which shows a z-score of only 0.13, indicating near-average expression rather than high expression."
+          "reason": "The TPM value for MAP2K2 matches the raw MCP tool output, and the interpretation is a descriptive inference based on the provided expression data."
         }
       ]
     },
@@ -1000,7 +887,7 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 2,
+      "n_findings_audited": 1,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -1010,13 +897,6 @@
           "value": "hemizygous_deletion",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "MAP2K2",
-          "value": "100.88 TPM",
-          "classification": "INFERRED",
-          "reason": "The TPM value for MAP2K2 is directly in the evidence, and its characterization as a MEK2 target eligible for inhibition is a standard biomedical inference based on the gene's known biological function."
         }
       ]
     },
@@ -1111,9 +991,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ERBB2",
-          "value": "z-score 3.70, TPM 3210.6",
-          "classification": "GROUNDED",
-          "reason": "The TPM (3210.598) and z-score (3.704) provided by the agent match the raw MCP tool output for the ERBB2 gene exactly, and the interpretation is a standard biomedical conclusion based on the high expression values provided."
+          "value": "z-score 3.704858872118759, TPM 3210.598879851915",
+          "classification": "INFERRED",
+          "reason": "The raw data confirms the ERBB2 z-score and TPM values, and the interpretation of strong overexpression based on those values is a standard biological inference."
         }
       ]
     },
@@ -1144,9 +1024,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ERBB2",
-          "value": "z-score 3.70; TPM 3210.6",
-          "classification": "INFERRED",
-          "reason": "The TPM and z-score for ERBB2 are present in the raw data, while the biological interpretation of oncogenic addiction is a standard scientific inference based on the high expression level."
+          "value": "3.704858872118759",
+          "classification": "GROUNDED",
+          "reason": "Value present in raw evidence (string match)"
         }
       ]
     },
@@ -1156,7 +1036,7 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 3,
+      "n_findings_audited": 4,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -1177,9 +1057,16 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ERBB2",
-          "value": "z=3.70, TPM=3195.42",
-          "classification": "INFERRED",
-          "reason": "The ERBB2 gene, z-score, and TPM values are present in the evidence; the conclusion regarding sensitivity to HER2-targeted therapy is a standard clinical interpretation of high ERBB2 expression."
+          "value": "3.7013318426452044 (z-score), 3195.420506962121 (TPM)",
+          "classification": "GROUNDED",
+          "reason": "The TPM and z-score values for ERBB2 are explicitly listed in the raw MCP tool output, and the interpretation of high expression is a direct observation of these values."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "EGFR",
+          "value": "-1.4193090625923883 (z-score)",
+          "classification": "GROUNDED",
+          "reason": "The z-score value for EGFR is directly present in the raw MCP output, and the interpretation follows directly from the retrieved value."
         }
       ]
     },
@@ -1213,8 +1100,8 @@
       "cell_line": "NCI-H1648",
       "drug": "Afatinib",
       "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
+      "final_verdict": "RESISTANT",
+      "correct": false,
       "n_findings_audited": 2,
       "n_leaked": 0,
       "leakage_rate": 0.0,
@@ -1241,23 +1128,30 @@
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
-      "n_findings_audited": 2,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_findings_audited": 3,
+      "n_leaked": 1,
+      "leakage_rate": 0.3333,
       "findings": [
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ALK",
-          "value": "z-score 2.97",
-          "classification": "INFERRED",
-          "reason": "The raw data confirms the ALK z-score of 2.97, and the interpretation of overexpression as an oncogenic driver in NSCLC is a standard biomedical inference derived from the gene and expression data."
+          "value": "z-score 2.968",
+          "classification": "GROUNDED",
+          "reason": "The z-score of 2.968 for the ALK gene is explicitly provided in the raw MCP tool output."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "ROS1",
-          "value": "z-score 2.39",
+          "value": "z-score 2.385",
+          "classification": "LEAKED",
+          "reason": "Vertex API error 403: {'error': {'code': 403, 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.', 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'SERVICE_DISABLED', 'domain': 'googleapis.com', 'metadata': {'serviceTitle': 'Agent Platform API', 'containerInfo': 'project-0de27b9a-ab4d-44a3-903', 'service': 'aiplatform.googleapis.com', 'activationUrl': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903', 'consumer': 'projects/project-0de27b9a-ab4d-44a3-903'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.'}, {'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Google developers console API activation', 'url': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903'}]}]}}"
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MET",
+          "value": "tpm 99.58",
           "classification": "GROUNDED",
-          "reason": "The ROS1 gene is present in the MCP tool output with a z-score of 2.385265464351774, which directly supports the cited value of 2.39."
+          "reason": "The TPM value for MET is directly provided in the raw MCP output, and the interpretation of robust expression is a standard biomedical description of a high TPM value for a target kinase."
         }
       ]
     },
@@ -1300,80 +1194,28 @@
       ]
     },
     {
-      "cell_line": "IGROV-1",
-      "drug": "Olaparib",
-      "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
-      "n_findings_audited": 2,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
-      "findings": [
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "PARP1",
-          "value": "164.05 TPM",
-          "classification": "GROUNDED",
-          "reason": "The value 164.05 TPM is directly retrieved from the target_expression array in the raw MCP output, and the interpretation is a standard biomedical extrapolation based on the provided TPM value."
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "PARP2",
-          "value": "52.29 TPM",
-          "classification": "INFERRED",
-          "reason": "The TPM value is present in the evidence, and the interpretation of 'constitutively high target expression' is a reasonable pharmacological inference derived from the provided quantitative data."
-        }
-      ]
-    },
-    {
       "cell_line": "HCC1395",
       "drug": "Olaparib",
       "true_label": "SENSITIVE",
       "final_verdict": "SENSITIVE",
       "correct": true,
       "n_findings_audited": 2,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_leaked": 1,
+      "leakage_rate": 0.5,
       "findings": [
         {
           "agent": "transcriptomics_agent",
-          "biomarker": "PARP1",
-          "value": "158.53 TPM",
-          "classification": "INFERRED",
-          "reason": "The TPM value is present in the raw data, and the interpretation that the expression level supports drug engagement is a standard biomedical inference derived from the provided gene expression data."
-        },
-        {
-          "agent": "transcriptomics_agent",
           "biomarker": "PARP2",
-          "value": "1.59 z-score",
+          "value": "z-score 1.59, tpm 86.17",
           "classification": "GROUNDED",
-          "reason": "The PARP2 z-score of 1.59 is explicitly present in the provided MCP tool output, and the interpretation of overexpression is a direct characterization of this z-score value."
-        }
-      ]
-    },
-    {
-      "cell_line": "CAL-51",
-      "drug": "Talazoparib",
-      "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
-      "n_findings_audited": 2,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
-      "findings": [
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "PARP1",
-          "value": "139.08 TPM",
-          "classification": "INFERRED",
-          "reason": "The TPM value is present in the raw data, while the interpretation 'constitutively highly expressed' is a qualitative summary derived from the quantitative TPM and z-score data."
+          "reason": "The cited z-score and tpm values for PARP2 are explicitly present in the raw MCP tool output."
         },
         {
           "agent": "transcriptomics_agent",
-          "biomarker": "PARP2",
-          "value": "68.33 TPM",
-          "classification": "INFERRED",
-          "reason": "The TPM value is present in the raw data, and the interpretation as 'constitutively highly expressed' is a standard biomedical inference derived from the high TPM value and percentile provided in the source."
+          "biomarker": "PARP1",
+          "value": "z-score 0.70, tpm 158.53",
+          "classification": "LEAKED",
+          "reason": "Vertex API error 403: {'error': {'code': 403, 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.', 'status': 'PERMISSION_DENIED', 'details': [{'@type': 'type.googleapis.com/google.rpc.ErrorInfo', 'reason': 'SERVICE_DISABLED', 'domain': 'googleapis.com', 'metadata': {'containerInfo': 'project-0de27b9a-ab4d-44a3-903', 'activationUrl': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903', 'consumer': 'projects/project-0de27b9a-ab4d-44a3-903', 'service': 'aiplatform.googleapis.com', 'serviceTitle': 'Agent Platform API'}}, {'@type': 'type.googleapis.com/google.rpc.LocalizedMessage', 'locale': 'en-US', 'message': 'Agent Platform API has not been used in project project-0de27b9a-ab4d-44a3-903 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.'}, {'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Google developers console API activation', 'url': 'https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=project-0de27b9a-ab4d-44a3-903'}]}]}}"
         }
       ]
     },
@@ -1384,15 +1226,15 @@
       "final_verdict": "RESISTANT",
       "correct": true,
       "n_findings_audited": 1,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_leaked": 1,
+      "leakage_rate": 1.0,
       "findings": [
         {
           "agent": "transcriptomics_agent",
           "biomarker": "PARP1",
-          "value": "89.39 TPM",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for PARP1 in the raw data is 89.3862..., which the agent correctly rounded to 89.39 TPM, and the interpretation as a target protein is supported by the data context."
+          "value": "89.386 TPM",
+          "classification": "LEAKED",
+          "reason": "While the TPM value is derived from the evidence, the interpretation that the expression is 'constitutively expressed' and 'actionable for inhibition' relies on external medical knowledge regarding PARP1 inhibitors not present in the provided tool output."
         }
       ]
     },
@@ -1416,6 +1258,25 @@
       ]
     },
     {
+      "cell_line": "NCI-H2009",
+      "drug": "Trametinib",
+      "true_label": "SENSITIVE",
+      "final_verdict": "SENSITIVE",
+      "correct": true,
+      "n_findings_audited": 1,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
+      "findings": [
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "MAP2K1",
+          "value": "z-score 1.706, TPM 108.29",
+          "classification": "INFERRED",
+          "reason": "The raw data confirms the TPM and z-score for MAP2K1, and characterizing it as 'strong overexpression' is a reasonable biomedical interpretation of a z-score above 1.5, even if the specific label was not in the raw data."
+        }
+      ]
+    },
+    {
       "cell_line": "NCI-H1573",
       "drug": "Crizotinib",
       "true_label": "RESISTANT",
@@ -1428,9 +1289,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "MET",
-          "value": "237.55 TPM",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for MET of 237.55 is explicitly provided in the raw MCP output, and characterizing a high percentile/z-score as high expression is a direct interpretation of that data."
+          "value": "z-score 1.43, TPM 237.55",
+          "classification": "INFERRED",
+          "reason": "The raw data confirms the MET TPM and z-score values, while the interpretation regarding overexpression and sensitivity is a standard clinical inference derived from these quantitative results."
         }
       ]
     },
@@ -1450,25 +1311,6 @@
           "value": "hemizygous_deletion",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        }
-      ]
-    },
-    {
-      "cell_line": "LAMA-84",
-      "drug": "Dasatinib",
-      "true_label": "SENSITIVE",
-      "final_verdict": "SENSITIVE",
-      "correct": true,
-      "n_findings_audited": 1,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
-      "findings": [
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "KIT",
-          "value": "z=1.69",
-          "classification": "INFERRED",
-          "reason": "The KIT gene and its z-score of 1.689 are explicitly present in the raw data, and the agent's interpretation that this represents overexpression and potential therapeutic sensitivity is a standard biomedical inference derived from the provided statistical evidence."
         }
       ]
     },
@@ -1499,9 +1341,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "FLT3",
-          "value": "z-score 6.33",
-          "classification": "INFERRED",
-          "reason": "The z-score of 6.33 is present in the raw data, and the interpretation of high expression as a drug sensitivity marker is a standard clinical inference derived from that data."
+          "value": "z-score 6.33, 125.73 TPM",
+          "classification": "GROUNDED",
+          "reason": "The specific TPM and z-score values for FLT3 are explicitly present in the raw MCP tool output."
         }
       ]
     },
@@ -1546,14 +1388,14 @@
           "biomarker": "CDK4",
           "value": "340.8 TPM",
           "classification": "INFERRED",
-          "reason": "The TPM value is directly supported by the raw data, while the interpretation regarding target accessibility is a standard biological inference based on the high expression level."
+          "reason": "The TPM value is retrieved from evidence, and the interpretation that high expression relates to sensitivity is a standard biomedical inference derived from the provided gene context."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK6",
-          "value": "53.8 TPM / 1.18 z-score",
+          "value": "53.8 TPM",
           "classification": "GROUNDED",
-          "reason": "The TPM value of 53.84 and z-score of 1.1788 are explicitly present in the raw MCP output for gene CDK6."
+          "reason": "The TPM value for CDK6 is explicitly present in the provided tool output, and the interpretation of high expression is a direct assessment based on the provided numeric data."
         }
       ]
     },
@@ -1571,15 +1413,15 @@
           "agent": "transcriptomics_agent",
           "biomarker": "CDK4",
           "value": "340.80 TPM",
-          "classification": "GROUNDED",
-          "reason": "The TPM value for CDK4 is explicitly present in the raw MCP output, and the interpretation regarding expression levels is a standard biomedical inference based on the retrieved data."
+          "classification": "INFERRED",
+          "reason": "The TPM value is retrieved from the evidence and the interpretation that high expression indicates target availability is a standard biomedical deduction derived from the provided data."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK6",
-          "value": "53.84 TPM",
+          "value": "53.84 TPM, z-score 1.18",
           "classification": "GROUNDED",
-          "reason": "The TPM value for CDK6 is explicitly present in the provided raw MCP tool output."
+          "reason": "The TPM and z-score values for CDK6 are explicitly present in the raw MCP tool output, and the interpretation is a standard biomedical derivation from those values."
         }
       ]
     },
@@ -1590,22 +1432,22 @@
       "final_verdict": "SENSITIVE",
       "correct": false,
       "n_findings_audited": 2,
-      "n_leaked": 1,
-      "leakage_rate": 0.5,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK4",
-          "value": "94.05 TPM",
-          "classification": "LEAKED",
-          "reason": "While the gene and TPM value (rounded) are in the evidence, the interpretation 'Constitutively expressed target present and druggable' is a qualitative biomedical claim not supported by the raw retrieved data."
+          "value": "TPM 94.048",
+          "classification": "INFERRED",
+          "reason": "The raw data confirms the CDK4 TPM value is 94.048, and the interpretation that it is a constitutively expressed target is a standard biomedical inference derived from its presence in the expression data."
         },
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK6",
-          "value": "1.56 TPM",
+          "value": "TPM 1.561",
           "classification": "INFERRED",
-          "reason": "The TPM value is directly supported by the MCP output, and the clinical implication regarding Palbociclib and CDK4/6 biological compensation is a standard biomedical interpretation based on the provided low expression levels."
+          "reason": "The TPM value is present in the raw output, and 'functionally absent/low expression' is a standard biomedical inference derived from the very low TPM (1.56) and low z-score provided in the data."
         }
       ]
     },
@@ -1613,18 +1455,25 @@
       "cell_line": "DU-145",
       "drug": "Ribociclib",
       "true_label": "RESISTANT",
-      "final_verdict": "RESISTANT",
-      "correct": true,
-      "n_findings_audited": 1,
+      "final_verdict": "SENSITIVE",
+      "correct": false,
+      "n_findings_audited": 2,
       "n_leaked": 1,
-      "leakage_rate": 1.0,
+      "leakage_rate": 0.5,
       "findings": [
         {
           "agent": "transcriptomics_agent",
           "biomarker": "CDK4",
-          "value": "94.05 TPM",
+          "value": "TPM 94.048",
           "classification": "LEAKED",
-          "reason": "While the TPM value is present in the evidence, the interpretation regarding Ribociclib efficacy despite the low z-score is a specific clinical claim not supported by the provided MCP data."
+          "reason": "While the TPM value is present in the evidence, the interpretation 'Constitutively expressed target protein' is an external biomedical claim not supported by the raw retrieved data."
+        },
+        {
+          "agent": "transcriptomics_agent",
+          "biomarker": "CDK6",
+          "value": "TPM 1.561",
+          "classification": "GROUNDED",
+          "reason": "The TPM value for CDK6 is explicitly present in the raw MCP output, and 'Low target expression' is a standard interpretation given the very low TPM and negative z-score."
         }
       ]
     },
@@ -1653,9 +1502,9 @@
       "true_label": "RESISTANT",
       "final_verdict": "RESISTANT",
       "correct": true,
-      "n_findings_audited": 3,
-      "n_leaked": 1,
-      "leakage_rate": 0.3333,
+      "n_findings_audited": 2,
+      "n_leaked": 0,
+      "leakage_rate": 0.0,
       "findings": [
         {
           "agent": "genomics_agent",
@@ -1670,13 +1519,6 @@
           "value": "Chronos = 0.001",
           "classification": "GROUNDED",
           "reason": "The DepMap score of 0.001 is provided in the MCP output, and the interpretation follows the logic that values above the essentiality threshold indicate a lack of essentiality."
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "TPM 0.07, z-score -1.42",
-          "classification": "LEAKED",
-          "reason": "While the EGFR expression data is grounded, the interpretation regarding resistance in Type B drugs is a specific clinical claim not supported by the provided raw evidence."
         }
       ]
     },
@@ -1686,7 +1528,7 @@
       "true_label": "RESISTANT",
       "final_verdict": "RESISTANT",
       "correct": true,
-      "n_findings_audited": 4,
+      "n_findings_audited": 3,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -1710,13 +1552,6 @@
           "value": "chronos = 0.001",
           "classification": "GROUNDED",
           "reason": "The DepMap score of 0.001 and the non-essential status are derived directly from the provided depmap_scores data and the accompanying note regarding chronos scores."
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "TPM 0.07",
-          "classification": "INFERRED",
-          "reason": "The agent retrieved the expression value from the data and correctly inferred the resistance phenotype based on the provided negligible TPM value, which is a standard biomedical interpretation."
         }
       ]
     },
@@ -1779,15 +1614,15 @@
       "final_verdict": "RESISTANT",
       "correct": true,
       "n_findings_audited": 1,
-      "n_leaked": 0,
-      "leakage_rate": 0.0,
+      "n_leaked": 1,
+      "leakage_rate": 1.0,
       "findings": [
         {
           "agent": "transcriptomics_agent",
           "biomarker": "BRAF",
-          "value": "z-score -2.25",
-          "classification": "GROUNDED",
-          "reason": "The BRAF z-score of -2.25 is explicitly present in the raw MCP tool output, and the interpretation follows directly from the provided numerical data."
+          "value": "z-score -2.25, TPM 2.89",
+          "classification": "LEAKED",
+          "reason": "The raw data provides numerical expression values for BRAF but contains no information regarding a 'T2_TRANSCRIPTIONAL_GATE' or the interpretation of the gene as functionally absent."
         }
       ]
     },
@@ -1818,9 +1653,9 @@
         {
           "agent": "transcriptomics_agent",
           "biomarker": "BRAF",
-          "value": "z-score: -2.25, tpm: 2.90",
-          "classification": "INFERRED",
-          "reason": "The raw data provides the z-score and tpm values for BRAF, and the interpretation is a standard domain-specific conclusion derived from the provided expression data."
+          "value": "z_score: -2.255, tpm: 2.899",
+          "classification": "GROUNDED",
+          "reason": "The TPM and z_score values for BRAF are explicitly present in the raw MCP tool output, and the interpretation is a direct derivation of the provided transcriptional data."
         }
       ]
     },
@@ -1856,7 +1691,7 @@
       "true_label": "RESISTANT",
       "final_verdict": "RESISTANT",
       "correct": true,
-      "n_findings_audited": 3,
+      "n_findings_audited": 1,
       "n_leaked": 0,
       "leakage_rate": 0.0,
       "findings": [
@@ -1866,20 +1701,6 @@
           "value": "hemizygous_deletion",
           "classification": "GROUNDED",
           "reason": "Value present in raw evidence (string match)"
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "EGFR",
-          "value": "z = -1.417",
-          "classification": "GROUNDED",
-          "reason": "The z-score of -1.417 is explicitly provided in the raw MCP tool output for the gene EGFR."
-        },
-        {
-          "agent": "transcriptomics_agent",
-          "biomarker": "ERBB2",
-          "value": "z = -0.151, TPM = 17.08",
-          "classification": "GROUNDED",
-          "reason": "The ERBB2 TPM (17.08) and z-score (-0.151) are explicitly present in the provided MCP tool output, and the interpretation follows directly from the low z-score."
         }
       ]
     }

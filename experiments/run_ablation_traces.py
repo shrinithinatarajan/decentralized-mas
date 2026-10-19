@@ -19,7 +19,9 @@ from pathlib import Path
 from scipy import stats
 from sklearn.metrics import roc_auc_score  # noqa: F401 used in DeLong block
 
-os.environ.setdefault("VERTEX_PROJECT", "project-d3bf2d5b-3451-46fd-8f3")
+from dotenv import load_dotenv
+load_dotenv()
+os.environ.setdefault("VERTEX_PROJECT", "project-0de27b9a-ab4d-44a3-903")
 
 from src.agents.genomics_agent import GenomicsAgent
 from src.agents.transcriptomics_agent import TranscriptomicsAgent
